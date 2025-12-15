@@ -1,0 +1,16 @@
+﻿<!-- Assets/Styles/Common/BaseResources.xaml -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- 全局度量（可被 App.ApplyUIConfig 动态覆盖） -->
+    <sys:Double x:Key="Global.FontSize">14</sys:Double>
+    <FontFamily x:Key="Global.FontFamily">Segoe UI</FontFamily>
+    <sys:Double x:Key="Global.CornerRadius">6</sys:Double>
+    <Thickness x:Key="Global.Padding">8</Thickness>
+
+    <!-- 窗口尺寸（可由 AppConfiguration 覆盖） -->
+    <sys:Double x:Key="DefaultWindowWidth">1200</sys:Double>
+    <sys:Double x:Key="DefaultWindowHeight">800</sys:Double>
+
+</ResourceDictionary>

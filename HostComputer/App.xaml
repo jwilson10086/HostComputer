@@ -1,0 +1,41 @@
+﻿<Application
+    x:Class="HostComputer.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:HostComputer"
+    xmlns:tb="http://www.hardcodet.net/taskbar"
+    xmlns:conv="clr-namespace:HostComputer.Common.Converter"
+    ShutdownMode="OnExplicitShutdown">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/HostComputer;component/Assets/Styles/Common/IconButtonStyle.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/HostComputer;component/Assets/Styles/Common/BaseResources.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/HostComputer;component/Assets/Styles/Common/Controls.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/HostComputer;component/Assets/Styles/Common/ScrollBarStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <conv:TranslateConverter x:Key="TranslateConverter"/>
+            <tb:TaskbarIcon
+                x:Key="TrayIcon"
+                IconSource="/Assets/Icons/TrayIcon.ico"
+                ToolTipText="HostComputer 程序">
+                <tb:TaskbarIcon.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Click="ShowMainWindow_Click" Header="显示主窗口" />
+                        <MenuItem Click="HideMainWindow_Click" Header="隐藏主窗口" />
+                        <MenuItem Click="ShowConsole_Click" Header="显示控制台" />
+                        <MenuItem Click="CloseConsole_Click" Header="关闭控制台" />
+                        <MenuItem Click="ExitApp_Click" Header="退出程序" />
+                    </ContextMenu>
+                </tb:TaskbarIcon.ContextMenu>
+            </tb:TaskbarIcon>
+            <FontFamily x:Key="iconfont">
+                pack://application:,,,/HostComputer;component/Assets/Fonts/#iconfont
+            </FontFamily>
+            <FontFamily x:Key="timefont">
+                pack://application:,,,/HostComputer;component/Assets/Fonts/#Digital Display
+            </FontFamily>
+        </ResourceDictionary>
+        
+    </Application.Resources>
+</Application>

@@ -1,0 +1,31 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace HostComputer.Views.Overview
+{
+    /// <summary>
+    /// Interaction logic for Overview_FlowRateView.xaml
+    /// </summary>
+    public partial class Overview_FlowRateView : UserControl
+    {
+        //private CancellationTokenSource _cts;
+        public Overview_FlowRateView()
+        {
+            InitializeComponent();
+        }
+      
+    }
+}
+

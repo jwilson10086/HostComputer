@@ -1,0 +1,25 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- 先 Merge Base (由 App 在启动时合并，或者在此处手动合并) -->
+    <!-- 如果不自动合并，App.ApplyUIConfig 会先合并 BaseResources.xaml -->
+
+    <!-- Colors -->
+    <Color x:Key="Color.Background">#FFFFFF</Color>
+    <Color x:Key="Color.Surface">#FFFFFF</Color>
+    <Color x:Key="Color.Primary">#007ACC</Color>
+    <Color x:Key="Color.Accent">#FF4081</Color>
+    <Color x:Key="Color.TextPrimary">#333333</Color>
+    <Color x:Key="Color.TextSecondary">#666666</Color>
+    <Color x:Key="Color.Border">#E5E5E5</Color>
+
+    <!-- Brushes -->
+    <SolidColorBrush x:Key="Brush.Background" Color="{StaticResource Color.Background}" />
+    <SolidColorBrush x:Key="Brush.Surface" Color="{StaticResource Color.Surface}" />
+    <SolidColorBrush x:Key="Brush.Primary" Color="{StaticResource Color.Primary}" />
+    <SolidColorBrush x:Key="Brush.Accent" Color="{StaticResource Color.Accent}" />
+    <SolidColorBrush x:Key="Brush.TextPrimary" Color="{StaticResource Color.TextPrimary}" />
+    <SolidColorBrush x:Key="Brush.TextSecondary" Color="{StaticResource Color.TextSecondary}" />
+    <SolidColorBrush x:Key="Brush.Border" Color="{StaticResource Color.Border}" />
+    <SolidColorBrush x:Key="Brush.ScrollBarTrack" Color="#2b2b2b"/>
+    <SolidColorBrush x:Key="Brush.ScrollBarThumb" Color="#444"/>
+
+</ResourceDictionary>

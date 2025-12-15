@@ -1,0 +1,324 @@
+﻿<Window
+    x:Class="CustomControls.Controls.FloatingPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Width="280"
+    Height="750"
+    AllowsTransparency="True"
+    Background="Transparent"
+    MouseLeftButtonDown="Window_MouseLeftButtonDown"
+    ResizeMode="NoResize"
+    Topmost="True"
+    WindowStyle="None">
+
+    <Window.Resources>
+
+        <!--  阴影  -->
+        <DropShadowEffect
+            x:Key="ShadowEffect"
+            BlurRadius="16"
+            Opacity="0.20"
+            ShadowDepth="2"
+            Color="Black" />
+
+        <!--  按钮风格：深灰工业风  -->
+        <Style x:Key="DarkMenuBtn" TargetType="Button">
+            <Setter Property="Background" Value="#3A3A3D" />
+            <Setter Property="Foreground" Value="#E6E6E6" />
+            <Setter Property="Padding" Value="10,6" />
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#007ACC" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#005A9E" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--  ComboBox 工业风  -->
+        <Style x:Key="DarkComboBox" TargetType="ComboBox">
+            <Setter Property="Foreground" Value="#E6E6E6" />
+            <Setter Property="Background" Value="#3A3A3D" />
+            <Setter Property="BorderBrush" Value="#5A5A5A" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="6" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="26" />
+                            </Grid.ColumnDefinitions>
+
+                            <!--  背景  -->
+                            <Border
+                                x:Name="Border"
+                                Grid.ColumnSpan="2"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5" />
+
+                            <!--  内容文字  -->
+                            <ContentPresenter
+                                Margin="6,0,6,0"
+                                VerticalAlignment="Center"
+                                Content="{TemplateBinding SelectionBoxItem}" />
+
+                            <!--  ★ 点击整个框即可下拉的透明按钮（关键点）  -->
+                            <ToggleButton
+                                x:Name="PART_WholeToggle"
+                                Grid.ColumnSpan="2"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                ClickMode="Press"
+                                Focusable="False"
+                                IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" />
+
+                            <!--  ▼按钮  -->
+                            <Path
+                                Grid.Column="1"
+                                Margin="0,0,6,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Data="M0 0 L6 6 L12 0 Z"
+                                Fill="White" />
+
+                            <!--  下拉 Popup  -->
+                            <Popup
+                                x:Name="PART_Popup"
+                                AllowsTransparency="True"
+                                IsOpen="{TemplateBinding IsDropDownOpen}"
+                                Placement="Bottom">
+
+                                <Border
+                                    Padding="4"
+                                    Background="#3A3A3D"
+                                    BorderBrush="#5A5A5A"
+                                    BorderThickness="1"
+                                    CornerRadius="6">
+
+                                    <ScrollViewer MaxHeight="200">
+                                        <ItemsPresenter />
+                                    </ScrollViewer>
+                                </Border>
+
+                            </Popup>
+                        </Grid>
+
+                        <!--  触发器  -->
+                        <ControlTemplate.Triggers>
+
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#4E4E52" />
+                            </Trigger>
+
+                            <Trigger Property="IsDropDownOpen" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#005A9E" />
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!--  ComboBox Item  -->
+        <Style TargetType="ComboBoxItem">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Background" Value="#3A3A3D" />
+            <Setter Property="Padding" Value="6" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBoxItem">
+                        <Border
+                            x:Name="Bd"
+                            Padding="6"
+                            Background="{TemplateBinding Background}">
+                            <ContentPresenter />
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#007ACC" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#005A9E" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--  Slider 工业风  -->
+
+
+    </Window.Resources>
+
+
+    <!--  主框架  -->
+    <Border
+        Margin="8"
+        Background="#FAFAFA"
+        BorderBrush="#444"
+        BorderThickness="1.2"
+        CornerRadius="12"
+        Effect="{DynamicResource ShadowEffect}">
+
+        <StackPanel Margin="14">
+
+            <TextBlock
+                Margin="0,0,0,12"
+                FontSize="18"
+                FontWeight="Bold"
+                Foreground="#333"
+                Text="机械手控制面板" />
+
+            <!--  下拉  -->
+            <ComboBox
+                x:Name="FingerSelector"
+                Height="30"
+                Margin="0,4"
+                Style="{StaticResource DarkComboBox}" />
+
+            <ComboBox
+                x:Name="StationSelector"
+                Height="30"
+                Margin="0,4"
+                Style="{StaticResource DarkComboBox}" />
+
+            <!--  5按钮  -->
+            <StackPanel Margin="0,12">
+                <Button
+                    x:Name="BtnPick"
+                    Content="取"
+                    Style="{StaticResource DarkMenuBtn}" />
+                <Button
+                    x:Name="BtnPlace"
+                    Content="放"
+                    Style="{StaticResource DarkMenuBtn}" />
+                <Button
+                    x:Name="BtnTeach"
+                    Content="示教"
+                    Style="{StaticResource DarkMenuBtn}" />
+                <Button
+                    x:Name="BtnLocate"
+                    Content="定位"
+                    Style="{StaticResource DarkMenuBtn}" />
+                <Button
+                    x:Name="BtnOpenPositions"
+                    Content="打开点位"
+                    Style="{StaticResource DarkMenuBtn}" />
+            </StackPanel>
+
+            <!--  消息提示  -->
+            <TextBlock
+                x:Name="MessageText"
+                Margin="6,3,6,0"
+                FontSize="13"
+                Foreground="#D97706"
+                Visibility="Visible" />
+
+
+            <Separator Margin="2" />
+
+            <!--  伸缩动作按钮  -->
+            <Button
+                x:Name="BtnExtendLeft"
+                Content="左臂伸出"
+                Style="{StaticResource DarkMenuBtn}" />
+            <Button
+                x:Name="BtnExtendRight"
+                Content="右臂伸出"
+                Style="{StaticResource DarkMenuBtn}" />
+            <Button
+                x:Name="BtnHome"
+                Content="全部收回"
+                Style="{StaticResource DarkMenuBtn}" />
+            <Button
+                x:Name="BtnRotateBase"
+                Content="整体旋转 +35°"
+                Style="{StaticResource DarkMenuBtn}" />
+
+            <Separator Margin="10" />
+
+            <!--  实时示教值  -->
+            <TextBlock
+                Margin="0,4"
+                FontSize="14"
+                FontWeight="SemiBold"
+                Foreground="#444"
+                Text="实时示教值" />
+
+            <UniformGrid Margin="0,6" Columns="2">
+
+                <TextBlock Foreground="#666" Text="J1：" />
+                <TextBlock Foreground="#222" Text="{Binding Arm1_1Angle}" />
+                <TextBlock Foreground="#666" Text="J2：" />
+                <TextBlock Foreground="#222" Text="{Binding Arm1_2Angle}" />
+                <TextBlock Foreground="#666" Text="J3：" />
+                <TextBlock Foreground="#222" Text="{Binding Arm1_3Angle}" />
+                <TextBlock Foreground="#666" Text="J4：" />
+                <TextBlock Foreground="#222" Text="{Binding Arm2_1Angle}" />
+                <TextBlock Foreground="#666" Text="J5：" />
+                <TextBlock Foreground="#222" Text="{Binding Arm2_2Angle}" />
+                <TextBlock Foreground="#666" Text="J6：" />
+                <TextBlock Foreground="#222" Text="{Binding Arm2_3Angle}" />
+                <TextBlock Foreground="#666" Text="J7 J8：" />
+                <TextBlock Foreground="#222" Text="{Binding BaseAngle}" />
+
+            </UniformGrid>
+
+            <Separator Margin="10" />
+
+            <!--  滑条  -->
+            <TextBlock Foreground="#444" Text="左臂角度控制" />
+            <Slider
+                x:Name="SliderLeft"
+                Maximum="130"
+                Minimum="75" />
+
+            <TextBlock
+                Margin="0,10,0,0"
+                Foreground="#444"
+                Text="右臂角度控制" />
+            <Slider
+                x:Name="SliderRight"
+                Maximum="130"
+                Minimum="75" />
+
+            <TextBlock
+                Margin="0,10,0,0"
+                Foreground="#444"
+                Text="整体旋转控制" />
+            <Slider x:Name="SliderBase" Maximum="359.99" />
+            <Button
+                x:Name="BtnClose"
+                Content="关闭"
+                Style="{StaticResource DarkMenuBtn}" />
+
+        </StackPanel>
+
+    </Border>
+
+</Window>

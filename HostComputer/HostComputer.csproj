@@ -1,0 +1,125 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+	  <!-- 保留 AnyCPU，但限制 runtime 只生成 Windows x64 -->
+	  <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <!-- 只保留默认语言英文资源，其他语言不复制 -->
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    
+    <!-- 可选：阻止第三方卫星程序集复制（更彻底） -->
+    <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\Fonts\digital_display.ttf" />
+    <None Remove="Assets\Fonts\iconfont.ttf" />
+    <None Remove="Assets\Icons\AppIcon.ico" />
+    <None Remove="Assets\Icons\Smiley_happy.ico" />
+    <None Remove="Assets\Icons\TrayIcon.ico" />
+    <None Remove="Assets\Images\loginbg.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="Assets\Styles\Themes\Dark.xaml" />
+    <Page Remove="Assets\Styles\Themes\Light.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CustomControls\CustomControls.csproj" />
+    <ProjectReference Include="..\DbFramework\DbFramework.csproj" />
+    <ProjectReference Include="..\IDataAccess\IDataAccess.csproj" />
+    <ProjectReference Include="..\MyLogger\MyLogger.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Fonts\digital_display.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Fonts\iconfont.ttf" />
+    <Resource Include="Assets\Icons\AppIcon.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Icons\Smiley_happy.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Icons\TrayIcon.ico" />
+    <Resource Include="Assets\Images\loginbg.png" />
+    <Resource Include="Assets\Styles\Themes\Dark.xaml" />
+    <Resource Include="Assets\Styles\Themes\Light.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Common\DataAccess\" />
+    <Folder Include="ViewModels\3thViews\" />
+    <Folder Include="ViewModels\Equipment_Setup\" />
+    <Folder Include="ViewModels\History\" />
+    <Folder Include="ViewModels\Lot_Operation\" />
+    <Folder Include="ViewModels\Maintenance\" />
+    <Folder Include="ViewModels\Overview\" />
+    <Folder Include="ViewModels\Parameter\" />
+    <Folder Include="ViewModels\Recipe_Editor\" />
+    <Folder Include="Views\3thViews\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.105.0" />
+    <PackageReference Include="Hardcodet.Wpf.TaskbarNotification" Version="1.0.5" />
+    <PackageReference Include="MiniExcel" Version="1.41.4" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.0">
+		</PackageReference>
+	</ItemGroup>
+	<Target Name="PruneRuntimes_Output" AfterTargets="CopyFilesToOutputDirectory;ResolvePackageAssets;AfterBuild">
+		<Message Text="PruneRuntimes_Output: removing non-win runtimes from output and intermediates..." Importance="high" />
+
+		<!-- 输出目录（VS/CLI 的最终输出） -->
+		<PropertyGroup>
+			<__outdir>$(OutputPath)</__outdir>
+			<__intdir>$(IntermediateOutputPath)</__intdir>
+			<__targetdir>$(TargetDir)</__targetdir>
+		</PropertyGroup>
+
+		<!-- 列出所有 runtimes 文件夹（可能来自不同阶段） -->
+		<ItemGroup>
+			<_RuntimesInOut Include="$(__outdir)runtimes\**\" />
+			<_RuntimesInTarget Include="$(__targetdir)runtimes\**\" />
+			<_RuntimesInInt Include="$(__intdir)runtimes\**\" />
+		</ItemGroup>
+
+		<!-- 要保留的 RID 模式：修改为你要保留的（如 win-x86 也保留则加入） -->
+		<ItemGroup>
+			<_KeepPatterns Include="$(__outdir)runtimes\win-x64\**\" />
+			<_KeepPatterns Include="$(__targetdir)runtimes\win-x64\**\" />
+			<_KeepPatterns Include="$(__intdir)runtimes\win-x64\**\" />
+			<!-- 若想同时保留 win-x86，请取消注释下一行 -->
+			<!-- <_KeepPatterns Include="$(__outdir)runtimes\win-x86\**\" /> -->
+		</ItemGroup>
+
+		<!-- 计算需要删除的目录（All - Keep） -->
+		<ItemGroup>
+			<_AllRuntimesDirs Include="@(_RuntimesInOut);@(_RuntimesInTarget);@(_RuntimesInInt)" />
+			<_ToDeleteDirs Include="@(_AllRuntimesDirs)" Exclude="@(_KeepPatterns)" />
+		</ItemGroup>
+
+		<!-- 删除目录（继续即便失败） -->
+		<RemoveDir Directories="@(_ToDeleteDirs)" ContinueOnError="true" />
+
+		<!-- 保险：删除单个残留文件（如文件直接被当作内容复制） -->
+		<ItemGroup>
+			<_AllRuntimesFiles Include="$(__outdir)runtimes\**\*.*;$(__targetdir)runtimes\**\*.*;$(__intdir)runtimes\**\*.*" />
+			<_FilesToDelete Include="@(_AllRuntimesFiles)" Exclude="@(_KeepPatterns)" />
+		</ItemGroup>
+		<Delete Files="@(_FilesToDelete)" ContinueOnError="true" />
+
+		<Message Text="PruneRuntimes_Output: done. Deleted @( _ToDeleteDirs -> '%(fullpath)') and @( _FilesToDelete -> '%(fullpath)')" Importance="normal" />
+	</Target>
+
+</Project>

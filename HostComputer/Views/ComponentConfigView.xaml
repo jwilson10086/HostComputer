@@ -1,0 +1,274 @@
+﻿<Window
+    x:Class="HostComputer.ComponentConfigView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:c="clr-namespace:HostComputer.Common.Converter"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:HostComputer"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="ComponentConfigView"
+    Width="800"
+    Height="450"
+    mc:Ignorable="d">
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="-1" />
+    </WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <c:DeviceItemConverter x:Key="dic" />
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Grid.Resources>
+            <Style x:Key="ExpanderToggleButton" TargetType="ToggleButton">
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ToggleButton">
+                            <Border CornerRadius="3">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                        <GradientStop Offset="0" Color="#996364f8" />
+                                        <GradientStop Offset="1" Color="#556364f8" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Grid Height="26">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="30" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border
+                                        Width="4"
+                                        Height="10"
+                                        Margin="3"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        Background="Gold"
+                                        CornerRadius="2" />
+                                    <ContentPresenter
+                                        Margin="13,0"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center" />
+                                    <TextBlock
+                                        Name="arrow"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        FontFamily="{StaticResource iconfont}"
+                                        RenderTransformOrigin="0.5,0.5"
+                                        Text="&#xe6df;" />
+                                </Grid>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="arrow" Property="RenderTransform">
+                                        <Setter.Value>
+                                            <RotateTransform Angle="180" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style TargetType="Expander">
+                <Setter Property="Margin" Value="0,3" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Expander">
+                            <Border
+                                x:Name="Content"
+                                BorderThickness="1,0,1,1"
+                                CornerRadius="3">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                        <GradientStop Offset="0" Color="#11000000" />
+                                        <GradientStop Offset="1" Color="Transparent" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition x:Name="ContentRow" Height="0" />
+                                    </Grid.RowDefinitions>
+                                    <ToggleButton
+                                        Content="{TemplateBinding Header}"
+                                        IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                        Style="{StaticResource ExpanderToggleButton}" />
+
+                                    <ContentPresenter Grid.Row="1" Margin="4" />
+                                </Grid>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsExpanded" Value="True">
+                                    <Setter TargetName="ContentRow" Property="Height" Value="{Binding Height, ElementName=Content}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="107*" />
+            <ColumnDefinition Width="693*" />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.ColumnSpan="2">
+            <Grid.Background>
+                <VisualBrush
+                    TileMode="Tile"
+                    Viewport="0,0,40,40"
+                    ViewportUnits="Absolute">
+                    <VisualBrush.Visual>
+                        <Path
+                            Data="M0,0 0,40 40 40"
+                            Stroke="#F7F9FA"
+                            StrokeDashArray="5,5"
+                            StrokeThickness="1" />
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </Grid.Background>
+            <Grid.OpacityMask>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Offset="0" Color="Transparent" />
+                    <GradientStop Offset="0.6" Color="Black" />
+                </LinearGradientBrush>
+            </Grid.OpacityMask>
+        </Grid>
+        <Grid Grid.ColumnSpan="2">
+            <Grid.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Offset="0" Color="Transparent" />
+                    <GradientStop Offset="1" Color="#1116a1ff" />
+                </LinearGradientBrush>
+            </Grid.Background>
+
+            <TextBlock
+                Margin="10"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                FontSize="18"
+                Foreground="#6364f8"
+                Text="设备组态编辑" />
+
+            <!--  编辑区域  -->
+            <ItemsControl
+                Margin="170,40,210,10"
+                AllowDrop="True"
+                Background="Transparent"
+                ItemsSource="{Binding DeviceList}">
+                <ItemsControl.ItemContainerStyle>
+                    <Style TargetType="ContentPresenter">
+                        <Setter Property="Canvas.Left" Value="{Binding X}" />
+                        <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                        <Setter Property="Panel.ZIndex" Value="{Binding Z}" />
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ContentControl Width="{Binding Width}" Height="{Binding Height}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!--  组件列表  -->
+            <ScrollViewer
+                Margin="10,40,0,10"
+                HorizontalAlignment="Left"
+                VerticalScrollBarVisibility="Hidden">
+                <ItemsControl Width="160" ItemsSource="{Binding ThumbList}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Expander Header="{Binding Header}" IsExpanded="True">
+                                <ItemsControl ItemsSource="{Binding Children}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Columns="3" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border
+                                                Width="40"
+                                                Height="40"
+                                                Margin="0,3"
+                                                Background="Orange"
+                                                CornerRadius="5" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Expander>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!--  属性表  -->
+            <Border
+                Width="200"
+                Margin="0,40,10,10"
+                HorizontalAlignment="Right"
+                Background="#0F000000"
+                CornerRadius="5">
+                <Grid Margin="10,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+                    <Border Margin="-10,0" CornerRadius="3">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Offset="0" Color="#996364f8" />
+                                <GradientStop Offset="1" Color="#556364f8" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                    </Border>
+                    <Border
+                        Width="4"
+                        Height="10"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Background="Gold"
+                        CornerRadius="2" />
+                    <TextBlock
+                        Margin="10,0,0,0"
+                        VerticalAlignment="Center"
+                        Foreground="White"
+                        Text="参数配置 - 组件A" />
+
+
+                    <UniformGrid
+                        Grid.Row="100"
+                        Margin="0,3"
+                        Rows="1">
+                        <Button
+                            Height="28"
+                            Margin="3,0"
+                            Command="{Binding SaveCommand}"
+                            CommandParameter="{Binding ElementName=win}"
+                            Content="保存" />
+                        <Button
+                            Height="28"
+                            Margin="3,0"
+                            Content="取消" />
+                    </UniformGrid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
