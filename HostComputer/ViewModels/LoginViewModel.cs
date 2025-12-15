@@ -105,44 +105,47 @@ namespace HostComputer.ViewModels
                             UserViewModel.UserName,
                             UserViewModel.Password
                         );
-                       
 
-                        if (result.Success == true)
-                        {
-                            UserViewModel.UserName = result.User.UserName;
-                            UserViewModel.Password = result.User.Password;
-                            UserViewModel.Level = result.User.Level;
-                            UserViewModel.Group = result.User.Group;
-                        }
-                        else
+                        if (!result.Success)
                         {
                             ErrorMessage = "用户名或密码错误，请重新输入！";
                             App.Logger.Warning($"登录失败：{UserViewModel.UserName}");
                             return;
                         }
-                        if (IsEnable == true)
+
+                        // ===== 登录成功，写入 ViewModel =====
+                        var user = result.User;
+
+                        UserViewModel.UserName = user.UserName;
+                        UserViewModel.Password = user.Password;
+                        UserViewModel.Level = user.Level;
+                        UserViewModel.Group = user.Group;
+
+                        // ===== 是否记住用户（只存一条）=====
+                        if (IsEnable)
                         {
-                            bool success = await LocalDataAccess.InsertUserAsync(
-                                UserViewModel.UserName,
-                                UserViewModel.Password
-                            );
-                            App.Logger.Security("用户记录密码");
+                            await LocalDataAccess.SaveRememberUserAsync(user);
+                            App.Logger.Security("用户选择记住密码（唯一一条）");
                         }
                         else
                         {
-                            bool resuccess = await LocalDataAccess.DeleteAllUsersAsync();
+                            await LocalDataAccess.DeleteAllUsersAsync();
                         }
 
-                        UserSession.UserName = UserViewModel.UserName;
-                        UserSession.UserLevel = UserViewModel.Level;
-                        UserSession.Group = UserViewModel.Group; 
-                        (obj as Window).DialogResult = true;
+                        // ===== 写入全局 Session =====
+                        Session.UserName = user.UserName;
+                        Session.Level = user.Level;
+                        Session.Group = user.Group;
+                        Session.IsLogin = true;
 
-                        App.Logger.Info($"登录成功：{UserViewModel.UserName}");
+                        App.Logger.Info($"登录成功：{user.UserName}");
+
+                        (obj as Window)!.DialogResult = true;
                     };
                 }
                 return _loginCommand;
             }
         }
+
     }
 }

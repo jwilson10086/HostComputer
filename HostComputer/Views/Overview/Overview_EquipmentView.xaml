@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:HostComputer.Views.Overview"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sys="clr-namespace:HostComputer"
     d:DesignHeight="600"
     d:DesignWidth="1000"
     mc:Ignorable="d">
@@ -20,7 +21,9 @@
             LowerWaferStatus="Completed"
             LowerWaferVisible="false"
             UpperWaferStatus="Fail"
-            UpperWaferVisible="false" />
+            UpperWaferVisible="false" 
+            Permission="{Binding Source={x:Static sys:App.Session}, Path=Level}"
+            />
 
     </Grid>
 </UserControl>

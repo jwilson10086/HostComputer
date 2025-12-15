@@ -173,6 +173,39 @@ namespace HostComputer.Common.Services.Local.Auth
         }
 
         /// <summary>
+        /// 保存“唯一一条”记住的用户（先清空再插入）
+        /// </summary>
+        public async Task SaveRememberUserAsync(UserModel user)
+        {
+            await Db.BeginTransactionAsync();
+            try
+            {
+                await Db.ExecuteNonQueryAsync("DELETE FROM UserRemeber");
+
+                string insertSql = """
+                        INSERT INTO UserRemeber (UserName, Password, Level, `Group`)
+                        VALUES (@UserName, @Password, @Level, @Group)
+                    """;
+
+                var parameters = new Dictionary<string, object>
+                {
+                    ["UserName"] = user.UserName,
+                    ["Password"] = user.Password,
+                    ["Level"] = user.Level,
+                    ["Group"] = user.Group
+                };
+
+                await Db.ExecuteNonQueryAsync(insertSql, parameters);
+                await Db.CommitAsync();
+            }
+            catch
+            {
+                await Db.RollbackAsync();
+                throw;
+            }
+        }
+
+        /// <summary>
         /// 异步记录用户名和密码到 Users 表中
         /// </summary>
         /// <param name="username">用户输入的用户名</param>
@@ -187,7 +220,7 @@ namespace HostComputer.Common.Services.Local.Auth
         {
             // SQL 语句：插入一条记录到 UserRemeber 表中
             string sql =
-                "INSERT INTO UserRemeber (UserName, Password) VALUES (@UserName, @Password)";
+                "INSERT INTO UserRemeber (UserName, Password) VALUES (@UserName, @Password, @Level, @Group)";
 
             // 构造参数集合
             var parameters = new Dictionary<string, object>

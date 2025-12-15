@@ -324,7 +324,7 @@
                     Grid.Row="0"
                     Grid.Column="1"
                     Foreground="LightGreen"
-                    Text="{Binding UserName, Converter={StaticResource TranslateConverter}}" />
+                      Text="{Binding Source={x:Static local:App.Session},Path=UserName}" />
 
                 <TextBlock
                     Grid.Row="1"
@@ -335,18 +335,18 @@
                     Grid.Row="1"
                     Grid.Column="1"
                     Foreground="LightGreen"
-                    Text="{Binding UserLevel, Converter={StaticResource TranslateConverter}}" />
+                   Text="{Binding Source={x:Static local:App.Session},Path=Group}" />
 
                 <TextBlock
                     Grid.Row="2"
                     Grid.Column="0"
                     Foreground="White"
-                    Text="{lang:Lang 'GROUP'}" />
+                    Text="{lang:Lang 'Level'}" />
                 <TextBlock
                     Grid.Row="2"
                     Grid.Column="1"
                     Foreground="LightSkyBlue"
-                    Text="{Binding CurrentTime}" />
+                    Text="{Binding Source={x:Static local:App.Session},Path=Level}" />
 
                 <!--  右两列你自行扩展  -->
                 <TextBlock

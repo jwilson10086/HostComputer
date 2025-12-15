@@ -1,7 +1,4 @@
-﻿using HostComputer.Models;
-using HostComputer.Common.Services;
-using HostComputer.ViewModels;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,7 +8,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-
+using HostComputer.Common.Services;
+using HostComputer.Models;
+using HostComputer.ViewModels;
 
 namespace HostComputer.Views
 {
@@ -29,12 +28,10 @@ namespace HostComputer.Views
             var nav = new NavigationService(PageHost);
             DataContext = new MainViewModel(nav);
         }
+
         private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             this.DragMove();
         }
-
     }
- 
-    
 }

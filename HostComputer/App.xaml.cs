@@ -2,6 +2,7 @@
 using HostComputer.Common.Languages;
 using HostComputer.Common.Services;
 using HostComputer.Common.Services.StartupModules;
+using HostComputer.Common.Session;
 using HostComputer.Views;
 using MyLogger;
 using System;
@@ -16,12 +17,7 @@ namespace HostComputer
         private MainWindow _mainWindow;
         private TaskbarIcon _trayIcon;
         private ResourceDictionary? _currentTheme;
-        public static class UserSession
-        {
-            public static string UserName { get; set; }
-            public static int UserLevel { get; set; }
-            public static string Group { get; set; }
-        }
+        public static Session Session { get; } = new Session();
         public static LanguageService Lang { get; private set; }
         public static Logger Logger { get; private set; }
 

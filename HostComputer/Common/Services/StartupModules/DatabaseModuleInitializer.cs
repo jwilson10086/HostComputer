@@ -1,10 +1,10 @@
-﻿using MyLogger;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
+using MyLogger;
 
 namespace HostComputer.Common.Services.StartupModules
 {
@@ -15,19 +15,25 @@ namespace HostComputer.Common.Services.StartupModules
         private string connectionString = AppConfiguration.Current.Database.ConnectionString;
         public InitializerPriority Priority => InitializerPriority.Core;
         public int Order => 2;
-        public List<ModuleDependency> Dependencies => new()
-        {
-            new ModuleDependency { ModuleName = "配置服务", ModuleType = "Config" }
-        };
+        public List<ModuleDependency> Dependencies =>
+            new()
+            {
+                new ModuleDependency { ModuleName = "配置服务", ModuleType = "Config" }
+            };
 
         public async Task<bool> InitializeAsync(Logger logger)
         {
+            connectionString = AppConfiguration.Current.Database.ConnectionString;
             logger.Database("开始初始化数据库服务...");
 
             try
             {
                 // 1. 检查数据库文件
-                string dbPath = AppConfiguration.Current.Database.ConnectionString.Replace("Data Source=", ""); ;
+                string dbPath = AppConfiguration.Current.Database.ConnectionString.Replace(
+                    "Data Source=",
+                    ""
+                );
+                ;
                 await CheckDatabaseFileAsync(dbPath, logger);
 
                 // 2. 测试数据库连接
@@ -83,7 +89,6 @@ namespace HostComputer.Common.Services.StartupModules
             {
                 logger.Database("测试数据库连接...");
 
-               
                 using (var connection = new SqliteConnection(connectionString))
                 {
                     await connection.OpenAsync();
@@ -123,8 +128,6 @@ namespace HostComputer.Common.Services.StartupModules
             try
             {
                 logger.Database("检查数据库表结构...");
-
-               
 
                 using (var connection = new SqliteConnection(connectionString))
                 {
@@ -174,7 +177,8 @@ namespace HostComputer.Common.Services.StartupModules
         {
             using (var command = connection.CreateCommand())
             {
-                command.CommandText = @"
+                command.CommandText =
+                    @"
                     SELECT COUNT(*) FROM sqlite_master 
                     WHERE type='table' AND name=@tableName";
                 command.Parameters.AddWithValue("@tableName", tableName);
@@ -188,12 +192,13 @@ namespace HostComputer.Common.Services.StartupModules
         {
             using (var command = connection.CreateCommand())
             {
-                command.CommandText = @"
+                command.CommandText =
+                    @"
                     CREATE TABLE Users (
                         Id INTEGER PRIMARY KEY AUTOINCREMENT,
                         UserName TEXT NOT NULL UNIQUE,
                         Password TEXT NOT NULL,
-                        DisplayName TEXT,
+                        Level TEXT,
                         Role TEXT DEFAULT 'User',
                         CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
                         LastLogin DATETIME,
@@ -211,7 +216,8 @@ namespace HostComputer.Common.Services.StartupModules
         {
             using (var command = connection.CreateCommand())
             {
-                command.CommandText = @"
+                command.CommandText =
+                    @"
                     CREATE TABLE UserRemeber (
                         Id INTEGER PRIMARY KEY AUTOINCREMENT,
                         UserName TEXT NOT NULL,
@@ -231,8 +237,6 @@ namespace HostComputer.Common.Services.StartupModules
             {
                 logger.Database("检查数据完整性...");
 
-                
-
                 using (var connection = new SqliteConnection(connectionString))
                 {
                     await connection.OpenAsync();
@@ -240,7 +244,8 @@ namespace HostComputer.Common.Services.StartupModules
                     // 检查是否有默认管理员账户
                     using (var command = connection.CreateCommand())
                     {
-                        command.CommandText = "SELECT COUNT(*) FROM Users WHERE Role = 'Admin'";
+                        command.CommandText = "SELECT COUNT(*) FROM Users WHERE \"Group\" = 'OEM'";
+
                         var adminCount = Convert.ToInt32(await command.ExecuteScalarAsync());
 
                         if (adminCount == 0)
@@ -291,7 +296,8 @@ namespace HostComputer.Common.Services.StartupModules
         {
             using (var command = connection.CreateCommand())
             {
-                command.CommandText = @"
+                command.CommandText =
+                    @"
                     INSERT INTO Users (UserName, Password, DisplayName, Role, IsActive)
                     VALUES (@userName, @password, @displayName, @role, 1)";
 

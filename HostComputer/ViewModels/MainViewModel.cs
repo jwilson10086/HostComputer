@@ -14,42 +14,75 @@ using static HostComputer.App;
 
 namespace HostComputer.ViewModels
 {
+    #region MainViewModel 主视图模型
+    /// <summary>
+    /// 主视图模型，负责管理主界面的所有功能
+    /// </summary>
     public class MainViewModel : NotifyBase
     {
-        #region === UserInfo ===
-        private string _userName;
-        public string UserName
+        #region === 构造函数 ===
+        /// <summary>
+        /// 初始化主视图模型
+        /// </summary>
+        /// <param name="navigation">导航服务实例</param>
+        public MainViewModel(NavigationService navigation)
         {
-            get => _userName;
-            set
-            {
-                _userName = value;
-                NotifyChanged();
-            }
-        }
+            _navigation = navigation;
 
-        private string _userLevel;
-        public string UserLevel
-        {
-            get => _userLevel;
-            set
-            {
-                _userLevel = value;
-                NotifyChanged();
-            }
-        }
+            // 设置默认语言
+            SelectedLanguage = AppConfiguration.Current.UI.Language;
 
-        private void LoadUserInfo()
-        {
-            UserName = UserSession.UserName ?? "Unknown";
-            UserLevel = UserSession.UserLevel.ToString() ?? "N/A";
+            // 订阅语言变更事件
+            LanguageService.LanguageChanged += RefreshMenuTitles;
+
+            // 加载菜单
+            LoadMenus();
+
+            // 设置默认页面
+            SetDefaultPage();
+
+            // 初始化命令
+            InitializeCommands();
+
+            // 订阅导航事件
+            SubscribeToNavigation();
         }
         #endregion
-        #region === Language Service ===
+
+        #region === 私有字段 ===
+        /// <summary>导航服务实例</summary>
+        private readonly NavigationService _navigation;
+
+        /// <summary>当前选择的语言</summary>
+        private string _selectedLanguage;
+
+        /// <summary>面包屑导航文本</summary>
+        private string _breadcrumb = "Home";
+
+        /// <summary>选中的一级菜单</summary>
+        private MenuItemModel _selectedMenu1;
+
+        /// <summary>选中的二级菜单</summary>
+        private MenuItemModel _selectedMenu2;
+
+        /// <summary>选中的三级菜单</summary>
+        private MenuItemModel _selectedMenu3;
+        #endregion
+
+        #region === 语言服务相关 ===
+        /// <summary>
+        /// 语言服务实例
+        /// </summary>
         public LanguageService LanguageService => App.Lang;
+
+        /// <summary>
+        /// 当前文化设置
+        /// </summary>
         public CultureInfo CurrentCulture => new CultureInfo("en-US");
 
-        private string _selectedLanguage;
+        /// <summary>
+        /// 选择的语言
+        /// </summary>
         public string SelectedLanguage
         {
             get => _selectedLanguage;
@@ -64,18 +97,27 @@ namespace HostComputer.ViewModels
         }
         #endregion
 
-
-        #region === Menu Collections ===
+        #region === 菜单集合 ===
+        /// <summary>
+        /// 一级菜单集合
+        /// </summary>
         public ObservableCollection<MenuItemModel> Menus { get; } = new();
+
+        /// <summary>
+        /// 二级菜单集合
+        /// </summary>
         public ObservableCollection<MenuItemModel> SecondLevel { get; } = new();
+
+        /// <summary>
+        /// 三级菜单集合
+        /// </summary>
         public ObservableCollection<MenuItemModel> ThirdLevel { get; } = new();
         #endregion
 
-
-        #region === Navigation & Breadcrumb ===
-        private readonly NavigationService _navigation;
-
-        private string _breadcrumb = "Home";
+        #region === 面包屑导航 ===
+        /// <summary>
+        /// 面包屑导航文本
+        /// </summary>
         public string Breadcrumb
         {
             get => _breadcrumb;
@@ -83,23 +125,28 @@ namespace HostComputer.ViewModels
         }
         #endregion
 
-
-        #region === Selected Menu (3 Levels) ===
-        private MenuItemModel _selectedMenu1;
+        #region === 选中菜单项 ===
+        /// <summary>
+        /// 选中的一级菜单项
+        /// </summary>
         public MenuItemModel SelectedMenu1
         {
             get => _selectedMenu1;
             set => SetProperty(ref _selectedMenu1, value);
         }
 
-        private MenuItemModel _selectedMenu2;
+        /// <summary>
+        /// 选中的二级菜单项
+        /// </summary>
         public MenuItemModel SelectedMenu2
         {
             get => _selectedMenu2;
             set => SetProperty(ref _selectedMenu2, value);
         }
 
-        private MenuItemModel _selectedMenu3;
+        /// <summary>
+        /// 选中的三级菜单项
+        /// </summary>
         public MenuItemModel SelectedMenu3
         {
             get => _selectedMenu3;
@@ -107,46 +154,50 @@ namespace HostComputer.ViewModels
         }
         #endregion
 
+        #region === 命令 ===
+        /// <summary>一级菜单点击命令</summary>
+        public ICommand Menu1Command { get; private set; }
 
-        #region === Commands ===
-        public ICommand Menu1Command { get; }
-        public ICommand Menu2Command { get; }
-        public ICommand Menu3Command { get; }
-        public ICommand BackCommand { get; }
-        public ICommand ChangeLanguageCommand { get; }
-        public ICommand CloseCommand { get; }
-        public ICommand LoginCommand { get; }
-        public ICommand MainViewCommand { get; }
-        public ICommand SettingCommand { get; }
+        /// <summary>二级菜单点击命令</summary>
+        public ICommand Menu2Command { get; private set; }
+
+        /// <summary>三级菜单点击命令</summary>
+        public ICommand Menu3Command { get; private set; }
+
+        /// <summary>返回命令</summary>
+        public ICommand BackCommand { get; private set; }
+
+        /// <summary>切换语言命令</summary>
+        public ICommand ChangeLanguageCommand { get; private set; }
+
+        /// <summary>关闭应用命令</summary>
+        public ICommand CloseCommand { get; private set; }
+
+        /// <summary>登录命令</summary>
+        public ICommand LoginCommand { get; private set; }
+
+        /// <summary>主视图命令</summary>
+        public ICommand MainViewCommand { get; private set; }
+
+        /// <summary>设置命令</summary>
+        public ICommand SettingCommand { get; private set; }
         #endregion
 
-
-        #region === Constructor ===
-
-        public UserModel UserViewModel { get; set; } = new UserModel();
-
-        public MainViewModel(NavigationService navigation)
+        #region === 私有方法 - 初始化 ===
+        /// <summary>
+        /// 加载菜单
+        /// </summary>
+        private void LoadMenus()
         {
-            LoadUserInfo();
-            // 实时时钟
-            //var timer = new DispatcherTimer();
-            //timer.Interval = TimeSpan.FromSeconds(1);
-            //timer.Tick += (_, __) =>
-            //{
-            //    MainModel.Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            //};
-            //timer.Start();
-            _navigation = navigation;
+            foreach (var menu in MenuService.LoadMenu())
+                Menus.Add(menu);
+        }
 
-            // 语言默认选择
-            SelectedLanguage = AppConfiguration.Current.UI.Language;
-
-            LanguageService.LanguageChanged += RefreshMenuTitles;
-
-            // 加载菜单
-            foreach (var m in MenuService.LoadMenu())
-                Menus.Add(m);
-
+        /// <summary>
+        /// 设置默认页面
+        /// </summary>
+        private void SetDefaultPage()
+        {
             RefreshMenuTitles();
             if (LanguageService.CurrentLang == "zh-CN")
             {
@@ -156,7 +207,13 @@ namespace HostComputer.ViewModels
             {
                 OnMenu1Clicked(Menus.FirstOrDefault(m => m.Title == "Overview"));
             }
-            // 初始化命令
+        }
+
+        /// <summary>
+        /// 初始化命令
+        /// </summary>
+        private void InitializeCommands()
+        {
             Menu1Command = new CommandBase() { DoExecute = m => OnMenu1Clicked((MenuItemModel)m) };
             Menu2Command = new CommandBase() { DoExecute = m => OnMenu2Clicked((MenuItemModel)m) };
             Menu3Command = new CommandBase() { DoExecute = m => OnMenu3Clicked((MenuItemModel)m) };
@@ -176,7 +233,10 @@ namespace HostComputer.ViewModels
 
             LoginCommand = new CommandBase()
             {
-                DoExecute = _ => _navigation.NavigatePopup("LoginWindow", modal: true)
+                DoExecute = _ =>
+                {
+                    _navigation.NavigatePopup("LoginWindow", modal: true);
+                }
             };
 
             MainViewCommand = new CommandBase()
@@ -198,6 +258,7 @@ namespace HostComputer.ViewModels
                     }
                 }
             };
+
             SettingCommand = new CommandBase()
             {
                 DoExecute = _ =>
@@ -220,8 +281,13 @@ namespace HostComputer.ViewModels
                     _navigation.ClearHistory();
                 }
             };
+        }
 
-            // 导航同步
+        /// <summary>
+        /// 订阅导航事件
+        /// </summary>
+        private void SubscribeToNavigation()
+        {
             _navigation.OnNavigated += state =>
             {
                 Breadcrumb = state.Breadcrumb;
@@ -230,11 +296,10 @@ namespace HostComputer.ViewModels
         }
         #endregion
 
-
-        #region === Menu Click Logic ===
-
-        #region === Menu Click Logic ===
-
+        #region === 菜单点击逻辑 ===
+        /// <summary>
+        /// 处理一级菜单点击
+        /// </summary>
         private void OnMenu1Clicked(MenuItemModel menu1)
         {
             if (menu1 == null || menu1 == SelectedMenu1)
@@ -265,6 +330,9 @@ namespace HostComputer.ViewModels
                 _navigation.Navigate(menu1.ViewName, menu1.Title);
         }
 
+        /// <summary>
+        /// 处理二级菜单点击（有父级菜单）
+        /// </summary>
         private void OnMenu2Clicked(MenuItemModel menu2, MenuItemModel parentMenu1)
         {
             if (menu2 == null || menu2 == SelectedMenu2)
@@ -298,6 +366,18 @@ namespace HostComputer.ViewModels
                 );
         }
 
+        /// <summary>
+        /// 处理二级菜单点击（无父级菜单）
+        /// </summary>
+        private void OnMenu2Clicked(MenuItemModel menu2)
+        {
+            var parent = Menus.FirstOrDefault(m => m.Children.Contains(menu2));
+            OnMenu2Clicked(menu2, parent);
+        }
+
+        /// <summary>
+        /// 处理三级菜单点击（有父级菜单）
+        /// </summary>
         private void OnMenu3Clicked(
             MenuItemModel menu3,
             MenuItemModel parent1,
@@ -320,26 +400,22 @@ namespace HostComputer.ViewModels
                     menu3: menu3.Title
                 );
         }
-        #endregion
 
-
-        private void OnMenu2Clicked(MenuItemModel menu2)
-        {
-            var parent = Menus.FirstOrDefault(m => m.Children.Contains(menu2));
-            OnMenu2Clicked(menu2, parent);
-        }
-
+        /// <summary>
+        /// 处理三级菜单点击（无父级菜单）
+        /// </summary>
         private void OnMenu3Clicked(MenuItemModel menu3)
         {
             var parent2 = SecondLevel.FirstOrDefault(m => m.Children.Contains(menu3));
             var parent1 = Menus.FirstOrDefault(m => m.Children.Contains(parent2));
             OnMenu3Clicked(menu3, parent1, parent2);
         }
-
         #endregion
 
-
-        #region === Navigation Helpers ===
+        #region === 导航辅助方法 ===
+        /// <summary>
+        /// 查找第一个可导航的菜单项
+        /// </summary>
         private (MenuItemModel Item, int Level, MenuItemModel Parent)? FindFirstViewable(
             MenuItemModel root,
             int level = 1,
@@ -362,6 +438,9 @@ namespace HostComputer.ViewModels
             return null;
         }
 
+        /// <summary>
+        /// 导航到指定菜单项
+        /// </summary>
         private void NavigateTo((MenuItemModel Item, int Level, MenuItemModel Parent) node)
         {
             if (node.Level == 2)
@@ -374,6 +453,9 @@ namespace HostComputer.ViewModels
                 );
         }
 
+        /// <summary>
+        /// 根据导航状态恢复菜单选择
+        /// </summary>
         private void RestoreMenu(NavigationState state)
         {
             if (string.IsNullOrEmpty(state.Menu1))
@@ -413,10 +495,15 @@ namespace HostComputer.ViewModels
         }
         #endregion
 
-
-        #region === Language Update ===
+        #region === 语言更新 ===
+        /// <summary>
+        /// 刷新菜单标题
+        /// </summary>
         private void RefreshMenuTitles() => UpdateTitles(Menus);
 
+        /// <summary>
+        /// 更新菜单项标题
+        /// </summary>
         private void UpdateTitles(IEnumerable<MenuItemModel> items)
         {
             if (items == null)
@@ -437,4 +524,5 @@ namespace HostComputer.ViewModels
         }
         #endregion
     }
+    #endregion
 }

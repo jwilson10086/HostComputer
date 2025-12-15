@@ -14,7 +14,11 @@ namespace HostComputer.Models
         public string UserName
         {
             get { return _userName; }
-            set { _userName = value; this.NotifyChanged(); }
+            set
+            {
+                _userName = value;
+                this.NotifyChanged();
+            }
         }
 
         private string _password = "";
@@ -22,11 +26,32 @@ namespace HostComputer.Models
         public string Password
         {
             get { return _password; }
-            set { _password = value; this.NotifyChanged(); }
+            set
+            {
+                _password = value;
+                this.NotifyChanged();
+            }
         }
 
-        public int Level { get; set; }
-        public string Group { get; set; }
-
+        private int _level;
+        public int Level
+        {
+            get { return _level; }
+            set
+            {
+                _level = value;
+                this.NotifyChanged();
+            }
+        }
+        private string _group;
+        public string Group
+        {
+            get { return _group; }
+            set
+            {
+                _group = value;
+                this.NotifyChanged();
+            }
+        }
     }
 }
