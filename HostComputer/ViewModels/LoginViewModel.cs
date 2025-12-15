@@ -9,41 +9,63 @@ using static HostComputer.App;
 
 namespace HostComputer.ViewModels
 {
+    #region LoginViewModel 登录视图模型
     /// <summary>
     /// 登录页面的 ViewModel
     /// 支持属性变更通知和操作日志记录
     /// </summary>
     public class LoginViewModel : NotifyBase
     {
+        #region 登录结果类
+        /// <summary>
+        /// 登录结果封装类
+        /// </summary>
         public class LoginResult
         {
+            /// <summary>登录是否成功</summary>
             public bool Success { get; set; }
+
+            /// <summary>登录结果消息</summary>
             public string Message { get; set; }
 
+            /// <summary>登录成功的用户信息</summary>
             public UserModel User { get; set; }
         }
+        #endregion
 
+        #region 构造函数
+        /// <summary>
+        /// 初始化登录视图模型
+        /// </summary>
         public LoginViewModel()
         {
             InitAsync();
         }
+        #endregion
 
-        private async void InitAsync()
-        {
-            var user = await LocalDataAccess.GetLastUserAsync();
-
-            if (user != null)
-            {
-                UserViewModel.UserName = user.UserName;
-                UserViewModel.Password = user.Password;
-                IsEnable = true;
-            }
-        }
-
-        public UserModel UserViewModel { get; set; } = new UserModel();
-        public AuthLocalService LocalDataAccess { get; set; } = new ();
-
+        #region 私有字段
         private string _errMessage = string.Empty;
+        private CommandBase _closeCommand;
+        private CommandBase _loginCommand;
+        private bool _isEnable;
+        #endregion
+
+        #region 视图模型属性
+        /// <summary>
+        /// 用户视图模型
+        /// </summary>
+        public UserModel UserViewModel { get; set; } = new UserModel();
+
+        /// <summary>
+        /// 本地认证服务
+        /// </summary>
+        public AuthLocalService LocalDataAccess { get; set; } = new();
+        #endregion
+
+        #region 用户界面属性
+        /// <summary>
+        /// 错误消息
+        /// </summary>
         public string ErrorMessage
         {
             get => _errMessage;
@@ -54,8 +76,27 @@ namespace HostComputer.ViewModels
             }
         }
 
-        // ==================== 关闭窗口命令 ====================
-        private CommandBase _closeCommand;
+        /// <summary>
+        /// 是否启用记住密码功能
+        /// </summary>
+        public bool IsEnable
+        {
+            get => _isEnable;
+            set
+            {
+                if (_isEnable != value)
+                {
+                    _isEnable = value;
+                    NotifyChanged();
+                }
+            }
+        }
+        #endregion
+
+        #region 命令
+        /// <summary>
+        /// 关闭窗口命令
+        /// </summary>
         public CommandBase CloseCommand
         {
             get
@@ -74,22 +115,9 @@ namespace HostComputer.ViewModels
             }
         }
 
-        // ==================== 登录命令 ====================
-        private CommandBase _loginCommand;
-        private bool _isEnable;
-        public bool IsEnable
-        {
-            get => _isEnable;
-            set
-            {
-                if (_isEnable != value)
-                {
-                    _isEnable = value;
-                    NotifyChanged();
-                }
-            }
-        }
-
+        /// <summary>
+        /// 登录命令
+        /// </summary>
         public CommandBase LoginCommand
         {
             get
@@ -146,6 +174,24 @@ namespace HostComputer.ViewModels
                 return _loginCommand;
             }
         }
+        #endregion
 
+        #region 私有方法
+        /// <summary>
+        /// 异步初始化方法
+        /// </summary>
+        private async void InitAsync()
+        {
+            var user = await LocalDataAccess.GetLastUserAsync();
+
+            if (user != null)
+            {
+                UserViewModel.UserName = user.UserName;
+                UserViewModel.Password = user.Password;
+                IsEnable = true;
+            }
+        }
+        #endregion
     }
+    #endregion
 }
