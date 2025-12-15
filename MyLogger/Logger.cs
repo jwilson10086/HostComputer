@@ -185,6 +185,7 @@ namespace MyLogger
         public void Info(string msg) => Log(LogLevel.Info, msg);
         public void Warning(string msg) => Log(LogLevel.Warning, msg);
         public void Error(string msg) => Log(LogLevel.Error, msg);
+        public void Error(string msg, Exception ex) => Log(LogLevel.Error, $"{msg} Exception: {ex}");
         public void Fatal(string msg) => Log(LogLevel.Fatal, msg);
 
 

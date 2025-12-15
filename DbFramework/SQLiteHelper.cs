@@ -1,214 +1,315 @@
-﻿using System.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
+
 namespace DbFramework
 {
+    /// <summary>
+    /// SQLite 数据库访问实现
+    /// 特点：
+    /// 1. 短连接（每次操作独立 Connection）
+    /// 2. 写操作串行（SemaphoreSlim）
+    /// 3. 事务仅存在于方法内部
+    /// 4. 适合 WPF / async / 多线程环境
+    /// </summary>
     public class SQLiteHelper : IDbHelper
     {
-        private SqliteConnection _connection;
-        private SqliteTransaction _transaction;
         private readonly string _connectionString;
-       
+
+        /// <summary>
+        /// SQLite 写操作全局锁（防止并发写导致 database is locked）
+        /// </summary>
+        private static readonly SemaphoreSlim _writeLock = new(1, 1);
 
         public SQLiteHelper(string connectionString)
         {
             _connectionString = connectionString;
-            _connection = new SqliteConnection(_connectionString);
-           
+            DbHelperFactory.Logger?.Info("NEW SQLiteHelper instance created");
         }
 
-        public async Task OpenConnectionAsync()
-        {
-            if (_connection.State != ConnectionState.Open)
-                await _connection.OpenAsync();
-        }
+        #region 连接控制（接口要求，SQLite 实际不使用长连接）
 
-        public void CloseConnection() => _connection.Close();
+        /// <summary>
+        /// SQLite 采用短连接模式，此方法仅为接口兼容
+        /// </summary>
+        public Task OpenConnectionAsync() => Task.CompletedTask;
 
-        private void Log(string sQL) => DbHelperFactory.Logger?.Info(sQL);
+        /// <summary>
+        /// SQLite 采用短连接模式，此方法仅为接口兼容
+        /// </summary>
+        public void CloseConnection() { }
 
-        private void AddParameters(SqliteCommand cmd, Dictionary<string, object> parameters)
+        #endregion
+
+        #region 私有辅助方法
+
+        private static void AddParameters(SqliteCommand cmd, Dictionary<string, object> parameters)
         {
             if (parameters == null) return;
+
             foreach (var kv in parameters)
             {
-                var param = cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value ?? DBNull.Value);
-                // 可以根据 value 的类型，显式设置 SqliteType，例如：
-                // if (kv.Value is int) param.SqliteType = SqliteType.Integer;
-                // else if (kv.Value is string) param.SqliteType = SqliteType.Text;
-                // 这对于批量插入等场景有优化作用。
+                cmd.Parameters.AddWithValue("@" + kv.Key, kv.Value ?? DBNull.Value);
             }
         }
 
-        #region 基础操作
-        public async Task<int> ExecuteNonQueryAsync(string sQL, Dictionary<string, object> parameters = null)
+        private static void Log(string sql)
         {
-            // 确保连接已打开
-            await OpenConnectionAsync();
-            Log(sQL);
-            using var cmd = new SqliteCommand(sQL, _connection, _transaction);
-            AddParameters(cmd, parameters);
-            return await cmd.ExecuteNonQueryAsync();
+            DbHelperFactory.Logger?.Info(sql);
         }
 
-        public async Task<object> ExecuteScalarAsync(string sQL, Dictionary<string, object> parameters = null)
+        private SqliteConnection CreateConnection()
         {
-            // 确保连接已打开
-            await OpenConnectionAsync();
+            var conn = new SqliteConnection(_connectionString);
+            return conn;
+        }
+
+        #endregion
+
+        // ===========================================================
+        #region 基础操作（ExecuteNonQuery / Scalar / Query）
+        // ===========================================================
+
+        /// <summary>
+        /// 执行 INSERT / UPDATE / DELETE
+        /// 写操作：串行执行
+        /// </summary>
+        public async Task<int> ExecuteNonQueryAsync(
+            string sQL,
+            Dictionary<string, object> parameters = null)
+        {
+            await _writeLock.WaitAsync();
+            try
+            {
+                Log(sQL);
+
+                using var conn = CreateConnection();
+                await conn.OpenAsync();
+
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = sQL;
+                AddParameters(cmd, parameters);
+
+                return await cmd.ExecuteNonQueryAsync();
+            }
+            catch (Exception ex)
+            {
+                DbHelperFactory.Logger?.Error($"执行SQL失败: {sQL}", ex);
+                throw;
+            }
+            finally
+            {
+                _writeLock.Release();
+            }
+        }
+
+        /// <summary>
+        /// 执行返回单值的查询
+        /// </summary>
+        public async Task<object> ExecuteScalarAsync(
+            string sQL,
+            Dictionary<string, object> parameters = null)
+        {
             Log(sQL);
-            using var cmd = new SqliteCommand(sQL, _connection, _transaction);
+
+            using var conn = CreateConnection();
+            await conn.OpenAsync();
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = sQL;
             AddParameters(cmd, parameters);
+
             return await cmd.ExecuteScalarAsync();
         }
 
-        public async Task<DataTable> ExecuteQueryAsync(string sQL, Dictionary<string, object> parameters = null)
+        /// <summary>
+        /// 执行查询，返回 DataTable
+        /// </summary>
+        public async Task<DataTable> ExecuteQueryAsync(
+            string sQL,
+            Dictionary<string, object> parameters = null)
         {
-           
-            // 详细记录SQL和参数
-            Log($"准备执行SQL: {sQL}");
-            if (parameters != null)
-            {
-                Log($"参数: {string.Join(", ", parameters.Select(kv => $"{kv.Key}={kv.Value}"))}");
-            }
-            await OpenConnectionAsync();
-            using var cmd = new SqliteCommand(sQL, _connection, _transaction);
+            Log(sQL);
+
+            using var conn = CreateConnection();
+            await conn.OpenAsync();
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = sQL;
             AddParameters(cmd, parameters);
+
+            using var reader = await cmd.ExecuteReaderAsync();
+
             var dt = new DataTable();
-            // 使用 SqliteDataReader 读取数据并填充 DataTable
-            await using (var reader = await cmd.ExecuteReaderAsync())
-            {
-                // 创建 DataTable 的列
-                for (int i = 0; i < reader.FieldCount; i++)
-                {
-                    var columnName = reader.GetName(i);
-                    var columnType = reader.GetFieldType(i) ?? typeof(string);
-                    dt.Columns.Add(columnName, columnType);
-                }
-                // 逐行读取数据
-                while (await reader.ReadAsync())
-                {
-                    var row = dt.NewRow();
-                    for (int i = 0; i < reader.FieldCount; i++)
-                    {
-                        row[i] = reader.IsDBNull(i) ? DBNull.Value : reader.GetValue(i);
-                    }
-                    dt.Rows.Add(row);
-                }
-            }
+            dt.Load(reader);
             return dt;
         }
+
         #endregion
 
-        #region 泛型查询
-        public async Task<T> QuerySingleAsync<T>(string sQL, Dictionary<string, object> parameters = null) where T : new()
+        // ===========================================================
+        #region 泛型查询（QuerySingle / QueryList）
+        // ===========================================================
+
+        public async Task<T> QuerySingleAsync<T>(
+            string sQL,
+            Dictionary<string, object> parameters = null) where T : new()
         {
             var dt = await ExecuteQueryAsync(sQL, parameters);
             if (dt.Rows.Count == 0) return default;
+
             return MapDataRow<T>(dt.Rows[0]);
         }
 
-        public async Task<List<T>> QueryListAsync<T>(string sQL, Dictionary<string, object> parameters = null) where T : new()
+        public async Task<List<T>> QueryListAsync<T>(
+            string sQL,
+            Dictionary<string, object> parameters = null) where T : new()
         {
-            Log(sQL);
+            var dt = await ExecuteQueryAsync(sQL, parameters);
             var list = new List<T>();
-            using var cmd = new SqliteCommand(sQL, _connection, _transaction);
-            AddParameters(cmd, parameters);
-            await using (var reader = await cmd.ExecuteReaderAsync())
+
+            foreach (DataRow row in dt.Rows)
             {
-                while (await reader.ReadAsync())
-                {
-                    T obj = new T();
-                    // 使用反射或更高效的方式（如序列化库）将 reader 的当前行映射到 obj
-                    // ... (映射逻辑，与之前 MapDataRow 类似，但直接从 reader 读取)
-                    list.Add(obj);
-                }
+                list.Add(MapDataRow<T>(row));
             }
+
             return list;
         }
 
-        private T MapDataRow<T>(DataRow row) where T : new()
+        private static T MapDataRow<T>(DataRow row) where T : new()
         {
             var obj = new T();
-            foreach (var prop in typeof(T).GetProperties())
+            var props = typeof(T).GetProperties();
+
+            foreach (var prop in props)
             {
-                if (row.Table.Columns.Contains(prop.Name) && row[prop.Name] != DBNull.Value)
-                    prop.SetValue(obj, Convert.ChangeType(row[prop.Name], prop.PropertyType));
+                if (!prop.CanWrite) continue;
+
+                if (row.Table.Columns.Contains(prop.Name) &&
+                    row[prop.Name] != DBNull.Value)
+                {
+                    prop.SetValue(obj,
+                        Convert.ChangeType(row[prop.Name], prop.PropertyType));
+                }
             }
+
             return obj;
         }
+
         #endregion
 
-        #region 插入/更新/删除
-        public async Task<int> InsertAsync(string tableName, Dictionary<string, object> data)
+        // ===========================================================
+        #region 插入 / 更新 / 删除
+        // ===========================================================
+
+        public async Task<int> InsertAsync(
+            string tableName,
+            Dictionary<string, object> data)
         {
             var keys = string.Join(",", data.Keys);
             var values = string.Join(",", data.Keys.Select(k => "@" + k));
-            string sQL = $"INSERT INTO {tableName} ({keys}) VALUES ({values})";
-            return await ExecuteNonQueryAsync(sQL, data);
+            var sql = $"INSERT INTO {tableName} ({keys}) VALUES ({values})";
+
+            return await ExecuteNonQueryAsync(sql, data);
         }
 
-        public async Task<int> UpdateAsync(string tableName, Dictionary<string, object> data, string whereClause, Dictionary<string, object> whereParams = null)
+        public async Task<int> UpdateAsync(
+            string tableName,
+            Dictionary<string, object> data,
+            string whereClause,
+            Dictionary<string, object> whereParams = null)
         {
-            var setStr = string.Join(",", data.Keys.Select(k => $"{k}=@{k}"));
-            string sQL = $"UPDATE {tableName} SET {setStr} WHERE {whereClause}";
+            var setSql = string.Join(",", data.Keys.Select(k => $"{k}=@{k}"));
+            var sql = $"UPDATE {tableName} SET {setSql} WHERE {whereClause}";
+
             var parameters = new Dictionary<string, object>(data);
             if (whereParams != null)
-                foreach (var kv in whereParams) parameters[kv.Key] = kv.Value;
-            return await ExecuteNonQueryAsync(sQL, parameters);
+            {
+                foreach (var kv in whereParams)
+                    parameters[kv.Key] = kv.Value;
+            }
+
+            return await ExecuteNonQueryAsync(sql, parameters);
         }
 
-        public async Task<int> DeleteAsync(string tableName, string whereClause, Dictionary<string, object> whereParams = null)
+        public async Task<int> DeleteAsync(
+            string tableName,
+            string whereClause,
+            Dictionary<string, object> whereParams = null)
         {
-            string sQL = $"DELETE FROM {tableName} WHERE {whereClause}";
-            return await ExecuteNonQueryAsync(sQL, whereParams);
+            var sql = $"DELETE FROM {tableName} WHERE {whereClause}";
+            return await ExecuteNonQueryAsync(sql, whereParams);
         }
+
         #endregion
 
+        // ===========================================================
         #region 批量操作
-        public async Task<int> BulkInsertAsync(string tableName, List<Dictionary<string, object>> dataList)
+        // ===========================================================
+
+        /// <summary>
+        /// 批量插入（单事务 + 写锁）
+        /// </summary>
+        public async Task<int> BulkInsertAsync(
+            string tableName,
+            List<Dictionary<string, object>> dataList)
         {
-            int total = 0;
-            await BeginTransactionAsync();
+            await _writeLock.WaitAsync();
             try
             {
+                using var conn = CreateConnection();
+                await conn.OpenAsync();
+
+                using var tx = conn.BeginTransaction();
+
+                int total = 0;
                 foreach (var data in dataList)
-                    total += await InsertAsync(tableName, data);
-                await CommitAsync();
+                {
+                    var keys = string.Join(",", data.Keys);
+                    var values = string.Join(",", data.Keys.Select(k => "@" + k));
+                    var sql = $"INSERT INTO {tableName} ({keys}) VALUES ({values})";
+
+                    using var cmd = conn.CreateCommand();
+                    cmd.Transaction = tx;
+                    cmd.CommandText = sql;
+                    AddParameters(cmd, data);
+
+                    total += await cmd.ExecuteNonQueryAsync();
+                }
+
+                tx.Commit();
+                return total;
             }
-            catch
+            finally
             {
-                await RollbackAsync();
-                throw;
+                _writeLock.Release();
             }
-            return total;
         }
+
         #endregion
 
-        #region 事务操作
-        public Task BeginTransactionAsync()
-        {
-            _transaction = _connection.BeginTransaction();
-            return Task.CompletedTask;
-        }
+        // ===========================================================
+        #region 事务操作（接口兼容，不建议外部使用）
+        // ===========================================================
 
-        public Task CommitAsync()
-        {
-            _transaction?.Commit();
-            _transaction = null;
-            return Task.CompletedTask;
-        }
+        /// <summary>
+        /// SQLiteHelper 不支持跨方法事务（保留接口兼容）
+        /// </summary>
+        public Task BeginTransactionAsync() => Task.CompletedTask;
 
-        public Task RollbackAsync()
-        {
-            _transaction?.Rollback();
-            _transaction = null;
-            return Task.CompletedTask;
-        }
+        public Task CommitAsync() => Task.CompletedTask;
+
+        public Task RollbackAsync() => Task.CompletedTask;
+
         #endregion
 
         public void Dispose()
         {
-            _transaction?.Dispose();
-            _connection?.Dispose();
+            // 短连接模式，无需释放资源
         }
     }
 }

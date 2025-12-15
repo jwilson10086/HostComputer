@@ -25,7 +25,7 @@ namespace HostComputer.Models
             set { _password = value; this.NotifyChanged(); }
         }
 
-        public string Permission { get; set; }
+        public int Level { get; set; }
         public string Group { get; set; }
 
     }

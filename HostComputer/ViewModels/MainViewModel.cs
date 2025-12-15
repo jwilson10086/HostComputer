@@ -42,7 +42,7 @@ namespace HostComputer.ViewModels
         private void LoadUserInfo()
         {
             UserName = UserSession.UserName ?? "Unknown";
-            UserLevel = UserSession.UserLevel ?? "N/A";
+            UserLevel = UserSession.UserLevel.ToString() ?? "N/A";
         }
         #endregion
         #region === Language Service ===

@@ -19,7 +19,8 @@ namespace HostComputer
         public static class UserSession
         {
             public static string UserName { get; set; }
-            public static string UserLevel { get; set; }
+            public static int UserLevel { get; set; }
+            public static string Group { get; set; }
         }
         public static LanguageService Lang { get; private set; }
         public static Logger Logger { get; private set; }

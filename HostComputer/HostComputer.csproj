@@ -56,6 +56,9 @@
 
   <ItemGroup>
     <Folder Include="Common\DataAccess\" />
+    <Folder Include="Common\Services\LocalDataService\Alarm\" />
+    <Folder Include="Common\Services\LocalDataService\Operation\" />
+    <Folder Include="Common\Services\LocalDataService\Process\" />
     <Folder Include="ViewModels\3thViews\" />
     <Folder Include="ViewModels\Equipment_Setup\" />
     <Folder Include="ViewModels\History\" />

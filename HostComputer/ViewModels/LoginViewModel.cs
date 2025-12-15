@@ -1,5 +1,6 @@
 ﻿using HostComputer.Common.Base;
 using HostComputer.Common.Services; // 引入日志
+using HostComputer.Common.Services.Local.Auth;
 using HostComputer.Models;
 using MyLogger;
 using System;
@@ -14,6 +15,14 @@ namespace HostComputer.ViewModels
     /// </summary>
     public class LoginViewModel : NotifyBase
     {
+        public class LoginResult
+        {
+            public bool Success { get; set; }
+            public string Message { get; set; }
+
+            public UserModel User { get; set; }
+        }
+
         public LoginViewModel()
         {
             InitAsync();
@@ -32,7 +41,7 @@ namespace HostComputer.ViewModels
         }
 
         public UserModel UserViewModel { get; set; } = new UserModel();
-        public LocalDataAccess LocalDataAccess { get; set; } = new LocalDataAccess();
+        public AuthLocalService LocalDataAccess { get; set; } = new ();
 
         private string _errMessage = string.Empty;
         public string ErrorMessage
@@ -92,12 +101,20 @@ namespace HostComputer.ViewModels
                     {
                         App.Logger.Security("用户尝试登录");
 
-                        bool success = await LocalDataAccess.CheckLoginAsync(
+                        var result = await LocalDataAccess.LoginAsync(
                             UserViewModel.UserName,
                             UserViewModel.Password
                         );
+                       
 
-                        if (!success)
+                        if (result.Success == true)
+                        {
+                            UserViewModel.UserName = result.User.UserName;
+                            UserViewModel.Password = result.User.Password;
+                            UserViewModel.Level = result.User.Level;
+                            UserViewModel.Group = result.User.Group;
+                        }
+                        else
                         {
                             ErrorMessage = "用户名或密码错误，请重新输入！";
                             App.Logger.Warning($"登录失败：{UserViewModel.UserName}");
@@ -105,7 +122,7 @@ namespace HostComputer.ViewModels
                         }
                         if (IsEnable == true)
                         {
-                            bool resuccess = await LocalDataAccess.InsertUserAsync(
+                            bool success = await LocalDataAccess.InsertUserAsync(
                                 UserViewModel.UserName,
                                 UserViewModel.Password
                             );
@@ -117,7 +134,8 @@ namespace HostComputer.ViewModels
                         }
 
                         UserSession.UserName = UserViewModel.UserName;
-                        UserSession.UserLevel = "Admin"; // 或者从数据库读取
+                        UserSession.UserLevel = UserViewModel.Level;
+                        UserSession.Group = UserViewModel.Group; 
                         (obj as Window).DialogResult = true;
 
                         App.Logger.Info($"登录成功：{UserViewModel.UserName}");
