@@ -11,35 +11,70 @@ using MyLogger;
 
 namespace HostComputer.Common.Services
 {
+    #region StartupProgressEventArgs 启动进度事件参数
+    /// <summary>
+    /// 启动进度事件参数
+    /// </summary>
     public class StartupProgressEventArgs : EventArgs
     {
+        /// <summary>模块名称</summary>
         public string ModuleName { get; set; }
-        public string Status { get; set; }  // "Started", "Success", "Failed", "Skipped"
-        public double Progress { get; set; } // 0-100
+
+        /// <summary>状态: "Started", "Success", "Failed", "Skipped"</summary>
+        public string Status { get; set; }
+
+        /// <summary>进度百分比 (0-100)</summary>
+        public double Progress { get; set; }
+
+        /// <summary>消息</summary>
         public string Message { get; set; }
+
+        /// <summary>持续时间</summary>
         public TimeSpan Duration { get; set; }
     }
+    #endregion
 
+    #region StartupManager 启动管理器
     /// <summary>
     /// 增强版启动管理器，支持进度报告
     /// </summary>
     public class StartupManager
     {
+        #region 私有字段
+        /// <summary>日志记录器</summary>
         private readonly Logger _logger;
+
+        /// <summary>总计时器</summary>
         private readonly Stopwatch _totalStopwatch = new();
+
+        /// <summary>模块信息字典（线程安全）</summary>
         private readonly ConcurrentDictionary<string, ModuleInfo> _modules = new();
+        #endregion
 
-        // 进度报告事件
+        #region 公共事件
+        /// <summary>
+        /// 进度变化事件
+        /// </summary>
         public event EventHandler<StartupProgressEventArgs> ProgressChanged;
+        #endregion
 
+        #region 构造函数
+        /// <summary>
+        /// 初始化启动管理器
+        /// </summary>
+        /// <param name="logger">日志记录器</param>
         public StartupManager(Logger logger)
         {
-            _logger = logger;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
+        #endregion
 
+        #region 公共方法
         /// <summary>
         /// 异步初始化，带进度报告
         /// </summary>
+        /// <param name="progressCallback">进度回调函数</param>
+        /// <returns>启动结果</returns>
         public async Task<StartupResult> InitializeAsync(Action<double> progressCallback = null)
         {
             _totalStopwatch.Start();
@@ -106,7 +141,9 @@ namespace HostComputer.Common.Services
 
             return result;
         }
+        #endregion
 
+        #region 私有方法 - 模块管理
         /// <summary>
         /// 获取所有需要初始化的模块
         /// </summary>
@@ -139,6 +176,9 @@ namespace HostComputer.Common.Services
             };
         }
 
+        /// <summary>
+        /// 初始化单个模块
+        /// </summary>
         private async Task InitializeSingleModuleAsync(IModuleInitializer initializer)
         {
             var stopwatch = Stopwatch.StartNew();
@@ -202,6 +242,9 @@ namespace HostComputer.Common.Services
             }
         }
 
+        /// <summary>
+        /// 检查模块依赖
+        /// </summary>
         private async Task<bool> CheckDependenciesAsync(IModuleInitializer initializer)
         {
             if (initializer.Dependencies == null || !initializer.Dependencies.Any())
@@ -219,7 +262,12 @@ namespace HostComputer.Common.Services
 
             return true;
         }
+        #endregion
 
+        #region 私有方法 - 环境检查
+        /// <summary>
+        /// 检查环境
+        /// </summary>
         private async Task CheckEnvironmentAsync()
         {
             var stopwatch = Stopwatch.StartNew();
@@ -244,7 +292,12 @@ namespace HostComputer.Common.Services
 
             _logger.Config($"环境检查完成 ({stopwatch.ElapsedMilliseconds}ms)");
         }
+        #endregion
 
+        #region 私有方法 - 报告生成
+        /// <summary>
+        /// 生成启动报告
+        /// </summary>
         private StartupResult GenerateStartupReport()
         {
             var result = new StartupResult
@@ -275,6 +328,9 @@ namespace HostComputer.Common.Services
             return result;
         }
 
+        /// <summary>
+        /// 报告进度
+        /// </summary>
         private void ReportProgress(string moduleName, string status, double progress, string message)
         {
             ProgressChanged?.Invoke(this, new StartupProgressEventArgs
@@ -286,20 +342,38 @@ namespace HostComputer.Common.Services
                 Duration = _totalStopwatch.Elapsed
             });
         }
+        #endregion
     }
+    #endregion
 
-    // 安全模块初始化器 (添加到你的StartupModules文件夹)
+    #region SecurityModuleInitializer 安全模块初始化器
+    /// <summary>
+    /// 安全模块初始化器
+    /// </summary>
     public class SecurityModuleInitializer : IModuleInitializer
     {
+        #region IModuleInitializer 实现
+        /// <summary>模块名称</summary>
         public string ModuleName => "安全服务";
+
+        /// <summary>模块类型</summary>
         public string ModuleType => "Security";
+
+        /// <summary>优先级</summary>
         public InitializerPriority Priority => InitializerPriority.Core;
+
+        /// <summary>顺序</summary>
         public int Order => 4;
+
+        /// <summary>依赖项</summary>
         public List<ModuleDependency> Dependencies => new()
         {
             new ModuleDependency { ModuleName = "数据库服务", ModuleType = "Database" }
         };
 
+        /// <summary>
+        /// 异步初始化
+        /// </summary>
         public async Task<bool> InitializeAsync(Logger logger)
         {
             logger.Security("初始化安全服务...");
@@ -321,7 +395,12 @@ namespace HostComputer.Common.Services
                 return false;
             }
         }
+        #endregion
 
+        #region 私有方法
+        /// <summary>
+        /// 检查用户数据库
+        /// </summary>
         private async Task CheckUserDatabaseAsync(Logger logger)
         {
             logger.Security("检查用户数据库...");
@@ -329,11 +408,16 @@ namespace HostComputer.Common.Services
             logger.Security("用户数据库检查完成");
         }
 
+        /// <summary>
+        /// 初始化加密服务
+        /// </summary>
         private void InitializeEncryptionService(Logger logger)
         {
             logger.Security("初始化加密服务...");
             // 加密初始化逻辑
             logger.Security("加密服务就绪");
         }
+        #endregion
     }
+    #endregion
 }

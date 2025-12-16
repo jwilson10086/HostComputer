@@ -8,19 +8,35 @@ using MyLogger;
 
 namespace HostComputer.Common.Services.StartupModules
 {
+    #region DatabaseModuleInitializer 数据库模块初始化器
+    /// <summary>
+    /// 数据库模块初始化器
+    /// </summary>
     public class DatabaseModuleInitializer : IModuleInitializer
     {
+        #region IModuleInitializer 实现
+        /// <summary>模块名称</summary>
         public string ModuleName => "数据库服务";
+
+        /// <summary>模块类型</summary>
         public string ModuleType => "Database";
-        private string connectionString = AppConfiguration.Current.Database.ConnectionString;
+
+        /// <summary>初始化优先级</summary>
         public InitializerPriority Priority => InitializerPriority.Core;
+
+        /// <summary>初始化顺序</summary>
         public int Order => 2;
+
+        /// <summary>依赖模块</summary>
         public List<ModuleDependency> Dependencies =>
             new()
             {
                 new ModuleDependency { ModuleName = "配置服务", ModuleType = "Config" }
             };
 
+        /// <summary>
+        /// 异步初始化数据库服务
+        /// </summary>
         public async Task<bool> InitializeAsync(Logger logger)
         {
             connectionString = AppConfiguration.Current.Database.ConnectionString;
@@ -33,7 +49,6 @@ namespace HostComputer.Common.Services.StartupModules
                     "Data Source=",
                     ""
                 );
-                ;
                 await CheckDatabaseFileAsync(dbPath, logger);
 
                 // 2. 测试数据库连接
@@ -60,7 +75,17 @@ namespace HostComputer.Common.Services.StartupModules
                 return false;
             }
         }
+        #endregion
 
+        #region 私有字段
+        /// <summary>数据库连接字符串</summary>
+        private string connectionString = AppConfiguration.Current.Database.ConnectionString;
+        #endregion
+
+        #region 私有方法 - 数据库文件检查
+        /// <summary>
+        /// 检查数据库文件
+        /// </summary>
         private async Task CheckDatabaseFileAsync(string dbPath, Logger logger)
         {
             string directory = Path.GetDirectoryName(dbPath);
@@ -82,7 +107,12 @@ namespace HostComputer.Common.Services.StartupModules
                 logger.Database($"数据库文件已存在，大小: {fileInfo.Length / 1024}KB");
             }
         }
+        #endregion
 
+        #region 私有方法 - 数据库连接测试
+        /// <summary>
+        /// 测试数据库连接
+        /// </summary>
         private async Task<bool> TestDatabaseConnectionAsync(Logger logger)
         {
             try
@@ -122,7 +152,12 @@ namespace HostComputer.Common.Services.StartupModules
                 return false;
             }
         }
+        #endregion
 
+        #region 私有方法 - 表结构检查与创建
+        /// <summary>
+        /// 检查和创建数据库表
+        /// </summary>
         private async Task CheckAndCreateTablesAsync(Logger logger)
         {
             try
@@ -173,6 +208,9 @@ namespace HostComputer.Common.Services.StartupModules
             }
         }
 
+        /// <summary>
+        /// 检查表是否存在
+        /// </summary>
         private async Task<bool> TableExistsAsync(SqliteConnection connection, string tableName)
         {
             using (var command = connection.CreateCommand())
@@ -188,6 +226,9 @@ namespace HostComputer.Common.Services.StartupModules
             }
         }
 
+        /// <summary>
+        /// 创建 Users 表
+        /// </summary>
         private async Task CreateUsersTableAsync(SqliteConnection connection)
         {
             using (var command = connection.CreateCommand())
@@ -212,6 +253,9 @@ namespace HostComputer.Common.Services.StartupModules
             }
         }
 
+        /// <summary>
+        /// 创建 UserRemeber 表
+        /// </summary>
         private async Task CreateUserRememberTableAsync(SqliteConnection connection)
         {
             using (var command = connection.CreateCommand())
@@ -230,7 +274,12 @@ namespace HostComputer.Common.Services.StartupModules
                 await command.ExecuteNonQueryAsync();
             }
         }
+        #endregion
 
+        #region 私有方法 - 数据完整性检查
+        /// <summary>
+        /// 检查数据完整性
+        /// </summary>
         private async Task CheckDataIntegrityAsync(Logger logger)
         {
             try
@@ -292,6 +341,9 @@ namespace HostComputer.Common.Services.StartupModules
             }
         }
 
+        /// <summary>
+        /// 创建默认管理员账户
+        /// </summary>
         private async Task CreateDefaultAdminAsync(SqliteConnection connection)
         {
             using (var command = connection.CreateCommand())
@@ -309,5 +361,7 @@ namespace HostComputer.Common.Services.StartupModules
                 await command.ExecuteNonQueryAsync();
             }
         }
+        #endregion
     }
+    #endregion
 }

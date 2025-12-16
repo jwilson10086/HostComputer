@@ -9,10 +9,19 @@ using MyLogger;
 
 namespace HostComputer.Common.Services.StartupModules
 {
+    #region AppConfig 应用配置类
+    /// <summary>
+    /// 应用程序配置类
+    /// </summary>
     public class AppConfig
     {
-        public string Environment { get; set; } = "Development"; // 新增: 环境名称
+        /// <summary>环境名称</summary>
+        public string Environment { get; set; } = "Development";
+
+        /// <summary>数据库配置</summary>
         public DatabaseConfig Database { get; set; } = new();
+
+        /// <summary>日志配置</summary>
         public LoggerConfig LoggingConfig { get; set; } =
             new LoggerConfig
             {
@@ -22,76 +31,170 @@ namespace HostComputer.Common.Services.StartupModules
                 LogFileName = "app.log",
                 MaxFileSizeMB = 10
             };
+
+        /// <summary>用户界面配置</summary>
         public UIConfig UI { get; set; } = new();
+
+        /// <summary>安全配置</summary>
         public SecurityConfig Security { get; set; } = new();
 
+        #region 嵌套配置类
+        /// <summary>
+        /// 数据库配置
+        /// </summary>
         public class DatabaseConfig
         {
+            /// <summary>数据库连接字符串</summary>
             public string ConnectionString { get; set; } = "Data Source=Data/app.db";
+
+            /// <summary>命令超时时间（秒）</summary>
             public int CommandTimeout { get; set; } = 30;
+
+            /// <summary>是否启用外键约束</summary>
             public bool EnableForeignKeys { get; set; } = true;
         }
 
+        /// <summary>
+        /// 用户界面配置
+        /// </summary>
         public class UIConfig
         {
-            /// <summary>
-            /// 全局字体大小
-            /// </summary>
+            /// <summary>全局字体大小</summary>
             public double FontSize { get; set; } = 14;
 
-            /// <summary>
-            /// 全局主题（Light / Dark）
-            /// </summary>
+            /// <summary>全局主题（Light / Dark）</summary>
             public string Theme { get; set; } = "Light";
 
-            /// <summary>
-            /// 默认窗口宽度
-            /// </summary>
+            /// <summary>默认窗口宽度</summary>
             public double WindowWidth { get; set; } = 1200;
 
-            /// <summary>
-            /// 默认窗口高度
-            /// </summary>
+            /// <summary>默认窗口高度</summary>
             public double WindowHeight { get; set; } = 800;
 
-            /// <summary>
-            /// 是否显示窗口标题栏
-            /// </summary>
+            /// <summary>是否显示窗口标题栏</summary>
             public bool ShowTitleBar { get; set; } = true;
 
-            /// <summary>
-            /// 控件默认圆角
-            /// </summary>
+            /// <summary>控件默认圆角</summary>
             public double CornerRadius { get; set; } = 4;
 
-            /// <summary>
-            /// 语言设置（如 "en-US", "zh-CN"）
-            /// </summary>
+            /// <summary>语言设置（如 "en-US", "zh-CN"）</summary>
             public string Language { get; set; } = "zh-CN";
         }
 
+        /// <summary>
+        /// 安全配置
+        /// </summary>
         public class SecurityConfig
         {
+            /// <summary>是否启用自动登录</summary>
             public bool EnableAutoLogin { get; set; } = false;
+
+            /// <summary>会话超时时间（分钟）</summary>
             public int SessionTimeout { get; set; } = 30;
+
+            /// <summary>是否需要强密码</summary>
             public bool RequireStrongPassword { get; set; } = false;
         }
+        #endregion
     }
+    #endregion
 
+    #region AppConfiguration 全局配置访问类
+    /// <summary>
+    /// 全局配置访问类
+    /// </summary>
+    public static class AppConfiguration
+    {
+        #region 公共属性
+        /// <summary>
+        /// 当前应用程序配置
+        /// </summary>
+        public static AppConfig Current { get; set; } = new AppConfig();
+        #endregion
+
+        #region 公共事件
+        /// <summary>
+        /// 配置变更事件
+        /// </summary>
+        public static event Action? OnConfigChanged;
+        #endregion
+
+        #region 公共方法
+        /// <summary>
+        /// 触发配置变更事件（会尽量在 UI 线程执行）
+        /// </summary>
+        public static void RaiseConfigChanged()
+        {
+            var handlers = OnConfigChanged;
+            if (handlers == null)
+                return;
+
+            try
+            {
+                var app = Application.Current;
+                if (app != null && app.Dispatcher != null && !app.Dispatcher.CheckAccess())
+                {
+                    app.Dispatcher.Invoke(() => handlers.Invoke());
+                }
+                else
+                {
+                    handlers.Invoke();
+                }
+            }
+            catch
+            {
+                try
+                {
+                    handlers.Invoke();
+                }
+                catch { }
+            }
+        }
+        #endregion
+    }
+    #endregion
+
+    #region ConfigModuleInitializer 配置模块初始化器
+    /// <summary>
+    /// 配置模块初始化器
+    /// </summary>
     public class ConfigModuleInitializer : IModuleInitializer
     {
+        #region IModuleInitializer 实现
+        /// <summary>模块名称</summary>
         public string ModuleName => "配置服务";
-        public string ModuleType => "Config";
-        public InitializerPriority Priority => InitializerPriority.Core;
-        public int Order => 1;
-        public List<ModuleDependency> Dependencies => new();
 
+        /// <summary>模块类型</summary>
+        public string ModuleType => "Config";
+
+        /// <summary>优先级</summary>
+        public InitializerPriority Priority => InitializerPriority.Core;
+
+        /// <summary>顺序</summary>
+        public int Order => 1;
+
+        /// <summary>依赖项</summary>
+        public List<ModuleDependency> Dependencies => new();
+        #endregion
+
+        #region 私有字段
+        /// <summary>配置文件目录</summary>
         private readonly string configDir = "Config";
+
+        /// <summary>主配置文件路径</summary>
         private readonly string mainConfigFile = "Config/appsettings.json";
+
+        /// <summary>环境配置文件路径</summary>
         private readonly string envConfigFile = "Config/appsettings.Production.json";
 
+        /// <summary>文件系统监视器</summary>
         private FileSystemWatcher watcher;
+        #endregion
 
+        #region 公共方法
+        /// <summary>
+        /// 异步初始化配置服务
+        /// </summary>
         public async Task<bool> InitializeAsync(Logger logger)
         {
             logger.Config("开始加载应用程序配置...");
@@ -127,10 +230,12 @@ namespace HostComputer.Common.Services.StartupModules
                 return false;
             }
         }
+        #endregion
 
-        // =============================
-        // 1. 确保 Config 目录存在
-        // =============================
+        #region 私有方法 - 配置文件处理
+        /// <summary>
+        /// 确保配置目录存在
+        /// </summary>
         private async Task EnsureConfigDirectory(Logger logger)
         {
             if (!Directory.Exists(configDir))
@@ -143,9 +248,9 @@ namespace HostComputer.Common.Services.StartupModules
             await Task.CompletedTask;
         }
 
-        // =============================
-        // 2. 加载主配置 + 环境配置（自动合并）
-        // =============================
+        /// <summary>
+        /// 加载和合并配置文件
+        /// </summary>
         private async Task<AppConfig> LoadAndMergeConfigs(Logger logger)
         {
             AppConfig config = await LoadOneConfig(mainConfigFile, logger) ?? new AppConfig();
@@ -163,6 +268,9 @@ namespace HostComputer.Common.Services.StartupModules
             return config;
         }
 
+        /// <summary>
+        /// 加载单个配置文件
+        /// </summary>
         private async Task<AppConfig?> LoadOneConfig(string file, Logger logger)
         {
             try
@@ -188,6 +296,9 @@ namespace HostComputer.Common.Services.StartupModules
             }
         }
 
+        /// <summary>
+        /// 合并配置（覆盖非空字段）
+        /// </summary>
         private void MergeConfig(AppConfig baseConfig, AppConfig overrideConfig)
         {
             // 只覆盖非空字段，确保灵活
@@ -198,9 +309,9 @@ namespace HostComputer.Common.Services.StartupModules
                 overrideConfig.Database.ConnectionString ?? baseConfig.Database.ConnectionString;
         }
 
-        // =============================
-        // 3. 验证配置
-        // =============================
+        /// <summary>
+        /// 验证配置
+        /// </summary>
         private async Task<bool> ValidateConfigAsync(AppConfig config, Logger logger)
         {
             logger.Config("验证配置...");
@@ -223,9 +334,9 @@ namespace HostComputer.Common.Services.StartupModules
             return ok;
         }
 
-        // =============================
-        // 4. 注册为全局可访问配置
-        // =============================
+        /// <summary>
+        /// 注册为全局可访问配置
+        /// </summary>
         private void RegisterToGlobal(AppConfig config, Logger logger)
         {
             AppConfiguration.Current = config;
@@ -236,9 +347,9 @@ namespace HostComputer.Common.Services.StartupModules
             logger.Config($"语言：{config.UI.Language}");
         }
 
-        // =============================
-        // 5. 如果主配置不存在则保存
-        // =============================
+        /// <summary>
+        /// 如果主配置不存在则保存
+        /// </summary>
         private async Task SaveIfNotExist(AppConfig config, Logger logger)
         {
             if (!File.Exists(mainConfigFile))
@@ -252,9 +363,9 @@ namespace HostComputer.Common.Services.StartupModules
             }
         }
 
-        // =============================
-        // 6. 自动备份损坏的 JSON
-        // =============================
+        /// <summary>
+        /// 备份损坏的配置文件
+        /// </summary>
         private async Task BackupCorruptedConfigAsync(string file, Logger logger)
         {
             string backup =
@@ -264,42 +375,9 @@ namespace HostComputer.Common.Services.StartupModules
             await Task.CompletedTask;
         }
 
-        // =============================
-        // 7. 配置热更新（实时监听）
-        // =============================
-        private void SetupConfigWatcher(Logger logger)
-        {
-            watcher = new FileSystemWatcher(configDir, "*.json")
-            {
-                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size
-            };
-
-            watcher.Changed += async (_, e) =>
-            {
-                try
-                {
-                    await Task.Delay(200); // 防止文件锁
-                    var config = await LoadAndMergeConfigs(logger);
-                    RegisterToGlobal(config, logger);
-
-                    logger.Config($"🔄 配置已重新加载（{e.Name}）");
-
-                    // 安全触发：使用 AppConfiguration.RaiseConfigChanged()
-                    AppConfiguration.RaiseConfigChanged();
-                }
-                catch (Exception ex)
-                {
-                    logger.Error("热载入配置失败：" + ex.Message);
-                }
-            };
-
-            watcher.EnableRaisingEvents = true;
-            logger.Config("已启动配置热更新监听");
-        }
-
-        // =============================
-        // 8. 创建默认配置（补齐缺失方法）
-        // =============================
+        /// <summary>
+        /// 创建默认配置
+        /// </summary>
         private async Task<AppConfig> CreateDefaultConfigAsync(Logger logger)
         {
             logger.Config("创建默认配置...");
@@ -355,47 +433,42 @@ namespace HostComputer.Common.Services.StartupModules
             logger.Config("✅ 默认配置创建完成");
             return defaultConfig;
         }
-    }
+        #endregion
 
-    // =============================
-    // 9. 全局配置访问（放在同一文件以便替换）
-    // =============================
-    public static class AppConfiguration
-    {
-        public static AppConfig Current { get; set; } = new AppConfig();
-
-        // 保持事件封装，外部只能订阅/退订
-        public static event Action? OnConfigChanged;
-
+        #region 私有方法 - 配置热更新
         /// <summary>
-        /// 在类内部安全触发 OnConfigChanged 事件（会尽量在 UI 线程执行）
+        /// 设置配置监视器（热更新）
         /// </summary>
-        public static void RaiseConfigChanged()
+        private void SetupConfigWatcher(Logger logger)
         {
-            var handlers = OnConfigChanged;
-            if (handlers == null)
-                return;
-
-            try
+            watcher = new FileSystemWatcher(configDir, "*.json")
             {
-                var app = Application.Current;
-                if (app != null && app.Dispatcher != null && !app.Dispatcher.CheckAccess())
-                {
-                    app.Dispatcher.Invoke(() => handlers.Invoke());
-                }
-                else
-                {
-                    handlers.Invoke();
-                }
-            }
-            catch
+                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size
+            };
+
+            watcher.Changed += async (_, e) =>
             {
                 try
                 {
-                    handlers.Invoke();
+                    await Task.Delay(200); // 防止文件锁
+                    var config = await LoadAndMergeConfigs(logger);
+                    RegisterToGlobal(config, logger);
+
+                    logger.Config($"🔄 配置已重新加载（{e.Name}）");
+
+                    // 安全触发：使用 AppConfiguration.RaiseConfigChanged()
+                    AppConfiguration.RaiseConfigChanged();
                 }
-                catch { }
-            }
+                catch (Exception ex)
+                {
+                    logger.Error("热载入配置失败：" + ex.Message);
+                }
+            };
+
+            watcher.EnableRaisingEvents = true;
+            logger.Config("已启动配置热更新监听");
         }
+        #endregion
     }
+    #endregion
 }

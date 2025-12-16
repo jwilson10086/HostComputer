@@ -7,12 +7,26 @@ using MyLogger;
 
 namespace HostComputer.Common.Services.StartupModules
 {
+    #region BackgroundServiceInitializer 后台服务初始化器
+    /// <summary>
+    /// 后台服务初始化器
+    /// </summary>
     public class BackgroundServiceInitializer : IModuleInitializer
     {
+        #region IModuleInitializer 实现
+        /// <summary>模块名称</summary>
         public string ModuleName => "后台服务";
+
+        /// <summary>模块类型</summary>
         public string ModuleType => "Service";
+
+        /// <summary>初始化优先级</summary>
         public InitializerPriority Priority => InitializerPriority.Business;
+
+        /// <summary>初始化顺序</summary>
         public int Order => 90;
+
+        /// <summary>依赖模块</summary>
         public List<ModuleDependency> Dependencies =>
             new()
             {
@@ -20,11 +34,9 @@ namespace HostComputer.Common.Services.StartupModules
                 new ModuleDependency { ModuleName = "配置服务", ModuleType = "Config" }
             };
 
-        private readonly List<Thread> _backgroundThreads = new();
-        private readonly List<Timer> _timers = new();
-        private readonly CancellationTokenSource _cancellationTokenSource = new();
-        private bool _isDisposed = false;
-
+        /// <summary>
+        /// 异步初始化后台服务
+        /// </summary>
         public async Task<bool> InitializeAsync(Logger logger)
         {
             logger.Service("开始启动后台服务...");
@@ -65,8 +77,26 @@ namespace HostComputer.Common.Services.StartupModules
                 return false;
             }
         }
+        #endregion
+
+        #region 私有字段
+        /// <summary>后台线程列表</summary>
+        private readonly List<Thread> _backgroundThreads = new();
+
+        /// <summary>定时器列表</summary>
+        private readonly List<Timer> _timers = new();
+
+        /// <summary>取消令牌源</summary>
+        private readonly CancellationTokenSource _cancellationTokenSource = new();
+
+        /// <summary>是否已释放</summary>
+        private bool _isDisposed = false;
+        #endregion
 
         #region 系统监控线程
+        /// <summary>
+        /// 启动系统监控线程
+        /// </summary>
         private async Task StartSystemMonitorAsync(Logger logger)
         {
             logger.Service("启动系统监控线程...");
@@ -123,6 +153,9 @@ namespace HostComputer.Common.Services.StartupModules
             }
         }
 
+        /// <summary>
+        /// 监控系统健康状态
+        /// </summary>
         private void MonitorSystemHealth()
         {
             try
@@ -160,6 +193,9 @@ namespace HostComputer.Common.Services.StartupModules
         #endregion
 
         #region 性能监控服务
+        /// <summary>
+        /// 启动性能监控服务
+        /// </summary>
         private async Task StartPerformanceMonitorAsync(Logger logger)
         {
             logger.Service("启动性能监控服务...");
@@ -187,6 +223,9 @@ namespace HostComputer.Common.Services.StartupModules
             }
         }
 
+        /// <summary>
+        /// 收集性能指标
+        /// </summary>
         private void CollectPerformanceMetrics(Logger logger)
         {
             try
@@ -243,6 +282,9 @@ namespace HostComputer.Common.Services.StartupModules
         #endregion
 
         #region 定时任务服务
+        /// <summary>
+        /// 启动定时任务服务
+        /// </summary>
         private async Task StartScheduledTasksAsync(Logger logger)
         {
             logger.Service("启动定时任务服务...");
@@ -299,6 +341,9 @@ namespace HostComputer.Common.Services.StartupModules
             await Task.CompletedTask;
         }
 
+        /// <summary>
+        /// 计算下一次运行时间
+        /// </summary>
         private TimeSpan CalculateNextRunTime(TimeSpan targetTime)
         {
             var now = DateTime.Now;
@@ -310,6 +355,9 @@ namespace HostComputer.Common.Services.StartupModules
                 return todayTarget.AddDays(1) - now; // 等到明天
         }
 
+        /// <summary>
+        /// 执行每日数据备份
+        /// </summary>
         private void ExecuteDailyBackup(Logger logger)
         {
             try
@@ -333,6 +381,9 @@ namespace HostComputer.Common.Services.StartupModules
             }
         }
 
+        /// <summary>
+        /// 生成每小时状态报告
+        /// </summary>
         private void GenerateHourlyReport(Logger logger)
         {
             try
@@ -356,6 +407,9 @@ namespace HostComputer.Common.Services.StartupModules
             }
         }
 
+        /// <summary>
+        /// 检查数据库连接
+        /// </summary>
         private void CheckDatabaseConnections(Logger logger)
         {
             try
@@ -379,6 +433,9 @@ namespace HostComputer.Common.Services.StartupModules
             }
         }
 
+        /// <summary>
+        /// 清理临时文件
+        /// </summary>
         private void CleanTempFiles(Logger logger)
         {
             try
@@ -439,6 +496,9 @@ namespace HostComputer.Common.Services.StartupModules
         #endregion
 
         #region 数据库维护服务
+        /// <summary>
+        /// 启动数据库维护服务
+        /// </summary>
         private async Task StartDatabaseMaintenanceAsync(Logger logger)
         {
             logger.Service("启动数据库维护服务...");
@@ -494,6 +554,9 @@ namespace HostComputer.Common.Services.StartupModules
             }
         }
 
+        /// <summary>
+        /// 执行数据库维护
+        /// </summary>
         private void PerformDatabaseMaintenance(Logger logger)
         {
             try
@@ -519,6 +582,9 @@ namespace HostComputer.Common.Services.StartupModules
         #endregion
 
         #region 其他后台服务
+        /// <summary>
+        /// 启动日志清理服务
+        /// </summary>
         private async Task StartLogCleanupServiceAsync(Logger logger)
         {
             logger.Service("启动日志清理服务...");
@@ -545,6 +611,9 @@ namespace HostComputer.Common.Services.StartupModules
             await Task.CompletedTask;
         }
 
+        /// <summary>
+        /// 清理旧日志
+        /// </summary>
         private void CleanupOldLogs(Logger logger)
         {
             try
@@ -562,6 +631,9 @@ namespace HostComputer.Common.Services.StartupModules
             }
         }
 
+        /// <summary>
+        /// 启动资源监控服务
+        /// </summary>
         private async Task StartResourceMonitorAsync(Logger logger)
         {
             logger.Service("启动资源监控服务...");
@@ -572,6 +644,9 @@ namespace HostComputer.Common.Services.StartupModules
             await Task.CompletedTask;
         }
 
+        /// <summary>
+        /// 启动网络连接监控
+        /// </summary>
         private async Task StartNetworkMonitorAsync(Logger logger)
         {
             logger.Service("启动网络连接监控...");
@@ -582,6 +657,9 @@ namespace HostComputer.Common.Services.StartupModules
             await Task.CompletedTask;
         }
 
+        /// <summary>
+        /// 启动设备状态监控
+        /// </summary>
         private async Task StartEquipmentMonitorAsync(Logger logger)
         {
             logger.Service("启动设备状态监控...");
@@ -594,6 +672,9 @@ namespace HostComputer.Common.Services.StartupModules
         #endregion
 
         #region 清理方法
+        /// <summary>
+        /// 清理后台服务
+        /// </summary>
         public async Task CleanupAsync(Logger logger)
         {
             if (_isDisposed)
@@ -647,4 +728,5 @@ namespace HostComputer.Common.Services.StartupModules
         }
         #endregion
     }
+    #endregion
 }

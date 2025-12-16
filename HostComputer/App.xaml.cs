@@ -1,4 +1,5 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
+using HostComputer.Common.Actions;
 using HostComputer.Common.Languages;
 using HostComputer.Common.Services;
 using HostComputer.Common.Services.StartupModules;
@@ -17,6 +18,7 @@ namespace HostComputer
         private MainWindow _mainWindow;
         private TaskbarIcon _trayIcon;
         private ResourceDictionary? _currentTheme;
+      
         public static Session Session { get; } = new Session();
         public static LanguageService Lang { get; private set; }
         public static Logger Logger { get; private set; }
@@ -81,7 +83,18 @@ namespace HostComputer
 
             // 初始化日志（先于其他所有操作）
             Logger = new Logger(AppConfiguration.Current.LoggingConfig);
-           
+            AppDomain.CurrentDomain.UnhandledException += (s, ev) =>
+            {
+                if (ev.ExceptionObject is Exception ex)
+                    Logger.Error($"未处理异常: {ex.Message}\n{ex.StackTrace}");
+            };
+
+            DispatcherUnhandledException += (s, ev) =>
+            {
+                Logger.Error($"UI线程未处理异常: {ev.Exception.Message}\n{ev.Exception.StackTrace}");
+                ev.Handled = true; // 阻止应用崩溃
+            };
+
             try
             {
                 #region 初始化托盘图标
@@ -120,7 +133,8 @@ namespace HostComputer
 
                 Logger.Startup("启动窗口已显示，开始后台初始化");
 
-                //ApplyUIConfig();
+                
+
 
 
                 HostComputer.Common.Services.StartupModules.AppConfiguration.OnConfigChanged += () =>

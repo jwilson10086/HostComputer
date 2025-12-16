@@ -9,6 +9,7 @@
     Title="ComponentConfigView"
     Width="800"
     Height="450"
+    WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="-1" />
@@ -265,6 +266,7 @@
                         <Button
                             Height="28"
                             Margin="3,0"
+                            Command="{Binding CancelCommand}"
                             Content="取消" />
                     </UniformGrid>
                 </Grid>

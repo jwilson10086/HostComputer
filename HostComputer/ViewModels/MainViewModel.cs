@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using HostComputer.Common.Actions;
 using HostComputer.Common.Base;
 using HostComputer.Common.Services;
 using HostComputer.Common.Services.StartupModules;
@@ -27,6 +28,9 @@ namespace HostComputer.ViewModels
         /// <param name="navigation">导航服务实例</param>
         public MainViewModel(NavigationService navigation)
         {
+            // 加载用户信息
+            LoadUserInfo();
+
             _navigation = navigation;
 
             // 设置默认语言
@@ -67,6 +71,67 @@ namespace HostComputer.ViewModels
 
         /// <summary>选中的三级菜单</summary>
         private MenuItemModel _selectedMenu3;
+        #endregion
+
+        #region === 用户信息属性 ===
+        private string _userName;
+
+        /// <summary>
+        /// 用户名
+        /// </summary>
+        public string UserName
+        {
+            get => _userName;
+            set
+            {
+                _userName = value;
+                NotifyChanged();
+            }
+        }
+
+        private string _userLevel;
+
+        /// <summary>
+        /// 用户等级
+        /// </summary>
+        public string UserLevel
+        {
+            get => _userLevel;
+            set
+            {
+                _userLevel = value;
+                NotifyChanged();
+            }
+        }
+
+        ///<summary>
+        ///用户组
+        /// </summary>
+        private string _group;
+        public string Group
+        {
+            get => _group;
+            set
+            {
+                _group = value;
+                NotifyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 用户视图模型
+        /// </summary>
+        public UserModel UserViewModel { get; set; } = new UserModel();
+
+        /// <summary>
+        /// 加载用户信息
+        /// </summary>
+        private void LoadUserInfo()
+        {
+            UserName = Session.UserName ?? "Unknown";
+            UserLevel = Session.Level.ToString() ?? "N/A";
+            Group = Session.Group ?? "Unknown";
+        }
         #endregion
 
         #region === 语言服务相关 ===
@@ -261,17 +326,12 @@ namespace HostComputer.ViewModels
 
             SettingCommand = new CommandBase()
             {
-                DoExecute = _ =>
-                    _navigation.NavigatePopup(
-                        "ComponentConfigView",
-                        true,
-                        window =>
-                        {
-                            window.Width = 800;
-                            window.Height = 600;
-                            window.Owner = Application.Current.MainWindow;
-                        }
-                    )
+                DoExecute = _ =>{
+                if(Session.Level ==5)
+                    {
+                       bool ok= ActionManager.Execute<object,bool>("AAA", null);
+                    }
+                }
             };
 
             ChangeLanguageCommand = new CommandBase()

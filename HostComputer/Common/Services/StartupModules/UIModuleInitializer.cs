@@ -1,9 +1,12 @@
-﻿using MyLogger;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
+using HostComputer.Common.Actions;
+using HostComputer.Common.Services.Actions;
+using HostComputer.Common.Services.Components;
+using MyLogger;
 
 namespace HostComputer.Common.Services.StartupModules
 {
@@ -13,10 +16,11 @@ namespace HostComputer.Common.Services.StartupModules
         public string ModuleType => "UI";
         public InitializerPriority Priority => InitializerPriority.UI;
         public int Order => 10;
-        public List<ModuleDependency> Dependencies => new()
-        {
-            new ModuleDependency { ModuleName = "配置服务", ModuleType = "Config" }
-        };
+        public List<ModuleDependency> Dependencies =>
+            new()
+            {
+                new ModuleDependency { ModuleName = "配置服务", ModuleType = "Config" }
+            };
 
         public async Task<bool> InitializeAsync(Logger logger)
         {
@@ -81,6 +85,7 @@ namespace HostComputer.Common.Services.StartupModules
                 "Styles/Menu.xaml",
                 "Styles/WindowChrome.xaml"
             };
+           
 
             int loadedCount = 0;
             foreach (var resourceFile in resourceFiles)
@@ -200,9 +205,13 @@ namespace HostComputer.Common.Services.StartupModules
 
             // 定义画笔
             darkTheme["BackgroundBrush"] = new System.Windows.Media.SolidColorBrush(
-                (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#1a1a1a"));
+                (System.Windows.Media.Color)
+                    System.Windows.Media.ColorConverter.ConvertFromString("#1a1a1a")
+            );
             darkTheme["ForegroundBrush"] = new System.Windows.Media.SolidColorBrush(
-                (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#ffffff"));
+                (System.Windows.Media.Color)
+                    System.Windows.Media.ColorConverter.ConvertFromString("#ffffff")
+            );
 
             Application.Current.Resources.MergedDictionaries.Add(darkTheme);
 
@@ -226,15 +235,26 @@ namespace HostComputer.Common.Services.StartupModules
 
             // 注册按钮样式
             var buttonStyle = new Style(typeof(System.Windows.Controls.Button));
-            buttonStyle.Setters.Add(new Setter(System.Windows.Controls.Control.PaddingProperty, new Thickness(10, 5, 10, 5)));
-            buttonStyle.Setters.Add(new Setter(System.Windows.Controls.Control.MarginProperty, new Thickness(5)));
+            buttonStyle.Setters.Add(
+                new Setter(
+                    System.Windows.Controls.Control.PaddingProperty,
+                    new Thickness(10, 5, 10, 5)
+                )
+            );
+            buttonStyle.Setters.Add(
+                new Setter(System.Windows.Controls.Control.MarginProperty, new Thickness(5))
+            );
 
             Application.Current.Resources[typeof(System.Windows.Controls.Button)] = buttonStyle;
 
             // 注册文本框样式
             var textBoxStyle = new Style(typeof(System.Windows.Controls.TextBox));
-            textBoxStyle.Setters.Add(new Setter(System.Windows.Controls.Control.PaddingProperty, new Thickness(5)));
-            textBoxStyle.Setters.Add(new Setter(System.Windows.Controls.Control.MarginProperty, new Thickness(5)));
+            textBoxStyle.Setters.Add(
+                new Setter(System.Windows.Controls.Control.PaddingProperty, new Thickness(5))
+            );
+            textBoxStyle.Setters.Add(
+                new Setter(System.Windows.Controls.Control.MarginProperty, new Thickness(5))
+            );
 
             Application.Current.Resources[typeof(System.Windows.Controls.TextBox)] = textBoxStyle;
 

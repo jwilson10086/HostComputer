@@ -8,6 +8,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using HostComputer.Common.Actions;
 using HostComputer.Common.Services;
 using HostComputer.Models;
 using HostComputer.ViewModels;
@@ -27,6 +28,30 @@ namespace HostComputer.Views
             InitializeComponent();
             var nav = new NavigationService(PageHost);
             DataContext = new MainViewModel(nav);
+            // 注册 ActionManager 示例
+            ActionManager.Register<object, bool>(
+                "AAA",
+                arg =>
+                {
+                    // 获取当前活跃窗口
+                    var owner = Application
+                        .Current.Windows.OfType<Window>()
+                        .FirstOrDefault(w => w.IsActive);
+
+                    nav.NavigatePopup(
+                        "ComponentConfigView",
+                        true,
+                        w =>
+                        {
+                            w.Width = 800;
+                            w.Height = 600;
+                            w.Owner = owner; // 自动识别当前窗口
+                        }
+                    );
+
+                    return true;
+                }
+            );
         }
 
         private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
