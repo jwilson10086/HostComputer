@@ -236,7 +236,7 @@
                     <TextBlock
                         FontSize="22"
                         Foreground="Black"
-                        Text="智程半导体" />
+                        Text="顶呱呱智慧平台" />
                     <TextBlock Foreground="gray" Text="专注半导体湿制程设备产业投资与发展布局" />
                 </StackPanel>
                 <TextBox

@@ -13,27 +13,26 @@
     WindowStartupLocation="CenterScreen"
     WindowStyle="None">
     <Window.Resources>
-        <!-- 深色现代滚动条 -->
+        <!--  深色现代滚动条  -->
         <Style TargetType="ScrollBar">
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ScrollBar">
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="0.00001*"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="0.00001*"/>
+                                <RowDefinition Height="0.00001*" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="0.00001*" />
                             </Grid.RowDefinitions>
 
-                            <Rectangle Grid.Row="1" Fill="#2b2b2b"/>
+                            <Rectangle Grid.Row="1" Fill="#2b2b2b" />
 
-                            <Track x:Name="PART_Track"
-                               Grid.Row="1"
-                               IsDirectionReversed="True">
+                            <Track
+                                x:Name="PART_Track"
+                                Grid.Row="1"
+                                IsDirectionReversed="True">
                                 <Track.Thumb>
-                                    <Thumb Background="#444"
-                                      
-                                       Height="40" />
+                                    <Thumb Height="40" Background="#444" />
                                 </Track.Thumb>
                             </Track>
                         </Grid>
@@ -42,16 +41,16 @@
             </Setter>
         </Style>
 
-        <!-- ListBox 禁用默认选择效果 -->
+        <!--  ListBox 禁用默认选择效果  -->
         <Style TargetType="ListBoxItem">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">
-                        <ContentPresenter/>
+                        <ContentPresenter />
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -134,10 +133,10 @@
                         <ListBox
                             x:Name="lbModules"
                             Background="Transparent"
-                            Loaded="ModuleList_Loaded"
                             BorderThickness="0"
                             ItemsSource="{Binding Modules}"
-                            ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            Loaded="ModuleList_Loaded"
+                            ScrollViewer.VerticalScrollBarVisibility="Hidden">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Border

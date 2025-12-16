@@ -26,6 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Remove="Assets\Styles\Common\ButtonStyle.xaml" />
+    <Page Remove="Assets\Styles\Common\WindowStyles.xaml" />
     <Page Remove="Assets\Styles\Themes\Dark.xaml" />
     <Page Remove="Assets\Styles\Themes\Light.xaml" />
   </ItemGroup>
@@ -50,6 +52,8 @@
     </Resource>
     <Resource Include="Assets\Icons\TrayIcon.ico" />
     <Resource Include="Assets\Images\loginbg.png" />
+    <Resource Include="Assets\Styles\Common\ButtonStyle.xaml" />
+    <Resource Include="Assets\Styles\Common\WindowStyles.xaml" />
     <Resource Include="Assets\Styles\Themes\Dark.xaml" />
     <Resource Include="Assets\Styles\Themes\Light.xaml" />
   </ItemGroup>

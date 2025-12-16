@@ -299,7 +299,6 @@ namespace HostComputer
                 HideConsole();
                 try { SetConsoleCtrlHandler(_consoleHandler, false); } catch { }
                 CleanupAndExit();
-                Shutdown();
             }
             else
             {

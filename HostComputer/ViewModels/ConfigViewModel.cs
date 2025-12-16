@@ -1,6 +1,4 @@
-﻿using HostComputer.Common.Base;
-using Mysqlx.Prepare;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,12 +6,16 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using HostComputer.Common.Base;
+using HostComputer.Models;
+using Mysqlx.Prepare;
 
 namespace HostComputer.ViewModels
 {
     public class ConfigViewModel : NotifyBase
     {
-        private bool? _windowState = false;
+        public bool _windowState = false;
+        public List<ThumbModel> ThumbList { get; set; }
 
         // 当前来源页面
         public UserControl SourcePage { get; init; } = null!;
@@ -35,21 +37,77 @@ namespace HostComputer.ViewModels
 
         public ConfigViewModel()
         {
-            
-                SaveCommand = new CommandBase() { DoExecute = _ => { } };
-                CancelCommand = new CommandBase()
+            ThumbList = new List<ThumbModel>();
+            ThumbModel thumb = new ThumbModel()
+            {
+                Header = "设备",
+                Children = new List<ThumbItemModel>()
                 {
-                    DoExecute = obj =>
-                    {
-                        //取消操作关闭窗口
-                        var window = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.DataContext == this);
-                        if (window is not null)
-                        (obj as Window).DialogResult = _windowState;
-                    }
-                };
-            
-            
-           
+                    new ThumbItemModel(),
+                    new ThumbItemModel(),
+                    new ThumbItemModel(),
+                    new ThumbItemModel(),
+                    new ThumbItemModel(),
+                }
+            };
+            ThumbList.Add(thumb);
+            thumb = new ThumbModel()
+            {
+                Header = "控制开关",
+                Children = new List<ThumbItemModel>()
+                {
+                    new ThumbItemModel(),
+                    new ThumbItemModel(),
+                    new ThumbItemModel(),
+                    new ThumbItemModel(),
+                    new ThumbItemModel()
+                }
+            };
+            ThumbList.Add(thumb);
+            thumb = new ThumbModel()
+            {
+                Header = "管道",
+                Children = new List<ThumbItemModel>()
+                {
+                    new ThumbItemModel(),
+                    new ThumbItemModel(),
+                    new ThumbItemModel(),
+                    new ThumbItemModel(),
+                    new ThumbItemModel()
+                }
+            };
+            ThumbList.Add(thumb);
+            thumb = new ThumbModel()
+            {
+                Header = "数字仪表",
+                Children = new List<ThumbItemModel>()
+                {
+                    new ThumbItemModel(),
+                    new ThumbItemModel(),
+                    new ThumbItemModel(),
+                    new ThumbItemModel(),
+                    new ThumbItemModel()
+                }
+            };
+            ThumbList.Add(thumb);
+        
+
+
+
+
+            SaveCommand = new CommandBase() { DoExecute = _ => { } };
+            CancelCommand = new CommandBase()
+            {
+                DoExecute = _ =>
+                {
+                    //取消操作关闭窗口
+                    var window = Application
+                        .Current.Windows.OfType<Window>()
+                        .FirstOrDefault(w => w.DataContext == this);
+                    if (window != null)
+                        window.DialogResult = _windowState;
+                }
+            };
         }
     }
 }

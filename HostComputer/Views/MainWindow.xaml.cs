@@ -43,13 +43,13 @@ namespace HostComputer.Views
                         true,
                         w =>
                         {
-                            w.Width = 800;
-                            w.Height = 600;
+                            w.Width = 1200;
+                            w.Height = 800;
                             w.Owner = owner; // 自动识别当前窗口
                         }
                     );
 
-                    return true;
+                    return new ComponentConfigView().DialogResult == true;
                 }
             );
         }
