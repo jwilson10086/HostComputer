@@ -166,7 +166,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
         <Style x:Key="MenuRadioButtonStyle" TargetType="RadioButton">
             <Setter Property="Background" Value="#3E3E42" />
             <Setter Property="Foreground" Value="White" />
@@ -324,7 +323,7 @@
                     Grid.Row="0"
                     Grid.Column="1"
                     Foreground="LightGreen"
-                      Text="{Binding Source={x:Static local:App.Session},Path=UserName}" />
+                    Text="{Binding Source={x:Static local:App.Session}, Path=UserName}" />
 
                 <TextBlock
                     Grid.Row="1"
@@ -335,7 +334,7 @@
                     Grid.Row="1"
                     Grid.Column="1"
                     Foreground="LightGreen"
-                   Text="{Binding Source={x:Static local:App.Session},Path=Group}" />
+                    Text="{Binding Source={x:Static local:App.Session}, Path=Group}" />
 
                 <TextBlock
                     Grid.Row="2"
@@ -346,7 +345,7 @@
                     Grid.Row="2"
                     Grid.Column="1"
                     Foreground="LightSkyBlue"
-                    Text="{Binding Source={x:Static local:App.Session},Path=Level}" />
+                    Text="{Binding Source={x:Static local:App.Session}, Path=Level}" />
 
                 <!--  右两列你自行扩展  -->
                 <TextBlock
@@ -483,11 +482,10 @@
         <!--  第二行：图标按钮栏  -->
         <DockPanel
             Grid.Row="1"
-            Grid.ColumnSpan="3"
             Grid.Column="0"
+            Grid.ColumnSpan="3"
             VerticalAlignment="Bottom"
-            Background="#3A3A3D"
-            >
+            Background="#3A3A3D">
 
             <!--  后退  -->
             <Button
@@ -602,7 +600,7 @@
                 <TextBlock
                     Name="txt_time"
                     Grid.Column="0"
-                    VerticalAlignment="Center"
+                    VerticalAlignment="Bottom"
                     DataContext="{x:Static sys:DateTime.Now}"
                     FontFamily="{StaticResource timefont}"
                     FontSize="28"
