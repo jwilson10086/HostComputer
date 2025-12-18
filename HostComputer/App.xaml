@@ -14,6 +14,8 @@
                 <ResourceDictionary Source="pack://application:,,,/HostComputer;component/Assets/Styles/Common/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/HostComputer;component/Assets/Styles/Common/ScrollBarStyle.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/HostComputer;component/Assets/Styles/Common/ButtonStyle.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/HostComputer;component/Assets/Styles/Common/ToggleButtonStyle.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/HostComputer;component/Assets/Styles/Common/IconMenuRadioButtonStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <conv:TranslateConverter x:Key="TranslateConverter" />
             <tb:TaskbarIcon

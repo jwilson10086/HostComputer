@@ -44,7 +44,7 @@
                                     FontFamily="{DynamicResource iconfont}"
                                     FontSize="16"
                                     Foreground="LightGray"
-                                    Text="&#xe610;" />
+                                    Text="&#xe849;" />
                                 <Border
                                     Margin="1,4"
                                     BorderBrush="LightGray"
@@ -114,9 +114,9 @@
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     FontFamily="{DynamicResource iconfont}"
-                                    FontSize="16"
+                                    FontSize="18"
                                     Foreground="LightGray"
-                                    Text="&#xe602;" />
+                                    Text="&#xe656;" />
                                 <Border
                                     Margin="1,4"
                                     BorderBrush="LightGray"
@@ -173,7 +173,7 @@
                     VerticalAlignment="Center"
                     FontFamily="{DynamicResource iconfont}"
                     FontSize="14"
-                    Text="&#xe653;" />
+                    Text="X" />
             </Grid>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">

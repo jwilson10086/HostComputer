@@ -13,6 +13,7 @@ namespace HostComputer.Models
     {
         public string Key { get; set; }  // 永远是唯一标识，用于语言索引
         public string ViewName { get; set; }
+        public string Icon { get; set; }
         public ObservableCollection<MenuItemModel> Children { get; set; } = new();
 
         private string _title;

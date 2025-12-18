@@ -338,6 +338,7 @@ namespace HostComputer.ViewModels
             {
                 DoExecute = _ =>
                 {
+                    SelectedLanguage = LanguageService.CurrentLang == "zh-CN" ? "en-US" : "zh-CN";
                     _navigation.ClearHistory();
                 }
             };
@@ -379,7 +380,7 @@ namespace HostComputer.ViewModels
             {
                 foreach (var child in menu1.Children)
                     SecondLevel.Add(child);
-
+                
                 // 默认选中第一个二级菜单
                 OnMenu2Clicked(SecondLevel.First(), menu1);
                 return;

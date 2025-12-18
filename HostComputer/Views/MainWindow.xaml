@@ -166,82 +166,31 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <Style x:Key="MenuRadioButtonStyle" TargetType="RadioButton">
-            <Setter Property="Background" Value="#3E3E42" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="Padding" Value="10,5" />
-            <Setter Property="Margin" Value="3" />
-            <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="RadioButton">
-                        <Border
-                            Padding="{TemplateBinding Padding}"
-                            Background="{TemplateBinding Background}"
-                            CornerRadius="5">
-                            <!--  使用TextBlock包裹内容，并自动换行  -->
-                            <TextBlock
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Text="{TemplateBinding Content}"
-                                TextAlignment="Center"
-                                TextWrapping="Wrap" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <!--  鼠标悬停  -->
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#007ACC" />
-                            </Trigger>
-                            <!--  按下或选中状态  -->
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter Property="Background" Value="#005A9E" />
-                            </Trigger>
-                            <Trigger Property="Content" Value="">
-                                <Setter Property="Visibility" Value="Hidden" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
+        <Style
+            x:Key="MainMenuRadioButtonStyle"
+            BasedOn="{StaticResource IconMenuRadioButtonStyle}"
+            TargetType="RadioButton">
+            <!--  固定尺寸  -->
+            <Setter Property="Width" Value="110" />
+            <Setter Property="Height" Value="80" />
 
-                </Setter.Value>
-            </Setter>
+            <!--  可选：防止被内部撑开  -->
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
         </Style>
-        <Style x:Key="MainMenuRadioButtonStyle" TargetType="RadioButton">
-            <Setter Property="Background" Value="#3E3E42" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="Padding" Value="10,5" />
-            <Setter Property="Margin" Value="3" />
-            <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="RadioButton">
-                        <Border
-                            Padding="{TemplateBinding Padding}"
-                            Background="{TemplateBinding Background}"
-                            CornerRadius="5">
-                            <TextBlock
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Text="{TemplateBinding Content}"
-                                TextAlignment="Center"
-                                TextWrapping="Wrap" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <!--  鼠标悬停  -->
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#007ACC" />
-                            </Trigger>
-                            <!--  按下或选中状态  -->
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter Property="Background" Value="#005A9E" />
-                            </Trigger>
-                            <Trigger Property="Content" Value="">
-                                <Setter Property="Visibility" Value="Hidden" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+
+        <Style
+            x:Key="MenuRadioButtonStyle"
+            BasedOn="{StaticResource IconMenuRadioButtonStyle}"
+            TargetType="RadioButton">
+            <!--  固定尺寸  -->
+            <Setter Property="Width" Value="100" />
+            <Setter Property="Height" Value="80" />
+            <!--  可选：防止被内部撑开  -->
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
         </Style>
+
         <ba:EqualityConverter x:Key="EqualityConverter" />
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Window.Resources>
@@ -261,9 +210,9 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <!--  内容区  -->
-            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="Auto" />
             <!--  二级菜单  -->
-            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="Auto" />
             <!--  三级菜单  -->
         </Grid.ColumnDefinitions>
 
@@ -274,16 +223,20 @@
             Height="80"
             Background="Gray">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="80" />
                 <!--  Logo 区域  -->
-                <ColumnDefinition Width="300" />
+                <ColumnDefinition Width="80" />
                 <!--  状态区  -->
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="300" />
                 <!--  实时事件  -->
-                <ColumnDefinition Width="100" />
-                <!--  三色灯  -->
-                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="*" />
                 <!--  语言切换  -->
+                <ColumnDefinition Width="80" />
+                <!--  报警  -->
+                <ColumnDefinition Width="80" />
+                <!--  蜂鸣器  -->
+                <ColumnDefinition Width="80" />
+                <!--  三色灯  -->
+                <ColumnDefinition Width="80" />
             </Grid.ColumnDefinitions>
 
             <!--  左：Logo 方框  -->
@@ -404,79 +357,76 @@
                     </ItemsControl>
                 </ScrollViewer>
             </Border>
+            <!--  报警  -->
+            <Button
+                Grid.Column="3"
+                BorderBrush="Transparent"
+                Command="{Binding AlarmCommand}"
+                CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                Content="&#xe642;"
+                FontFamily="{StaticResource iconfont}"
+                FontSize="18"
+                Style="{StaticResource ButtonStyle}"
+                ToolTip="报警" />
+            <!--  蜂鸣器  -->
+            <ToggleButton
+                Grid.Column="4"
+                BorderBrush="Transparent"
+                Command="{Binding BellCommand}"
+                CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                Content="&#xe643;"
+                FontFamily="{StaticResource iconfont}"
+                FontSize="18"
+                Style="{StaticResource ToggleButtonStyle}"
+                Tag="蜂鸣器" />
+            <!--  最右：中英文切换与语言 Combo  -->
+            <Button
+                Grid.Column="5"
+                Name="LanguageButton"
+                FontSize="18"
+           
+                Content="&#xe65e;"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Background="#444"
+                BorderBrush="#555"
+                Command="{Binding ChangeLanguageCommand}"
+           
+                FontFamily="{StaticResource iconfont}"
+                Foreground="White"
+                Style="{StaticResource ButtonStyle}"
+                ToolTip="语言" />
 
             <!--  右侧竖向三色灯  -->
             <Border
-                Grid.Column="4"
-                Margin="35,2,35,2"
-                Background="White"
-                CornerRadius="5" />
-            <StackPanel
-                Grid.Column="4"
-                Margin="5"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Orientation="Vertical">
-                <Rectangle
-                    Width="22"
-                    Height="22"
-                    Margin="1"
-                    Fill="Red"
-                    Stroke="Gray" />
-                <Rectangle
-                    Width="22"
-                    Height="22"
-                    Margin="1"
-                    Fill="Yellow"
-                    Stroke="Gray" />
-                <Rectangle
-                    Width="22"
-                    Height="22"
-                    Margin="1"
-                    Fill="Green"
-                    Stroke="Gray" />
-            </StackPanel>
-
-            <!--  最右：中英文切换与语言 Combo  -->
-            <Border
-                Grid.Column="3"
-                Padding="3"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Background="#2E2E2E"
-                BorderBrush="#555"
-                BorderThickness="1"
-                CornerRadius="5"
-                SnapsToDevicePixels="True">
+                Grid.Column="6"
+                Margin="2"
+                Background="Transparent"
+                CornerRadius="5">
                 <StackPanel
+                    Grid.Column="6"
+                    Margin="5"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Orientation="Vertical">
-                    <TextBlock
-                        Margin="0,0,0,5"
-                        HorizontalAlignment="Center"
-                        FontSize="14"
-                        FontWeight="Bold"
-                        Foreground="White"
-                        Text="{lang:Lang 'Language'}" />
-                    <ComboBox
-                        Name="LanguageComboBox"
-                        Width="80"
-                        Height="25"
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center"
-                        beh:ComboBoxBehaviors.CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
-                        beh:ComboBoxBehaviors.SelectionChangedCommand="{Binding ChangeLanguageCommand}"
-                        Background="#444"
-                        BorderBrush="#555"
-                        Foreground="White"
-                        ItemsSource="{Binding Source={x:Static local:App.Lang}, Path=AvailableLanguages}"
-                        SelectedItem="{Binding Path=CurrentLang, Source={x:Static local:App.Lang}, Mode=TwoWay}"
-                        Style="{StaticResource DarkComboBox}" />
-
+                    <Rectangle
+                        Width="50"
+                        Height="22"
+                        Margin="1"
+                        Fill="Red"
+                        Stroke="Gray" />
+                    <Rectangle
+                        Height="22"
+                        Margin="1"
+                        Fill="Yellow"
+                        Stroke="Gray" />
+                    <Rectangle
+                        Height="22"
+                        Margin="1"
+                        Fill="Green"
+                        Stroke="Gray" />
                 </StackPanel>
             </Border>
-
 
         </Grid>
         <!--  第二行：图标按钮栏  -->
@@ -584,7 +534,7 @@
             </Button>
 
             <Grid
-                Margin="0,0,2,0"
+                Margin="0,0,2,2"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
@@ -689,18 +639,21 @@
             ItemsSource="{Binding Menus}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Background="LightSteelBlue" Orientation="Horizontal" />
+                    <StackPanel Background="Gray" Orientation="Horizontal" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <RadioButton
-                        Margin="5"
+                        Margin="1,2,8,2"
                         Command="{Binding DataContext.Menu1Command, RelativeSource={RelativeSource AncestorType=Window}}"
                         CommandParameter="{Binding}"
-                        Content="{Binding Title}"
+                        Content="{Binding Icon}"
+                        FontFamily="{DynamicResource iconfont}"
+                        FontSize="18"
                         GroupName="NavGroup"
-                        Style="{StaticResource MainMenuRadioButtonStyle}">
+                        Style="{StaticResource MainMenuRadioButtonStyle}"
+                        Tag="{Binding Title}">
                         <RadioButton.IsChecked>
                             <MultiBinding Converter="{StaticResource EqualityConverter}" Mode="OneWay">
                                 <Binding Path="." />
@@ -717,6 +670,7 @@
         <ItemsControl
             Grid.Row="2"
             Grid.Column="2"
+            Background="AliceBlue"
             ItemsSource="{Binding SecondLevel}">
             <ItemsControl.Style>
                 <Style TargetType="ItemsControl">
@@ -731,11 +685,13 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <RadioButton
-                        Margin="2"
+                        Margin="2,2,3,3"
                         Command="{Binding DataContext.Menu2Command, RelativeSource={RelativeSource AncestorType=Window}}"
                         CommandParameter="{Binding}"
-                        Content="{Binding Title}"
-                        Style="{StaticResource MenuRadioButtonStyle}">
+                        Content="{Binding Icon}"
+                        FontFamily="{DynamicResource iconfont}"
+                        Style="{StaticResource MenuRadioButtonStyle}"
+                        Tag="{Binding Title}">
                         <RadioButton.IsChecked>
                             <MultiBinding Converter="{StaticResource EqualityConverter}" Mode="OneWay">
                                 <Binding Path="." />
@@ -769,8 +725,10 @@
                         Margin="2"
                         Command="{Binding DataContext.Menu3Command, RelativeSource={RelativeSource AncestorType=Window}}"
                         CommandParameter="{Binding}"
-                        Content="{Binding Title}"
-                        Style="{StaticResource MenuRadioButtonStyle}">
+                        Content="{Binding Icon}"
+                        FontFamily="{DynamicResource iconfont}"
+                        Style="{StaticResource MenuRadioButtonStyle}"
+                        Tag="{Binding Title}">
                         <RadioButton.IsChecked>
                             <MultiBinding Converter="{StaticResource EqualityConverter}" Mode="OneWay">
                                 <Binding Path="." />

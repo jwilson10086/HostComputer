@@ -98,7 +98,7 @@
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
-                                        <RowDefinition x:Name="ContentRow" Height="0"/>
+                                        <RowDefinition x:Name="ContentRow" Height="0" />
                                     </Grid.RowDefinitions>
                                     <ToggleButton
                                         Content="{TemplateBinding Header}"
@@ -175,7 +175,7 @@
                 Margin="10,30,10,10"
                 HorizontalAlignment="Left"
                 HorizontalScrollBarVisibility="Hidden"
-                 VerticalScrollBarVisibility="Disabled">
+                VerticalScrollBarVisibility="Disabled">
                 <ItemsControl ItemsSource="{Binding ThumbList}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -240,8 +240,8 @@
                         CornerRadius="2" />
                     <TextBlock
                         Margin="10,0,0,0"
-                        FontSize="18"
                         VerticalAlignment="Center"
+                        FontSize="18"
                         Foreground="White"
                         Text="参数配置" />
 
@@ -251,18 +251,22 @@
                         Margin="0,3"
                         Rows="1">
                         <Button
-                            Height="28"
-                            Margin="3,0"
+                            FontFamily="{DynamicResource iconfont}"
+                            Height="50"
+                            Width="80"
                             Command="{Binding SaveCommand}"
                             CommandParameter="{Binding ElementName=win}"
-                            Content="保存"
-                            Style="{StaticResource ButtonStyle}" />
+                            Content="&#xe610;"
+                            Style="{StaticResource ButtonStyle}"
+                            ToolTip="保存" />
                         <Button
-                            Height="28"
+                            Height="50"
                             Margin="3,0"
+                            FontFamily="{DynamicResource iconfont}"
                             Command="{Binding CancelCommand}"
-                            Content="取消"
-                            Style="{StaticResource ButtonStyle}" />
+                            Content="&#xe610;"
+                            Style="{StaticResource ButtonStyle}"
+                            ToolTip="取消" />
                     </UniformGrid>
                 </Grid>
             </Border>
