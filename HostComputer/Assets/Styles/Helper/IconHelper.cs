@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 
 namespace HostComputer.Assets.Styles.Helper
 {
@@ -14,7 +9,7 @@ namespace HostComputer.Assets.Styles.Helper
                 "IconFontSize",
                 typeof(double),
                 typeof(IconHelper),
-                new PropertyMetadata(36d));
+                new FrameworkPropertyMetadata(36d, FrameworkPropertyMetadataOptions.Inherits));
 
         public static void SetIconFontSize(DependencyObject obj, double value)
             => obj.SetValue(IconFontSizeProperty, value);
@@ -22,5 +17,4 @@ namespace HostComputer.Assets.Styles.Helper
         public static double GetIconFontSize(DependencyObject obj)
             => (double)obj.GetValue(IconFontSizeProperty);
     }
-
 }

@@ -9,6 +9,7 @@
     xmlns:local="clr-namespace:HostComputer"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:helper="clr-namespace:HostComputer.Assets.Styles.Helper"
     Title="Equipment Host"
     Width="{DynamicResource DefaultWindowWidth}"
     Height="{DynamicResource DefaultWindowHeight}"
@@ -366,6 +367,7 @@
                 Content="&#xe642;"
                 FontFamily="{StaticResource iconfont}"
                 FontSize="18"
+                helper:IconHelper.IconFontSize="30"
                 Style="{StaticResource ButtonStyle}"
                 ToolTip="报警" />
             <!--  蜂鸣器  -->
@@ -375,6 +377,7 @@
                 Command="{Binding BellCommand}"
                 CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                 Content="&#xe643;"
+                helper:IconHelper.IconFontSize="30"
                 FontFamily="{StaticResource iconfont}"
                 FontSize="18"
                 Style="{StaticResource ToggleButtonStyle}"
@@ -384,18 +387,18 @@
                 Grid.Column="5"
                 Name="LanguageButton"
                 FontSize="18"
-           
+                ToolTip="语言"
                 Content="&#xe65e;"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Background="#444"
                 BorderBrush="#555"
                 Command="{Binding ChangeLanguageCommand}"
-           
+                helper:IconHelper.IconFontSize="30"
                 FontFamily="{StaticResource iconfont}"
                 Foreground="White"
                 Style="{StaticResource ButtonStyle}"
-                ToolTip="语言" />
+               />
 
             <!--  右侧竖向三色灯  -->
             <Border
@@ -651,6 +654,7 @@
                         Content="{Binding Icon}"
                         FontFamily="{DynamicResource iconfont}"
                         FontSize="18"
+                    
                         GroupName="NavGroup"
                         Style="{StaticResource MainMenuRadioButtonStyle}"
                         Tag="{Binding Title}">
@@ -689,6 +693,7 @@
                         Command="{Binding DataContext.Menu2Command, RelativeSource={RelativeSource AncestorType=Window}}"
                         CommandParameter="{Binding}"
                         Content="{Binding Icon}"
+                        
                         FontFamily="{DynamicResource iconfont}"
                         Style="{StaticResource MenuRadioButtonStyle}"
                         Tag="{Binding Title}">
@@ -726,6 +731,7 @@
                         Command="{Binding DataContext.Menu3Command, RelativeSource={RelativeSource AncestorType=Window}}"
                         CommandParameter="{Binding}"
                         Content="{Binding Icon}"
+                       
                         FontFamily="{DynamicResource iconfont}"
                         Style="{StaticResource MenuRadioButtonStyle}"
                         Tag="{Binding Title}">

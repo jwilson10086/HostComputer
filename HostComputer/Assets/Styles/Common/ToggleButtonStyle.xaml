@@ -1,4 +1,7 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:helper="clr-namespace:HostComputer.Assets.Styles.Helper;assembly=HostComputer">
 
     <Style x:Key="ToggleButtonStyle" TargetType="ToggleButton">
 
@@ -10,7 +13,6 @@
         <Setter Property="FontSize" Value="12" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FontFamily" Value="Segoe UI" />
-
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ToggleButton">
@@ -28,9 +30,9 @@
                                 Margin="0,2,0,4"
                                 HorizontalAlignment="Center"
                                 FontFamily="{TemplateBinding FontFamily}"
-                                FontSize="22"
+                                FontSize="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(helper:IconHelper.IconFontSize)}"
                                 Text="{TemplateBinding Content}" />
-
+                                   
                             <!--  TEXT  -->
                             <TextBlock
                                 x:Name="Text"

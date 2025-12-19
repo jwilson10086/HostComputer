@@ -1,4 +1,6 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:helper="clr-namespace:HostComputer.Assets.Styles.Helper;assembly=HostComputer"
+>
 
     <!--  通用阴影效果  -->
     <DropShadowEffect
@@ -27,9 +29,6 @@
         <Setter Property="Background" Value="#333" />
         <Setter Property="Foreground" Value="White" />
         <Setter Property="BorderThickness" Value="0" />
-
-        
-
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
@@ -47,9 +46,10 @@
                                 Margin="0,2,0,4"
                                 HorizontalAlignment="Center"
                                 FontFamily="{TemplateBinding FontFamily}"
-                                FontSize="{TemplateBinding Tag}"
+                                FontSize="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(helper:IconHelper.IconFontSize)}"
                                 Foreground="{TemplateBinding Foreground}"
                                 Text="{TemplateBinding Content}" />
+
 
                             <!--  按钮文字  -->
                             <TextBlock
