@@ -4,7 +4,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:c="clr-namespace:HostComputer.Common.Converter"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helper="clr-namespace:HostComputer.Assets.Styles.Helper"
     xmlns:local="clr-namespace:HostComputer"
+    xmlns:conv="clr-namespace:HostComputer.Common.Converter"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Width="1200"
     Height="650"
@@ -16,7 +18,7 @@
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="-1" />
     </WindowChrome.WindowChrome>
-
+    
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -25,6 +27,7 @@
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
+        
     </Window.Resources>
     <Grid>
         <Grid.Resources>
@@ -118,8 +121,6 @@
                 </Setter>
             </Style>
         </Grid.Resources>
-
-
         <Grid Grid.ColumnSpan="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -163,7 +164,10 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <ContentControl Width="{Binding Width}" Height="{Binding Height}" />
+                        <ContentControl
+                            Width="{Binding Width}"
+                            Height="{Binding Height}"
+                            Content="{Binding DeviceType, Converter={StaticResource dic}}" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
@@ -251,20 +255,22 @@
                         Margin="0,3"
                         Rows="1">
                         <Button
-                            FontFamily="{DynamicResource iconfont}"
-                            Height="50"
                             Width="80"
+                            Height="50"
+                            helper:IconHelper.IconFontSize="28"
                             Command="{Binding SaveCommand}"
                             CommandParameter="{Binding ElementName=win}"
-                            Content="&#xe610;"
+                            Content="&#xe69c;"
+                            FontFamily="{DynamicResource iconfont}"
                             Style="{StaticResource ButtonStyle}"
                             ToolTip="保存" />
                         <Button
                             Height="50"
                             Margin="3,0"
-                            FontFamily="{DynamicResource iconfont}"
+                            helper:IconHelper.IconFontSize="28"
                             Command="{Binding CancelCommand}"
-                            Content="&#xe610;"
+                            Content="&#xe6a0;"
+                            FontFamily="{DynamicResource iconfont}"
                             Style="{StaticResource ButtonStyle}"
                             ToolTip="取消" />
                     </UniformGrid>

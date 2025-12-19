@@ -35,6 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Components\Components.csproj" />
     <ProjectReference Include="..\CustomControls\CustomControls.csproj" />
     <ProjectReference Include="..\DbFramework\DbFramework.csproj" />
     <ProjectReference Include="..\IDataAccess\IDataAccess.csproj" />

@@ -5,11 +5,11 @@
     xmlns:ba="clr-namespace:HostComputer.Common.Converter"
     xmlns:beh="clr-namespace:HostComputer.Common.Behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helper="clr-namespace:HostComputer.Assets.Styles.Helper"
     xmlns:lang="clr-namespace:HostComputer.Common.Languages"
     xmlns:local="clr-namespace:HostComputer"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
-    xmlns:helper="clr-namespace:HostComputer.Assets.Styles.Helper"
     Title="Equipment Host"
     Width="{DynamicResource DefaultWindowWidth}"
     Height="{DynamicResource DefaultWindowHeight}"
@@ -361,44 +361,43 @@
             <!--  报警  -->
             <Button
                 Grid.Column="3"
+                helper:IconHelper.IconFontSize="30"
                 BorderBrush="Transparent"
                 Command="{Binding AlarmCommand}"
                 CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                 Content="&#xe642;"
                 FontFamily="{StaticResource iconfont}"
                 FontSize="18"
-                helper:IconHelper.IconFontSize="30"
                 Style="{StaticResource ButtonStyle}"
-                ToolTip="报警" />
+                ToolTip="{lang:Lang 'Alarm'}" />
             <!--  蜂鸣器  -->
             <ToggleButton
                 Grid.Column="4"
+                helper:IconHelper.IconFontSize="30"
                 BorderBrush="Transparent"
                 Command="{Binding BellCommand}"
                 CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                 Content="&#xe643;"
-                helper:IconHelper.IconFontSize="30"
                 FontFamily="{StaticResource iconfont}"
                 FontSize="18"
                 Style="{StaticResource ToggleButtonStyle}"
-                Tag="蜂鸣器" />
+                Tag="{lang:Lang 'Bell'}" />
             <!--  最右：中英文切换与语言 Combo  -->
             <Button
-                Grid.Column="5"
                 Name="LanguageButton"
-                FontSize="18"
-                ToolTip="语言"
-                Content="&#xe65e;"
+                Grid.Column="5"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
+                helper:IconHelper.IconFontSize="30"
                 Background="#444"
                 BorderBrush="#555"
                 Command="{Binding ChangeLanguageCommand}"
-                helper:IconHelper.IconFontSize="30"
+                Content="&#xe65e;"
                 FontFamily="{StaticResource iconfont}"
+                FontSize="18"
                 Foreground="White"
                 Style="{StaticResource ButtonStyle}"
-               />
+                ToolTip="{lang:Lang 'Language'}" />
 
             <!--  右侧竖向三色灯  -->
             <Border
@@ -437,6 +436,7 @@
             Grid.Row="1"
             Grid.Column="0"
             Grid.ColumnSpan="3"
+            Height="28"
             VerticalAlignment="Bottom"
             Background="#3A3A3D">
 
@@ -553,7 +553,7 @@
                 <TextBlock
                     Name="txt_time"
                     Grid.Column="0"
-                    VerticalAlignment="Bottom"
+                    VerticalAlignment="Center"
                     DataContext="{x:Static sys:DateTime.Now}"
                     FontFamily="{StaticResource timefont}"
                     FontSize="28"
@@ -568,6 +568,8 @@
                     Orientation="Vertical">
 
                     <!--  星期  -->
+                    <!--  中文星期  -->
+                    <!--  星期  -->
                     <TextBlock
                         Name="txt_date"
                         DataContext="{x:Static sys:DateTime.Now}"
@@ -577,7 +579,7 @@
                             <Style TargetType="TextBlock">
                                 <Setter Property="Visibility" Value="Collapsed" />
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding SelectedValue, ElementName=LanguageComboBox}" Value="zh-CN">
+                                    <DataTrigger Binding="{Binding ToolTip, ElementName=LanguageButton}" Value="语言">
                                         <Setter Property="Visibility" Value="Visible" />
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -594,7 +596,7 @@
                             <Style TargetType="TextBlock">
                                 <Setter Property="Visibility" Value="Collapsed" />
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding SelectedValue, ElementName=LanguageComboBox}" Value="en-US">
+                                    <DataTrigger Binding="{Binding ToolTip, ElementName=LanguageButton}" Value="Language">
                                         <Setter Property="Visibility" Value="Visible" />
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -602,7 +604,6 @@
                         </TextBlock.Style>
                         <Run Text="{Binding Now, Mode=OneWay, StringFormat='dddd', ConverterCulture=en-US}" />
                     </TextBlock>
-
                     <!--  日期  -->
                     <TextBlock
                         DataContext="{x:Static sys:DateTime.Now}"
@@ -649,12 +650,12 @@
                 <DataTemplate>
                     <RadioButton
                         Margin="1,2,8,2"
+                        helper:IconHelper.IconFontSize="28"
                         Command="{Binding DataContext.Menu1Command, RelativeSource={RelativeSource AncestorType=Window}}"
                         CommandParameter="{Binding}"
                         Content="{Binding Icon}"
                         FontFamily="{DynamicResource iconfont}"
-                        FontSize="18"
-                    
+                        FontSize="15"
                         GroupName="NavGroup"
                         Style="{StaticResource MainMenuRadioButtonStyle}"
                         Tag="{Binding Title}">
@@ -690,11 +691,12 @@
                 <DataTemplate>
                     <RadioButton
                         Margin="2,2,3,3"
+                        helper:IconHelper.IconFontSize="28"
                         Command="{Binding DataContext.Menu2Command, RelativeSource={RelativeSource AncestorType=Window}}"
                         CommandParameter="{Binding}"
                         Content="{Binding Icon}"
-                        
                         FontFamily="{DynamicResource iconfont}"
+                        FontSize="15"
                         Style="{StaticResource MenuRadioButtonStyle}"
                         Tag="{Binding Title}">
                         <RadioButton.IsChecked>
@@ -728,11 +730,12 @@
                 <DataTemplate>
                     <RadioButton
                         Margin="2"
+                        helper:IconHelper.IconFontSize="28"
                         Command="{Binding DataContext.Menu3Command, RelativeSource={RelativeSource AncestorType=Window}}"
                         CommandParameter="{Binding}"
                         Content="{Binding Icon}"
-                       
                         FontFamily="{DynamicResource iconfont}"
+                        FontSize="15"
                         Style="{StaticResource MenuRadioButtonStyle}"
                         Tag="{Binding Title}">
                         <RadioButton.IsChecked>

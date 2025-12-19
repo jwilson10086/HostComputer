@@ -245,7 +245,7 @@ namespace HostComputer
 
         public void ShowMainWindow()
         {
-            if (_mainWindow == null)
+            if (_mainWindow == null || Session.Level <=0)
             {
                 _mainWindow = new MainWindow();
                 _mainWindow.Closing += MainWindow_Closing;

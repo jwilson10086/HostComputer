@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,9 +13,11 @@ using Mysqlx.Prepare;
 
 namespace HostComputer.ViewModels
 {
-    public class ConfigViewModel : NotifyBase
+    public class ConfigViewModel : ViewModelBase
     {
         public bool _windowState = false;
+        public ObservableCollection<DeviceItemModel> DeviceList { get; set; } =
+            new ObservableCollection<DeviceItemModel>();
         public List<ThumbModel> ThumbList { get; set; }
 
         // 当前来源页面
@@ -43,7 +46,13 @@ namespace HostComputer.ViewModels
                 Header = "设备",
                 Children = new List<ThumbItemModel>()
                 {
-                    new ThumbItemModel(),
+                    new ThumbItemModel()
+                    {
+                        TargetType = "WaferRobot",
+                        Width=200,
+                        Height=200,
+                        Icon=""
+                    },
                     new ThumbItemModel(),
                     new ThumbItemModel(),
                     new ThumbItemModel(),
@@ -90,10 +99,17 @@ namespace HostComputer.ViewModels
                 }
             };
             ThumbList.Add(thumb);
-        
 
-
-
+            DeviceList.Add(
+                new DeviceItemModel()
+                {
+                    X = 100,
+                    Y = 100,
+                    Width = 200,
+                    Height = 200,
+                    DeviceType = "WaferRobot"
+                }
+            );
 
             SaveCommand = new CommandBase() { DoExecute = _ => { } };
             CancelCommand = new CommandBase()
