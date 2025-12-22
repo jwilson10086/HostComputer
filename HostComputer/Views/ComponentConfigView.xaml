@@ -2,6 +2,7 @@
     x:Class="HostComputer.ComponentConfigView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:b="clr-namespace:HostComputer.Common.Behaviors"
     xmlns:c="clr-namespace:HostComputer.Common.Converter"
     xmlns:conv="clr-namespace:HostComputer.Common.Converter"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -24,6 +25,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary>
                     <c:DeviceItemConverter x:Key="dic" />
+
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -203,8 +205,8 @@
                                                 ToolTip="{Binding Header}">
                                                 <Border.InputBindings>
                                                     <MouseBinding
-                                                        Command="{Binding DragDropCommand}"
-                                                        CommandParameter="{Binding}"
+                                                        Command="{Binding ThumbCommand}"
+                                                        CommandParameter="{Binding ElementName=b_1}"
                                                         MouseAction="LeftClick" />
                                                 </Border.InputBindings>
                                             </Border>

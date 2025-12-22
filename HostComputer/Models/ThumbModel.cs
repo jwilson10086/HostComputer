@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
+using DocumentFormat.OpenXml.Bibliography;
 using HostComputer.Common.Base;
 
 namespace HostComputer.Models
 {
-    public class ThumbModel 
+    public class ThumbModel
     {
         public string Header { get; set; }
         public List<ThumbItemModel> Children { get; set; }
@@ -22,5 +24,15 @@ namespace HostComputer.Models
         public int Height { get; set; }
 
         public ICommand ThumbCommand { get; set; }
+
+        public ThumbItemModel()
+        {
+            ThumbCommand = new CommandBase { Name = "ThumbCommand", DoExecute = DoThumbCommand };
+        }
+
+        private void DoThumbCommand(object obj)
+        {
+            DragDrop.DoDragDrop((DependencyObject)obj, this, DragDropEffects.Copy);
+        }
     }
 }
