@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -19,7 +20,7 @@ namespace HostComputer.ViewModels
     /// <summary>
     /// 主视图模型，负责管理主界面的所有功能
     /// </summary>
-    public class MainViewModel : NotifyBase
+    public class MainViewModel : ViewModelBase
     {
         #region === 构造函数 ===
         /// <summary>
@@ -30,7 +31,7 @@ namespace HostComputer.ViewModels
         {
             // 加载用户信息
             LoadUserInfo();
-
+            
             _navigation = navigation;
 
             // 设置默认语言
@@ -85,7 +86,6 @@ namespace HostComputer.ViewModels
             set
             {
                 _userName = value;
-                NotifyChanged();
             }
         }
 
@@ -100,7 +100,6 @@ namespace HostComputer.ViewModels
             set
             {
                 _userLevel = value;
-                NotifyChanged();
             }
         }
 
@@ -114,7 +113,6 @@ namespace HostComputer.ViewModels
             set
             {
                 _group = value;
-                NotifyChanged();
             }
         }
 
@@ -128,9 +126,9 @@ namespace HostComputer.ViewModels
         /// </summary>
         private void LoadUserInfo()
         {
-            UserName = Session.UserName ?? "Unknown";
-            UserLevel = Session.Level.ToString() ?? "N/A";
-            Group = Session.Group ?? "Unknown";
+            UserName = UserSession.UserName ?? "Unknown";
+            UserLevel = UserSession.Level.ToString() ?? "N/A";
+            Group = UserSession.Group ?? "Unknown";
         }
         #endregion
 
@@ -153,7 +151,7 @@ namespace HostComputer.ViewModels
             get => _selectedLanguage;
             set
             {
-                if (SetProperty(ref _selectedLanguage, value))
+                if (Set(ref _selectedLanguage, value))
                 {
                     LanguageService.CurrentLang = value;
                     RefreshMenuTitles();
@@ -186,7 +184,7 @@ namespace HostComputer.ViewModels
         public string Breadcrumb
         {
             get => _breadcrumb;
-            set => SetProperty(ref _breadcrumb, value);
+            set => Set(ref _breadcrumb, value);
         }
         #endregion
 
@@ -197,7 +195,7 @@ namespace HostComputer.ViewModels
         public MenuItemModel SelectedMenu1
         {
             get => _selectedMenu1;
-            set => SetProperty(ref _selectedMenu1, value);
+            set => Set(ref _selectedMenu1, value);
         }
 
         /// <summary>
@@ -206,7 +204,7 @@ namespace HostComputer.ViewModels
         public MenuItemModel SelectedMenu2
         {
             get => _selectedMenu2;
-            set => SetProperty(ref _selectedMenu2, value);
+            set => Set(ref _selectedMenu2, value);
         }
 
         /// <summary>
@@ -215,7 +213,7 @@ namespace HostComputer.ViewModels
         public MenuItemModel SelectedMenu3
         {
             get => _selectedMenu3;
-            set => SetProperty(ref _selectedMenu3, value);
+            set => Set(ref _selectedMenu3, value);
         }
         #endregion
 
@@ -245,10 +243,13 @@ namespace HostComputer.ViewModels
         public ICommand MainViewCommand { get; private set; }
 
         /// <summary>设置命令</summary>
-        public ICommand SettingCommand { get; private set; }
+        [Permission(4)]
+        public ICommand SettingCommand { get; set; }
         #endregion
 
         #region === 私有方法 - 初始化 ===
+      
+
         /// <summary>
         /// 加载菜单
         /// </summary>
@@ -279,6 +280,8 @@ namespace HostComputer.ViewModels
         /// </summary>
         private void InitializeCommands()
         {
+            // ===== 登录完成后刷新按钮 =====
+            CommandManager.InvalidateRequerySuggested();
             Menu1Command = new CommandBase() { DoExecute = m => OnMenu1Clicked((MenuItemModel)m) };
             Menu2Command = new CommandBase() { DoExecute = m => OnMenu2Clicked((MenuItemModel)m) };
             Menu3Command = new CommandBase() { DoExecute = m => OnMenu3Clicked((MenuItemModel)m) };
@@ -301,6 +304,8 @@ namespace HostComputer.ViewModels
                 DoExecute = _ =>
                 {
                     _navigation.NavigatePopup("LoginWindow", modal: true);
+                    // 登录完成后刷新权限
+                    MenuService.RefreshMenuPermissions(Menus);
                 }
             };
 
@@ -324,15 +329,13 @@ namespace HostComputer.ViewModels
                 }
             };
 
-            SettingCommand = new CommandBase()
-            {
-                DoExecute = _ =>{
-                if(Session.Level ==5)
-                    {
-                       bool ok= ActionManager.Execute<object,bool>("AAA", null);
-                    }
+            SettingCommand = CreateCommand(
+                nameof(SettingCommand),
+                _ =>
+                {
+                    ActionManager.Execute<object, bool>("AAA", null);
                 }
-            };
+            );
 
             ChangeLanguageCommand = new CommandBase()
             {
@@ -380,7 +383,7 @@ namespace HostComputer.ViewModels
             {
                 foreach (var child in menu1.Children)
                     SecondLevel.Add(child);
-                
+
                 // 默认选中第一个二级菜单
                 OnMenu2Clicked(SecondLevel.First(), menu1);
                 return;

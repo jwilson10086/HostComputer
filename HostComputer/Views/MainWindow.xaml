@@ -193,6 +193,7 @@
         </Style>
 
         <ba:EqualityConverter x:Key="EqualityConverter" />
+
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Window.Resources>
 
@@ -277,7 +278,7 @@
                     Grid.Row="0"
                     Grid.Column="1"
                     Foreground="LightGreen"
-                    Text="{Binding Source={x:Static local:App.Session}, Path=UserName}" />
+                    Text="{Binding Source={x:Static local:App.UserSession}, Path=UserName}" />
 
                 <TextBlock
                     Grid.Row="1"
@@ -288,7 +289,7 @@
                     Grid.Row="1"
                     Grid.Column="1"
                     Foreground="LightGreen"
-                    Text="{Binding Source={x:Static local:App.Session}, Path=Group}" />
+                    Text="{Binding Source={x:Static local:App.UserSession}, Path=Group}" />
 
                 <TextBlock
                     Grid.Row="2"
@@ -299,7 +300,7 @@
                     Grid.Row="2"
                     Grid.Column="1"
                     Foreground="LightSkyBlue"
-                    Text="{Binding Source={x:Static local:App.Session}, Path=Level}" />
+                    Text="{Binding Source={x:Static local:App.UserSession}, Path=Level}" />
 
                 <!--  右两列你自行扩展  -->
                 <TextBlock
@@ -657,6 +658,7 @@
                         FontFamily="{DynamicResource iconfont}"
                         FontSize="15"
                         GroupName="NavGroup"
+                        IsEnabled="{Binding IsEnabled}"
                         Style="{StaticResource MainMenuRadioButtonStyle}"
                         Tag="{Binding Title}">
                         <RadioButton.IsChecked>
@@ -697,6 +699,7 @@
                         Content="{Binding Icon}"
                         FontFamily="{DynamicResource iconfont}"
                         FontSize="15"
+                        IsEnabled="{Binding IsEnabled}"
                         Style="{StaticResource MenuRadioButtonStyle}"
                         Tag="{Binding Title}">
                         <RadioButton.IsChecked>

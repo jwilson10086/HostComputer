@@ -7,7 +7,7 @@ using HostComputer.Common.Base;
 
 namespace HostComputer.Models
 {
-    public class UserModel : NotifyBase
+    public class UserModel : ObservableObject
     {
         private string _userName;
 
@@ -17,7 +17,7 @@ namespace HostComputer.Models
             set
             {
                 _userName = value;
-                this.NotifyChanged();
+                
             }
         }
 
@@ -29,7 +29,7 @@ namespace HostComputer.Models
             set
             {
                 _password = value;
-                this.NotifyChanged();
+                
             }
         }
 
@@ -40,7 +40,7 @@ namespace HostComputer.Models
             set
             {
                 _level = value;
-                this.NotifyChanged();
+                
             }
         }
         private string _group;
@@ -50,7 +50,7 @@ namespace HostComputer.Models
             set
             {
                 _group = value;
-                this.NotifyChanged();
+                
             }
         }
     }

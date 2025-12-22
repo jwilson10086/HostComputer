@@ -3,10 +3,10 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:c="clr-namespace:HostComputer.Common.Converter"
+    xmlns:conv="clr-namespace:HostComputer.Common.Converter"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:helper="clr-namespace:HostComputer.Assets.Styles.Helper"
     xmlns:local="clr-namespace:HostComputer"
-    xmlns:conv="clr-namespace:HostComputer.Common.Converter"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Width="1200"
     Height="650"
@@ -18,7 +18,7 @@
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="-1" />
     </WindowChrome.WindowChrome>
-    
+
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -27,7 +27,7 @@
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
-        
+
     </Window.Resources>
     <Grid>
         <Grid.Resources>
@@ -200,7 +200,14 @@
                                                 Background="Orange"
                                                 CornerRadius="5"
                                                 Tag="{Binding}"
-                                                ToolTip="{Binding Header}" />
+                                                ToolTip="{Binding Header}">
+                                                <Border.InputBindings>
+                                                    <MouseBinding
+                                                        Command="{Binding DragDropCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        MouseAction="LeftClick" />
+                                                </Border.InputBindings>
+                                            </Border>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>

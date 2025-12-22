@@ -47,5 +47,16 @@ namespace HostComputer.Common.Services   // 定义命名空间，用于组织代
             return list;
         }
 
+        public static void RefreshMenuPermissions(IEnumerable<MenuItemModel> menus)
+        {
+            var session = App.UserSession;
+            foreach (var menu in menus)
+            {
+                menu.IsEnabled = session != null && session.Level >= menu.RequiredLevel;
+                if (menu.Children != null && menu.Children.Count > 0)
+                    RefreshMenuPermissions(menu.Children);
+            }
+        }
+
     }
 }

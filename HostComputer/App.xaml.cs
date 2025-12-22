@@ -19,7 +19,7 @@ namespace HostComputer
         private TaskbarIcon _trayIcon;
         private ResourceDictionary? _currentTheme;
       
-        public static Session Session { get; } = new Session();
+        public static Session UserSession { get; set; } = new Session();
         public static LanguageService Lang { get; private set; }
         public static Logger Logger { get; private set; }
 
@@ -245,7 +245,7 @@ namespace HostComputer
 
         public void ShowMainWindow()
         {
-            if (_mainWindow == null || Session.Level <=0)
+            if (_mainWindow == null || UserSession.Level <=0)
             {
                 _mainWindow = new MainWindow();
                 _mainWindow.Closing += MainWindow_Closing;

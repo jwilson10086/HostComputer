@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using HostComputer.Common.Base;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace HostComputer.Common.Session
@@ -25,8 +26,14 @@ namespace HostComputer.Common.Session
         public int Level
         {
             get => _level;
-            set { _level = value; OnPropertyChanged(); }
+            set
+            {
+                _level = value;
+                OnPropertyChanged();
+                CommandRegistry.RefreshAll(); // 自动刷新命令
+            }
         }
+
 
         public string Group
         {
@@ -46,4 +53,9 @@ namespace HostComputer.Common.Session
         private void OnPropertyChanged([CallerMemberName] string name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
+    public static class SessionContext
+    {
+        public static Session Current { get; set; } = new Session();
+    }
+
 }

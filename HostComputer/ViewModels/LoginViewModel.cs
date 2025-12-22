@@ -1,10 +1,12 @@
-﻿using HostComputer.Common.Base;
+﻿using System;
+using System.Diagnostics;
+using System.Windows;
+using System.Windows.Input;
+using HostComputer.Common.Base;
 using HostComputer.Common.Services; // 引入日志
 using HostComputer.Common.Services.Local.Auth;
 using HostComputer.Models;
 using MyLogger;
-using System;
-using System.Windows;
 using static HostComputer.App;
 
 namespace HostComputer.ViewModels
@@ -14,7 +16,7 @@ namespace HostComputer.ViewModels
     /// 登录页面的 ViewModel
     /// 支持属性变更通知和操作日志记录
     /// </summary>
-    public class LoginViewModel : NotifyBase
+    public class LoginViewModel : ViewModelBase
     {
         #region 登录结果类
         /// <summary>
@@ -39,14 +41,74 @@ namespace HostComputer.ViewModels
         /// </summary>
         public LoginViewModel()
         {
+            LoginCommand = CreateCommand(nameof(LoginCommand), obj =>
+            {
+                // 使用 Task.Run 或 async void 内部异步执行
+                _ = ExecuteLoginAsync(obj);
+            });
+
             InitAsync();
         }
+
+        private async Task ExecuteLoginAsync(object obj)
+        {
+            try
+            {
+                App.Logger.Security("用户尝试登录");
+                IsBusy = true;
+
+                var result = await LocalDataAccess.LoginAsync(
+                    UserViewModel.UserName,
+                    UserViewModel.Password
+                );
+
+                if (!result.Success)
+                {
+                    ErrorMessage = "用户名或密码错误，请重新输入！";
+                    App.Logger.Warning($"登录失败：{UserViewModel.UserName}");
+                    return;
+                }
+
+                var user = result.User;
+
+                // ===== 更新 ViewModel =====
+                UserViewModel.UserName = user.UserName;
+                UserViewModel.Password = user.Password;
+                UserViewModel.Level = user.Level;
+                UserViewModel.Group = user.Group;
+
+                if (IsEnable)
+                    await LocalDataAccess.SaveRememberUserAsync(user);
+                else
+                    await LocalDataAccess.DeleteAllUsersAsync();
+
+                // ===== 更新全局 Session =====
+                UserSession.UserName = user.UserName;
+                UserSession.Level = user.Level;
+                UserSession.Group = user.Group;
+                UserSession.IsLogin = true;
+
+            
+
+                App.Logger.Info($"登录成功：{user.UserName}");
+
+                // ===== 关闭窗口 =====
+                if (obj is Window window)
+                    window.DialogResult = true;
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
         #endregion
 
         #region 私有字段
         private string _errMessage = string.Empty;
         private CommandBase _closeCommand;
-        private CommandBase _loginCommand;
+        public ICommand LoginCommand { get; set; }
+
         private bool _isEnable;
         #endregion
 
@@ -69,11 +131,7 @@ namespace HostComputer.ViewModels
         public string ErrorMessage
         {
             get => _errMessage;
-            set
-            {
-                _errMessage = value;
-                this.NotifyChanged();
-            }
+            set { _errMessage = value; }
         }
 
         /// <summary>
@@ -87,93 +145,25 @@ namespace HostComputer.ViewModels
                 if (_isEnable != value)
                 {
                     _isEnable = value;
-                    NotifyChanged();
                 }
             }
         }
         #endregion
 
         #region 命令
+
         /// <summary>
         /// 关闭窗口命令
         /// </summary>
-        public CommandBase CloseCommand
+        public ICommand CloseCommand = new CommandBase()
         {
-            get
+            DoExecute = obj =>
             {
-                if (_closeCommand == null)
-                {
-                    // 传入 Logger，自动记录按钮点击
-                    _closeCommand = new CommandBase();
-                    _closeCommand.DoExecute = obj =>
-                    {
-                        App.Logger.Info("关闭登录窗口"); // 额外日志
-                        (obj as Window).DialogResult = false;
-                    };
-                }
-                return _closeCommand;
+                App.Logger.Info("关闭登录窗口"); // 额外日志
+                (obj as Window).DialogResult = false;
             }
-        }
+        };
 
-        /// <summary>
-        /// 登录命令
-        /// </summary>
-        public CommandBase LoginCommand
-        {
-            get
-            {
-                if (_loginCommand == null)
-                {
-                    _loginCommand = new CommandBase();
-                    _loginCommand.DoExecute = async obj =>
-                    {
-                        App.Logger.Security("用户尝试登录");
-
-                        var result = await LocalDataAccess.LoginAsync(
-                            UserViewModel.UserName,
-                            UserViewModel.Password
-                        );
-
-                        if (!result.Success)
-                        {
-                            ErrorMessage = "用户名或密码错误，请重新输入！";
-                            App.Logger.Warning($"登录失败：{UserViewModel.UserName}");
-                            return;
-                        }
-
-                        // ===== 登录成功，写入 ViewModel =====
-                        var user = result.User;
-
-                        UserViewModel.UserName = user.UserName;
-                        UserViewModel.Password = user.Password;
-                        UserViewModel.Level = user.Level;
-                        UserViewModel.Group = user.Group;
-
-                        // ===== 是否记住用户（只存一条）=====
-                        if (IsEnable)
-                        {
-                            await LocalDataAccess.SaveRememberUserAsync(user);
-                            App.Logger.Security("用户选择记住密码（唯一一条）");
-                        }
-                        else
-                        {
-                            await LocalDataAccess.DeleteAllUsersAsync();
-                        }
-
-                        // ===== 写入全局 Session =====
-                        Session.UserName = user.UserName;
-                        Session.Level = user.Level;
-                        Session.Group = user.Group;
-                        Session.IsLogin = true;
-
-                        App.Logger.Info($"登录成功：{user.UserName}");
-
-                        (obj as Window)!.DialogResult = true;
-                    };
-                }
-                return _loginCommand;
-            }
-        }
         #endregion
 
         #region 私有方法

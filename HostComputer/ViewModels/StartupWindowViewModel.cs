@@ -12,7 +12,7 @@ namespace HostComputer.ViewModels
     /// <summary>
     /// 启动窗口的 ViewModel，继承自 NotifyBase
     /// </summary>
-    public class StartupWindowViewModel : NotifyBase
+    public class StartupWindowViewModel : ObservableObject
     {
         #region 事件
         public event EventHandler RequestCloseWindow; // 请求关闭窗口事件
@@ -31,7 +31,7 @@ namespace HostComputer.ViewModels
         public string StatusText
         {
             get => _statusText;
-            set => SetProperty(ref _statusText, value);
+            set => Set(ref _statusText, value);
         }
 
         private double _overallProgress;
@@ -40,9 +40,9 @@ namespace HostComputer.ViewModels
             get => _overallProgress;
             set
             {
-                if (SetProperty(ref _overallProgress, value))
+                if (Set(ref _overallProgress, value))
                 {
-                    NotifyChanged(nameof(ProgressText));
+                    Raise(nameof(ProgressText));
                 }
             }
         }
@@ -53,7 +53,7 @@ namespace HostComputer.ViewModels
         public string ElapsedTime
         {
             get => _elapsedTime;
-            set => SetProperty(ref _elapsedTime, value);
+            set => Set(ref _elapsedTime, value);
         }
 
         public ObservableCollection<ModuleStatusViewModel> Modules { get; } = new();
@@ -292,7 +292,7 @@ namespace HostComputer.ViewModels
     /// <summary>
     /// 模块状态视图模型，继承自 NotifyBase
     /// </summary>
-    public class ModuleStatusViewModel : NotifyBase
+    public class ModuleStatusViewModel : ObservableObject
     {
         private string _name;
         private string _status;
@@ -302,7 +302,7 @@ namespace HostComputer.ViewModels
         public string Name
         {
             get => _name;
-            set => SetProperty(ref _name, value);
+            set => Set(ref _name, value);
         }
 
         public string Status
@@ -310,9 +310,9 @@ namespace HostComputer.ViewModels
             get => _status;
             set
             {
-                if (SetProperty(ref _status, value))
+                if (Set(ref _status, value))
                 {
-                    NotifyChanged(nameof(StatusColor));
+                    Raise(nameof(StatusColor));
                 }
             }
         }
@@ -320,13 +320,13 @@ namespace HostComputer.ViewModels
         public string Message
         {
             get => _message;
-            set => SetProperty(ref _message, value);
+            set => Set(ref _message, value);
         }
 
         public string Duration
         {
             get => _duration;
-            set => SetProperty(ref _duration, value);
+            set => Set(ref _duration, value);
         }
 
         public string StatusColor => Status switch

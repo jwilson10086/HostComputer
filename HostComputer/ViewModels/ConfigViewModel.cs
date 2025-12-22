@@ -19,19 +19,14 @@ namespace HostComputer.ViewModels
         public ObservableCollection<DeviceItemModel> DeviceList { get; set; } =
             new ObservableCollection<DeviceItemModel>();
         public List<ThumbModel> ThumbList { get; set; }
-
         // 当前来源页面
         public UserControl SourcePage { get; init; } = null!;
-
         // 页面标识（A / B / C）
         public string SourceViewName { get; init; } = "";
-
         // 原始组态数据（控件、位置、参数）
         public object OriginalLayout { get; init; } = null!;
-
         // 组态后的结果
         public object? ResultLayout { get; set; }
-
         // 是否保存
         public bool IsSaved { get; set; }
 
@@ -49,9 +44,9 @@ namespace HostComputer.ViewModels
                     new ThumbItemModel()
                     {
                         TargetType = "WaferRobot",
-                        Width=200,
-                        Height=200,
-                        Icon=""
+                        Width = 200,
+                        Height = 200,
+                        Icon = "&#xe669;"
                     },
                     new ThumbItemModel(),
                     new ThumbItemModel(),

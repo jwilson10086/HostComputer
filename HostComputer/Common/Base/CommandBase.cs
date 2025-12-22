@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using HostComputer.Common.Services;
 using HostComputer.Models;
 using MyLogger;
 
@@ -10,32 +11,46 @@ namespace HostComputer.Common.Base
 {
     public class CommandBase : ICommand
     {
+        public string Name { get; set; } = "(未命名命令)";
+        internal PermissionAttribute? Permission { get; set; }
+        public Action<object?>? DoExecute { get; set; }
+
+        private bool? _cachedCanExecute; // 缓存权限判断结果
+
         public event EventHandler? CanExecuteChanged;
 
-        public CommandBase()
+        public bool CanExecute(object? parameter)
         {
-            
-        }
+            // 如果缓存存在，则直接返回
+            if (_cachedCanExecute.HasValue)
+                return _cachedCanExecute.Value;
 
-        public bool CanExecute(object? parameter) => true;
+            // 否则进行权限判断
+            _cachedCanExecute = PermissionService.CanExecute(Permission, Name);
+            return _cachedCanExecute.Value;
+        }
 
         public void Execute(object? parameter)
         {
+            // 日志记录只在 Execute 中
+            LogControlUI(parameter);
+
             try
             {
-                LogControlUI(parameter);
+                DoExecute?.Invoke(parameter);
+                App.Logger?.Info("命令执行成功");
             }
             catch (Exception ex)
             {
-                App.Logger?.Error($"CommandBase 日志记录异常：{ex.Message}");
+                App.Logger?.Error("命令执行报错：", ex);
             }
-
-            // 执行绑定逻辑
-            DoExecute?.Invoke(parameter);
         }
 
-        public Action<object>? DoExecute { get; set; }
-
+        public void RaiseCanExecuteChanged()
+        {
+            _cachedCanExecute = null; // 清空缓存，下一次 CanExecute 会重新计算
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        }
 
         /*********************************************************
          *           核心：自动识别控件类型并记录日志

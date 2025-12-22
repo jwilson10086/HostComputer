@@ -20,7 +20,7 @@ namespace HostComputer.Common.Base
             Raise(propertyName);
         }
 
-        protected bool SetProperty<T>(
+        protected bool Set<T>(
             ref T storage,
             T value,
             [CallerMemberName] string? propertyName = null)

@@ -21,7 +21,7 @@
             VerticalAlignment="Center"
             LowerWaferStatus="Completed"
             LowerWaferVisible="false"
-            Permission="{Binding Source={x:Static app:App.Session},Path=Level}"
+            Permission="{Binding Source={x:Static app:App.UserSession},Path=Level}"
             UpperWaferStatus="Fail"
             UpperWaferVisible="false" />
 

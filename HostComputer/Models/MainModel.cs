@@ -8,14 +8,14 @@ using System.Windows;
 
 namespace HostComputer.Models
 {
-    public class MainModel : NotifyBase
+    public class MainModel : ObservableObject
     {
         private string _time;
 
         public string Time
         {
             get { return _time; }
-            set { _time = value; this.NotifyChanged(); }
+            set { _time = value; }
         }
 
         private string _userName;
@@ -23,7 +23,7 @@ namespace HostComputer.Models
         public string UserName
         {
             get { return _userName; }
-            set { _userName = value; this.NotifyChanged(); }
+            set { _userName = value;  }
         }
 
         private string _avatar;
@@ -31,7 +31,7 @@ namespace HostComputer.Models
         public string Avatar
         {
             get { return _avatar; }
-            set { _avatar = value; this.NotifyChanged(); }
+            set { _avatar = value;  }
         }
 
         private UIElement _mainContent;
@@ -39,7 +39,7 @@ namespace HostComputer.Models
         public UIElement MainContent
         {
             get { return _mainContent; }
-            set { _mainContent = value; this.NotifyChanged(); }
+            set { _mainContent = value;  }
         }
 
     }
