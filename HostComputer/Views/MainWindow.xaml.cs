@@ -37,7 +37,10 @@ namespace HostComputer.Views
                     var owner = Application
                         .Current.Windows.OfType<Window>()
                         .FirstOrDefault(w => w.IsActive);
-
+                    var vm = new ConfigViewModel
+                    {
+                        SourceViewName = nav._currentState?.Page.GetType().Name??"Unknown", // 这里指定当前页面标识
+                    };
                     nav.NavigatePopup(
                         "ComponentConfigView",
                         true,
@@ -45,10 +48,10 @@ namespace HostComputer.Views
                         {
                             w.Width = 1200;
                             w.Height = 800;
-                            w.Owner = owner; // 自动识别当前窗口
+                            w.Owner = owner; 
+                            w.DataContext = vm;
                         }
                     );
-
                     return new ComponentConfigView().DialogResult == true;
                 }
             );

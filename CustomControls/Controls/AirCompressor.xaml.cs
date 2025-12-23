@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CustomControl
+namespace CustomControls.Controls
 {
     /// <summary>
     /// AirCompressor.xaml 的交互逻辑

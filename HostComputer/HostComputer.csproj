@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Components\Components.csproj" />
+    <ProjectReference Include="..\ComponentEntities\ComponentEntities.csproj" />
     <ProjectReference Include="..\CustomControls\CustomControls.csproj" />
     <ProjectReference Include="..\DbFramework\DbFramework.csproj" />
     <ProjectReference Include="..\IDataAccess\IDataAccess.csproj" />
@@ -79,6 +79,7 @@
   <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.105.0" />
     <PackageReference Include="Hardcodet.Wpf.TaskbarNotification" Version="1.0.5" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
     <PackageReference Include="MiniExcel" Version="1.41.4" />
   </ItemGroup>
 

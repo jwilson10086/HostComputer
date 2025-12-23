@@ -7,7 +7,7 @@ using System.Windows.Media.Animation;
 
 namespace CustomControls.Controls
 {
-    public partial class WaferRobot : UserControl
+    public partial class WaferRobot : ComponentBase
     {
         public WaferRobot()
         {

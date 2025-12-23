@@ -28,33 +28,33 @@ namespace HostComputer.Views.Overview
 
         private void InitRobotPanel()
         {
-            WaferRobotCtrl.RequestShowFloatingPanel += () =>
-            {
-                // 如果已经存在并且还没被关闭
-                if (_floatingPanel != null)
-                {
-                    // 已显示 → Bring to front
-                    if (_floatingPanel.IsVisible)
-                    {
-                        _floatingPanel.Activate();
-                        return;
-                    }
-                    else
-                    {
-                        // 被关闭但引用没清
-                        _floatingPanel = null;
-                    }
-                }
+            //WaferRobotCtrl.RequestShowFloatingPanel += () =>
+            //{
+            //    // 如果已经存在并且还没被关闭
+            //    if (_floatingPanel != null)
+            //    {
+            //        // 已显示 → Bring to front
+            //        if (_floatingPanel.IsVisible)
+            //        {
+            //            _floatingPanel.Activate();
+            //            return;
+            //        }
+            //        else
+            //        {
+            //            // 被关闭但引用没清
+            //            _floatingPanel = null;
+            //        }
+            //    }
 
-                // 创建新窗口
-                _floatingPanel = new FloatingPanel(WaferRobotCtrl);
+            //    // 创建新窗口
+            //    _floatingPanel = new FloatingPanel(WaferRobotCtrl);
 
-                // 监听关闭事件 → 自动清 NULL
-                _floatingPanel.Closed += (s, e) => _floatingPanel = null;
+            //    // 监听关闭事件 → 自动清 NULL
+            //    _floatingPanel.Closed += (s, e) => _floatingPanel = null;
 
-                _floatingPanel.Show();
-                _floatingPanel.Activate();
-            };
+            //    _floatingPanel.Show();
+            //    _floatingPanel.Activate();
+        //    };
         }
         public Overview_EquipmentView()
         {

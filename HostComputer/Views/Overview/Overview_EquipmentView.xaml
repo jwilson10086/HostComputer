@@ -8,22 +8,43 @@
     xmlns:app="clr-namespace:HostComputer"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:c="clr-namespace:HostComputer.Common.Converter"
     d:DesignHeight="600"
     d:DesignWidth="1000"
     mc:Ignorable="d">
-
-    <Grid>
-        <ctrl:WaferRobot
-            x:Name="WaferRobotCtrl"
-            Width="300"
-            Height="300"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            LowerWaferStatus="Completed"
-            LowerWaferVisible="false"
-            Permission="{Binding Source={x:Static app:App.UserSession},Path=Level}"
-            UpperWaferStatus="Fail"
-            UpperWaferVisible="false" />
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <c:DeviceItemConverter x:Key="dic"/>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+        
+        <Grid>
+        <ItemsControl ItemsSource="{Binding DeviceList}">
+            <ItemsControl.ItemContainerStyle>
+                <Style TargetType="ContentPresenter">
+                    <Setter Property="Canvas.Left" Value="{Binding X}"/>
+                    <Setter Property="Canvas.Top" Value="{Binding Y}"/>
+                    <Setter Property="Panel.ZIndex" Value="{Binding Z}"/>
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <ContentControl 
+                 Content="{Binding Path=DeviceType,Converter={StaticResource dic}}"
+                 Width="{Binding Width}" Height="{Binding Height}">
+                    </ContentControl>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
 
     </Grid>
 </UserControl>

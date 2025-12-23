@@ -9,6 +9,7 @@ using System.Windows.Threading;
 using HostComputer.Common.Actions;
 using HostComputer.Common.Base;
 using HostComputer.Common.Services;
+using HostComputer.Common.Services.LocalDataService.Component;
 using HostComputer.Common.Services.StartupModules;
 using HostComputer.Models;
 using Mysqlx.Prepare;
@@ -31,7 +32,7 @@ namespace HostComputer.ViewModels
         {
             // 加载用户信息
             LoadUserInfo();
-            
+
             _navigation = navigation;
 
             // 设置默认语言
@@ -51,15 +52,28 @@ namespace HostComputer.ViewModels
 
             // 订阅导航事件
             SubscribeToNavigation();
+
+            // 初始化本地组件服务
+            _localService = new ComponentLocalService();
+
+            //实例化
+            DeviceList = new List<DeviceItemModel>();
+
+            // 初始化设备列表
+            LoadLayoutFromFile();
         }
         #endregion
 
         #region === 私有字段 ===
         /// <summary>导航服务实例</summary>
         private readonly NavigationService _navigation;
+        public List<DeviceItemModel> DeviceList { get; set; }
 
         /// <summary>当前选择的语言</summary>
         private string _selectedLanguage;
+
+        ///
+        ComponentLocalService _localService;
 
         /// <summary>面包屑导航文本</summary>
         private string _breadcrumb = "Home";
@@ -83,10 +97,7 @@ namespace HostComputer.ViewModels
         public string UserName
         {
             get => _userName;
-            set
-            {
-                _userName = value;
-            }
+            set { _userName = value; }
         }
 
         private string _userLevel;
@@ -97,10 +108,7 @@ namespace HostComputer.ViewModels
         public string UserLevel
         {
             get => _userLevel;
-            set
-            {
-                _userLevel = value;
-            }
+            set { _userLevel = value; }
         }
 
         ///<summary>
@@ -110,10 +118,7 @@ namespace HostComputer.ViewModels
         public string Group
         {
             get => _group;
-            set
-            {
-                _group = value;
-            }
+            set { _group = value; }
         }
 
         /// <summary>
@@ -248,7 +253,27 @@ namespace HostComputer.ViewModels
         #endregion
 
         #region === 私有方法 - 初始化 ===
-      
+        /// <summary>
+        /// 刷新组件
+        /// </summary>
+        private void LoadLayoutFromFile()
+        {
+            string SourceViewName = _navigation._currentState.Page.GetType().Name;
+            if (string.IsNullOrEmpty(SourceViewName))
+                return;
+
+            // 这里传入外部传进来的 SourceViewName (如 "PageA")
+            var config = _localService.LoadLayout(SourceViewName);
+            if (config != null)
+            {
+                DeviceList.Clear();
+                foreach (var device in config.Devices)
+                {
+                    DeviceList.Add(device);
+                }
+                // 如果本地文件里存的名字和传入的不一致，以传入的为准（或覆盖）
+            }
+        }
 
         /// <summary>
         /// 加载菜单

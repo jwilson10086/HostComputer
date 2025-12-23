@@ -13,11 +13,18 @@ namespace HostComputer.Common.Converter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-          
-            var assembly = Assembly.Load("CustomControls");//load the assembly
-            Type type = assembly.GetType("CustomControls.Controls." + value.ToString());//get the type
-            return Activator.CreateInstance(type)!;//create an instance of the type
+            if (value == null) throw new ArgumentNullException(nameof(value));
+
+            var assembly = Assembly.Load("CustomControls");
+            string typeName = "CustomControls.Controls." + value.ToString();
+            Type? type = assembly.GetType(typeName);
+
+            if (type == null)
+                throw new InvalidOperationException($"Type '{typeName}' not found in assembly '{assembly.FullName}'.");
+
+            return Activator.CreateInstance(type)!;
         }
+
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {

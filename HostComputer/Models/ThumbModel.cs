@@ -23,16 +23,6 @@ namespace HostComputer.Models
         public int Width { get; set; }
         public int Height { get; set; }
 
-        public ICommand ThumbCommand { get; set; }
-
-        public ThumbItemModel()
-        {
-            ThumbCommand = new CommandBase { Name = "ThumbCommand", DoExecute = DoThumbCommand };
-        }
-
-        private void DoThumbCommand(object obj)
-        {
-            DragDrop.DoDragDrop((DependencyObject)obj, this, DragDropEffects.Copy);
-        }
+        
     }
 }

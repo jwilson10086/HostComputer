@@ -47,7 +47,7 @@ namespace HostComputer.Common.Services
         private readonly LinkedList<NavigationState> _history = new();
 
         /// <summary>当前导航状态</summary>
-        private NavigationState? _currentState;
+        public NavigationState? _currentState;
         #endregion
 
         #region 构造函数
