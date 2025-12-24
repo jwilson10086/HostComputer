@@ -10,21 +10,34 @@ jobs:
     runs-on: windows-latest
 
     steps:
+    # 1️⃣ 检出代码
     - uses: actions/checkout@v3
 
+    # 2️⃣ 获取 Git Revision
     - name: Get Git Revision
       shell: pwsh
       run: |
         $gitRev = git rev-parse --short HEAD
         echo "GIT_REV=$gitRev" >> $env:GITHUB_ENV
 
+    # 3️⃣ 获取最近一次 commit message
     - name: Get Commit Message
       shell: pwsh
       run: |
         $commitMsg = git log -1 --pretty=%B
         echo "COMMIT_MSG=$commitMsg" >> $env:GITHUB_ENV
 
+    # 4️⃣ 调试打印环境变量（可选，验证值是否正确）
+    - name: Debug Env
+      shell: pwsh
+      run: |
+        Write-Host "GIT_REV = $env:GIT_REV"
+        Write-Host "COMMIT_MSG = $env:COMMIT_MSG"
+
+    # 5️⃣ Build WPF 并把环境变量传给 MSBuild
     - name: Build WPF
       shell: pwsh
       run: |
-        dotnet build HostComputer.sln -c Release
+        dotnet build HostComputer.sln -c Release `
+          /p:GitRevision=$env:GIT_REV `
+          /p:CommitMessage="$env:COMMIT_MSG"

@@ -22,6 +22,12 @@ namespace HostComputer.ViewModels.Overview
         {
           
             var assembly =  Assembly.GetExecutingAssembly();
+            var attrs = assembly.GetCustomAttributes<AssemblyMetadataAttribute>();
+            foreach (var a in attrs)
+            {
+                App.Logger.Info($"{a.Key} = {a.Value}");
+            }
+
             var assemblyName = assembly.GetName();
 
             SoftwareName = assemblyName.Name ?? "Unknown";
