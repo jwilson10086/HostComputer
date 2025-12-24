@@ -21,7 +21,7 @@ namespace HostComputer.ViewModels.Overview
         public SoftwareVersionViewModel()
         {
           
-            var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+            var assembly =  Assembly.GetExecutingAssembly();
             var assemblyName = assembly.GetName();
 
             SoftwareName = assemblyName.Name ?? "Unknown";
