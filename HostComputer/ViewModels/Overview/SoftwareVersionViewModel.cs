@@ -10,14 +10,21 @@ namespace HostComputer.ViewModels.Overview
 {
     public class SoftwareVersionViewModel
     {
+        public string SoftwareName { get; }
         public string SoftwareVersion { get; }
+        public string PlcFirmwareVersion { get; }
         public string GitRevision { get; }
-        public string CommitMessage { get; }
         public string BuildTime { get; }
+        public string LastModifiedDate { get; }
+        public string CommitMessage { get; }
 
         public SoftwareVersionViewModel()
         {
-            var assembly = Assembly.GetExecutingAssembly();
+          
+            var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+            var assemblyName = assembly.GetName();
+
+            SoftwareName = assemblyName.Name ?? "Unknown";
             SoftwareVersion = assembly.GetName().Version?.ToString() ?? "N/A";
 
             GitRevision = assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
