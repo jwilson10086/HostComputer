@@ -26,7 +26,7 @@ namespace HostComputer.ViewModels.Overview
 
             SoftwareName = assemblyName.Name ?? "Unknown";
             SoftwareVersion = assembly.GetName().Version?.ToString() ?? "N/A";
-
+            PlcFirmwareVersion = "Melsoft FX5U Ver 1.10"; // 假设从某个配置或服务获取PLC固件版本
             GitRevision = assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
                                   .FirstOrDefault(a => a.Key == "GitRevision")?.Value ?? "N/A";
 
