@@ -7,10 +7,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UseWPF>true</UseWPF>
 
-		<!-- 默认版本号，CI 会覆盖 -->
-		<Version>1.3.1</Version>
-		<AssemblyVersion>1.3.1.0</AssemblyVersion>
-		<FileVersion>1.3.1.0</FileVersion>
+		
 
 		<RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
 
@@ -18,7 +15,12 @@
 		<CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
 		<ApplicationIcon>Assets\Icons\after_invert.ico</ApplicationIcon>
 
-		<!-- CI 通过环境变量注入 GitRevision / CommitMessage -->
+		<!-- 默认版本号，CI 会覆盖 -->
+		<Version>1.3.1</Version>
+		<AssemblyVersion>1.3.1.0</AssemblyVersion>
+		<FileVersion>1.3.1.0</FileVersion>
+
+		<!-- CI 环境变量注入 -->
 		<GitRevision>$([System.Environment]::GetEnvironmentVariable('GIT_REV'))</GitRevision>
 		<CommitMessage>$([System.Environment]::GetEnvironmentVariable('COMMIT_MSG'))</CommitMessage>
 	</PropertyGroup>

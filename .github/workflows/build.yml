@@ -24,24 +24,6 @@ jobs:
         $commitMsg = git log -1 --pretty=%B
         echo "COMMIT_MSG=$commitMsg" >> $env:GITHUB_ENV
 
-    - name: Generate Build Number
-      shell: pwsh
-      run: |
-        $BUILD = [int]((Get-Date -UFormat %s) % 65535)
-        $REV = [int]((Get-Date).ToString('HHmmss') % 65535)
-        echo "BUILD_NUMBER=$BUILD" >> $env:GITHUB_ENV
-        echo "REVISION_NUMBER=$REV" >> $env:GITHUB_ENV
-
-    - name: Update Version in csproj
-      shell: pwsh
-      run: |
-        $csproj = "HostComputer/HostComputer.csproj"
-        (Get-Content $csproj) `
-          -replace '<AssemblyVersion>.*?</AssemblyVersion>', "<AssemblyVersion>1.3.$env:BUILD_NUMBER.$env:REVISION_NUMBER</AssemblyVersion>" `
-          -replace '<FileVersion>.*?</FileVersion>', "<FileVersion>1.3.$env:BUILD_NUMBER.$env:REVISION_NUMBER</FileVersion>" `
-          -replace '<Version>.*?</Version>', "<Version>1.3.$env:BUILD_NUMBER</Version>" `
-          | Set-Content -Encoding utf8 $csproj
-
     - name: Build WPF
       shell: pwsh
       run: |
