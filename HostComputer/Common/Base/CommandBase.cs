@@ -32,6 +32,12 @@ namespace HostComputer.Common.Base
 
         public void Execute(object? parameter)
         {
+
+            if(parameter is MouseEventArgs e )
+            {
+                DoExecute?.Invoke(parameter);
+                return;
+            }
             // 日志记录只在 Execute 中
             LogControlUI(parameter);
 

@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
+using CustomControls.Controls;
 using HostComputer.Common.Actions;
 using HostComputer.Common.Base;
 using HostComputer.Common.Services;
@@ -56,36 +59,28 @@ namespace HostComputer.ViewModels
             // 初始化本地组件服务
             _localService = new ComponentLocalService();
 
-            //实例化
+            // 实例化设备列表
             DeviceList = new List<DeviceItemModel>();
 
             // 初始化设备列表
-            LoadLayoutFromFile();
+            //LoadLayoutFromFile(_navigation._currentState.Page.GetType().Name);
+            //挂面板
+            //AttachFloatingPanels();
+            PreloadAllLayouts();
         }
         #endregion
 
         #region === 私有字段 ===
         /// <summary>导航服务实例</summary>
         private readonly NavigationService _navigation;
-        public List<DeviceItemModel> DeviceList { get; set; }
 
-        /// <summary>当前选择的语言</summary>
-        private string _selectedLanguage;
+        /// <summary>l
+        /// 页面名 → 设备布局缓存
+        /// </summary>
+        private readonly Dictionary<string, List<DeviceItemModel>> _pageDeviceCache = new();
 
-        ///
-        ComponentLocalService _localService;
-
-        /// <summary>面包屑导航文本</summary>
-        private string _breadcrumb = "Home";
-
-        /// <summary>选中的一级菜单</summary>
-        private MenuItemModel _selectedMenu1;
-
-        /// <summary>选中的二级菜单</summary>
-        private MenuItemModel _selectedMenu2;
-
-        /// <summary>选中的三级菜单</summary>
-        private MenuItemModel _selectedMenu3;
+        /// <summary>本地组件服务</summary>
+        private ComponentLocalService _localService;
         #endregion
 
         #region === 用户信息属性 ===
@@ -111,10 +106,11 @@ namespace HostComputer.ViewModels
             set { _userLevel = value; }
         }
 
-        ///<summary>
-        ///用户组
-        /// </summary>
         private string _group;
+
+        /// <summary>
+        /// 用户组
+        /// </summary>
         public string Group
         {
             get => _group;
@@ -147,6 +143,8 @@ namespace HostComputer.ViewModels
         /// 当前文化设置
         /// </summary>
         public CultureInfo CurrentCulture => new CultureInfo("en-US");
+
+        private string _selectedLanguage;
 
         /// <summary>
         /// 选择的语言
@@ -182,7 +180,64 @@ namespace HostComputer.ViewModels
         public ObservableCollection<MenuItemModel> ThirdLevel { get; } = new();
         #endregion
 
+        #region === 设备布局相关 ===
+        /// <summary>
+        /// 设备列表
+        /// </summary>
+        public List<DeviceItemModel> DeviceList { get; set; }
+
+        /// <summary>
+        /// 从文件加载布局
+        /// </summary>
+        private void LoadLayoutFromFile(string? sourceViewName = null)
+        {
+            sourceViewName ??= _navigation._currentState.Page.GetType().Name;
+            if (string.IsNullOrEmpty(sourceViewName))
+                return;
+
+            var config = _localService.LoadLayout(sourceViewName);
+            if (config == null)
+                return;
+
+            var newDeviceList = new List<DeviceItemModel>();
+
+            foreach (var device in config.Devices)
+            {
+                if (device.DeviceType == "WaferRobot")
+                {
+                    var robotCtrl = new WaferRobot
+                    {
+                        Width = device.Width,
+                        Height = device.Height,
+                        Permission = UserSession.Level
+                    };
+
+                    Canvas.SetLeft(robotCtrl, device.X);
+                    Canvas.SetTop(robotCtrl, device.Y);
+
+                    device.DeviceControl = robotCtrl;
+                }
+
+                newDeviceList.Add(device);
+            }
+
+            // ✅ 只更新缓存
+            _pageDeviceCache[sourceViewName] = newDeviceList;
+
+            // ✅ 如果是当前页面，再刷新 UI
+            if (sourceViewName == _navigation._currentState.Page.GetType().Name)
+            {
+                DeviceList = newDeviceList;
+                Raise(nameof(DeviceList));
+            }
+        }
+
+
+        #endregion
+
         #region === 面包屑导航 ===
+        private string _breadcrumb = "Home";
+
         /// <summary>
         /// 面包屑导航文本
         /// </summary>
@@ -194,6 +249,8 @@ namespace HostComputer.ViewModels
         #endregion
 
         #region === 选中菜单项 ===
+        private MenuItemModel _selectedMenu1;
+
         /// <summary>
         /// 选中的一级菜单项
         /// </summary>
@@ -203,6 +260,8 @@ namespace HostComputer.ViewModels
             set => Set(ref _selectedMenu1, value);
         }
 
+        private MenuItemModel _selectedMenu2;
+
         /// <summary>
         /// 选中的二级菜单项
         /// </summary>
@@ -211,6 +270,8 @@ namespace HostComputer.ViewModels
             get => _selectedMenu2;
             set => Set(ref _selectedMenu2, value);
         }
+
+        private MenuItemModel _selectedMenu3;
 
         /// <summary>
         /// 选中的三级菜单项
@@ -253,28 +314,6 @@ namespace HostComputer.ViewModels
         #endregion
 
         #region === 私有方法 - 初始化 ===
-        /// <summary>
-        /// 刷新组件
-        /// </summary>
-        private void LoadLayoutFromFile()
-        {
-            string SourceViewName = _navigation._currentState.Page.GetType().Name;
-            if (string.IsNullOrEmpty(SourceViewName))
-                return;
-
-            // 这里传入外部传进来的 SourceViewName (如 "PageA")
-            var config = _localService.LoadLayout(SourceViewName);
-            if (config != null)
-            {
-                DeviceList.Clear();
-                foreach (var device in config.Devices)
-                {
-                    DeviceList.Add(device);
-                }
-                // 如果本地文件里存的名字和传入的不一致，以传入的为准（或覆盖）
-            }
-        }
-
         /// <summary>
         /// 加载菜单
         /// </summary>
@@ -358,7 +397,11 @@ namespace HostComputer.ViewModels
                 nameof(SettingCommand),
                 _ =>
                 {
-                    ActionManager.Execute<object, bool>("AAA", null);
+                    string targetPage = _navigation._currentState?.Page.GetType().Name ?? "Unknown";
+                    if (ActionManager.Execute<object, bool>("AAA", targetPage))
+                    {
+                        LoadLayoutFromFile(targetPage);
+                    }
                 }
             );
 
@@ -381,8 +424,60 @@ namespace HostComputer.ViewModels
             {
                 Breadcrumb = state.Breadcrumb;
                 RestoreMenu(state);
+
+                var pageName = state.Page.GetType().Name;
+
+                if (_pageDeviceCache.TryGetValue(pageName, out var devices))
+                {
+                    DeviceList = devices;
+                    Raise(nameof(DeviceList));
+                }
+                else
+                {
+                    // 第一次进这个页面，才加载
+                    LoadLayoutFromFile(pageName);
+                }
             };
         }
+
+        /// <summary>
+        /// 收集所有的页面名称
+        /// </summary>
+        /// <returns></returns>
+        private HashSet<string> CollectAllPageNames()
+        {
+            var pages = new HashSet<string>();
+
+            void Traverse(IEnumerable<MenuItemModel> menus)
+            {
+                foreach (var menu in menus)
+                {
+                    if (!string.IsNullOrEmpty(menu.ViewName))
+                        pages.Add(menu.ViewName);
+
+                    if (menu.Children != null && menu.Children.Any())
+                        Traverse(menu.Children);
+                }
+            }
+
+            Traverse(Menus);
+            return pages;
+        }
+        private void PreloadAllLayouts()
+        {
+            var pageNames = CollectAllPageNames();
+
+            foreach (var page in pageNames)
+            {
+                // 避免重复加载
+                if (_pageDeviceCache.ContainsKey(page))
+                    continue;
+
+                LoadLayoutFromFile(page);
+            }
+        }
+
+
         #endregion
 
         #region === 菜单点击逻辑 ===

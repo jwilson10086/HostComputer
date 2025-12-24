@@ -1,4 +1,5 @@
-﻿using HostComputer.Common.Base;
+﻿using CustomControls.Controls;
+using HostComputer.Common.Base;
 using HostComputer.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -102,7 +103,14 @@ namespace HostComputer.Models
 
         // 根据这个名称动态创建一个组件实例
         public string DeviceType { get; set; }
+        // ⭐ 运行时用（配置文件里没有）
+        public UIElement? DeviceControl { get; set; }
 
+        // 运行时控件
+        public WaferRobot RobotControl { get; set; }
+
+        // 工具面板引用
+        public FloatingPanel? RobotPanel { get; set; }
 
         public DeviceItemModel()
         {

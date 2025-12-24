@@ -14,17 +14,7 @@ namespace HostComputer.Common.Services.Local.Auth
         public async Task<LoginResult> LoginAsync(string username, string password)
         {
             string sql =
-                @"
-                SELECT 
-                    UserName,
-                    Password,
-                    Level,
-                    [Group]
-                FROM Users
-                WHERE UserName = @UserName
-                  AND Password = @Password
-                LIMIT 1
-            ";
+                @"SELECT UserName,Password,Level,[Group] FROM Users WHERE UserName = @UserName AND Password = @Password LIMIT 1";
 
             var parameters = new Dictionary<string, object>
             {

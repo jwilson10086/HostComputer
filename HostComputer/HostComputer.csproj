@@ -70,7 +70,6 @@
     <Folder Include="ViewModels\History\" />
     <Folder Include="ViewModels\Lot_Operation\" />
     <Folder Include="ViewModels\Maintenance\" />
-    <Folder Include="ViewModels\Overview\" />
     <Folder Include="ViewModels\Parameter\" />
     <Folder Include="ViewModels\Recipe_Editor\" />
     <Folder Include="Views\3thViews\" />

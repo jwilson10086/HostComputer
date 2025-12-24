@@ -12,6 +12,7 @@ using HostComputer.Common.Actions;
 using HostComputer.Common.Services;
 using HostComputer.Models;
 using HostComputer.ViewModels;
+using MySqlX.XDevAPI.Common;
 
 namespace HostComputer.Views
 {
@@ -33,26 +34,27 @@ namespace HostComputer.Views
                 "AAA",
                 arg =>
                 {
-                    // 获取当前活跃窗口
                     var owner = Application
                         .Current.Windows.OfType<Window>()
                         .FirstOrDefault(w => w.IsActive);
                     var vm = new ConfigViewModel
                     {
-                        SourceViewName = nav._currentState?.Page.GetType().Name??"Unknown", // 这里指定当前页面标识
+                        SourceViewName = nav._currentState?.Page.GetType().Name ?? "Unknown", // 这里指定当前页面标识
                     };
-                    nav.NavigatePopup(
-                        "ComponentConfigView",
-                        true,
-                        w =>
-                        {
-                            w.Width = 1200;
-                            w.Height = 800;
-                            w.Owner = owner; 
-                            w.DataContext = vm;
-                        }
-                    );
-                    return new ComponentConfigView().DialogResult == true;
+                    // 创建窗口实例
+                    var window = new ComponentConfigView
+                    {
+                        Owner = owner,
+                        Width = 1200,
+                        Height = 800,
+                        DataContext = vm
+                    };
+
+                    // 显示模态窗口，阻塞直到关闭
+                    bool? result = window.ShowDialog();
+
+                    // 返回是否点击确定
+                    return result == true;
                 }
             );
         }

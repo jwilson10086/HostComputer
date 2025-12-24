@@ -124,6 +124,7 @@ namespace CustomControls.Controls
             typeof(WaferRobot),
             new PropertyMetadata(0)
         );
+        public FloatingPanel? RobotPanel { get; set; }
 
         // 为了两个 WaferControl（WaferCtrl_Lower、WaferCtrl_Upper）分别暴露属性
         // Lower (下手指)
@@ -598,8 +599,23 @@ namespace CustomControls.Controls
 
         private void OnRobotRightClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            if(Permission > 4)
-            RequestShowFloatingPanel?.Invoke();
+            //if(Permission > 4)
+            //RequestShowFloatingPanel?.Invoke();
+            if (RobotPanel != null)
+            {
+                if (RobotPanel.IsVisible)
+                {
+                    RobotPanel.Activate();
+                    return;
+                }
+                RobotPanel = null;
+            }
+
+            RobotPanel = new FloatingPanel(this);
+            RobotPanel.Closed += (_, __) => RobotPanel = null;
+
+            RobotPanel.Show();
+            RobotPanel.Activate();
         }
 
         #endregion

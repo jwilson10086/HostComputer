@@ -177,13 +177,13 @@
                             Content="{Binding DeviceType, Converter={StaticResource dic}}">
                             <b:Interaction.Triggers>
                                 <b:EventTrigger EventName="MouseLeftButtonDown">
-                                    <b:InvokeCommandAction Command="{Binding DataContext.SelectCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+                                    <b:InvokeCommandAction Command="{Binding DataContext.SelectCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" PassEventArgsToCommand="True" />
                                 </b:EventTrigger>
                                 <b:EventTrigger EventName="MouseMove">
                                     <b:InvokeCommandAction Command="{Binding DataContext.MoveCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" PassEventArgsToCommand="True" />
                                 </b:EventTrigger>
                                 <b:EventTrigger EventName="MouseLeftButtonUp">
-                                    <b:InvokeCommandAction Command="{Binding DataContext.ReleaseCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
+                                    <b:InvokeCommandAction Command="{Binding DataContext.ReleaseCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" PassEventArgsToCommand="True" />
                                 </b:EventTrigger>
                             </b:Interaction.Triggers>
                         </ContentControl>
