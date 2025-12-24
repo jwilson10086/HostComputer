@@ -63,8 +63,8 @@
                 <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding BuildTime}"/>
 
                 <!-- Last Modified -->
-                <TextBlock Grid.Row="5" Grid.Column="0" Text="Last Modified Date :" FontWeight="SemiBold"/>
-                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding LastModifiedDate}"/>
+                <TextBlock Grid.Row="5" Grid.Column="0" Text="Commit Message :" FontWeight="SemiBold"/>
+                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding CommitMessage}"/>
             </Grid>
         </Grid>
     </Border>
