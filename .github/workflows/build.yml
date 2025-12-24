@@ -43,6 +43,6 @@ jobs:
           | Set-Content -Encoding utf8 $csproj
 
     - name: Build WPF
-      shell: pwsh
-      run: |
-        msbuild HostComputer.sln /p:Configuration=Release
+    shell: pwsh
+    run: |
+        dotnet build HostComputer.sln -c Release
