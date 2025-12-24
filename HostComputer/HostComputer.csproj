@@ -12,12 +12,12 @@
 	  <Version>1.3.1</Version>
 	  <AssemblyVersion>1.3.1.0</AssemblyVersion>
 	  <FileVersion>1.3.1.0</FileVersion>
-	  <!-- ±£Áô AnyCPU£¬µ«ÏÞÖÆ runtime Ö»Éú³É Windows x64 -->
+	  <!-- ï¿½ï¿½ï¿½ï¿½ AnyCPUï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ runtime Ö»ï¿½ï¿½ï¿½ï¿½ Windows x64 -->
 	  <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
-    <!-- Ö»±£ÁôÄ¬ÈÏÓïÑÔÓ¢ÎÄ×ÊÔ´£¬ÆäËûÓïÑÔ²»¸´ÖÆ -->
+    <!-- Ö»ï¿½ï¿½ï¿½ï¿½Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¢ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½ï¿½ï¿½ -->
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     
-    <!-- ¿ÉÑ¡£º×èÖ¹µÚÈý·½ÎÀÐÇ³ÌÐò¼¯¸´ÖÆ£¨¸ü³¹µ×£© -->
+    <!-- ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç³ï¿½ï¿½ò¼¯¸ï¿½ï¿½Æ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×£ï¿½ -->
     <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
     <ApplicationIcon>Assets\Icons\after_invert.ico</ApplicationIcon>
   </PropertyGroup>
@@ -75,6 +75,7 @@
 
   <ItemGroup>
     <Folder Include="Common\DataAccess\" />
+    <Folder Include="Properties\" />
     <Folder Include="ViewModels\3thViews\" />
     <Folder Include="ViewModels\Equipment_Setup\" />
     <Folder Include="ViewModels\History\" />
@@ -99,39 +100,39 @@
 	<Target Name="PruneRuntimes_Output" AfterTargets="CopyFilesToOutputDirectory;ResolvePackageAssets;AfterBuild">
 		<Message Text="PruneRuntimes_Output: removing non-win runtimes from output and intermediates..." Importance="high" />
 
-		<!-- Êä³öÄ¿Â¼£¨VS/CLI µÄ×îÖÕÊä³ö£© -->
+		<!-- ï¿½ï¿½ï¿½Ä¿Â¼ï¿½ï¿½VS/CLI ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ -->
 		<PropertyGroup>
 			<__outdir>$(OutputPath)</__outdir>
 			<__intdir>$(IntermediateOutputPath)</__intdir>
 			<__targetdir>$(TargetDir)</__targetdir>
 		</PropertyGroup>
 
-		<!-- ÁÐ³öËùÓÐ runtimes ÎÄ¼þ¼Ð£¨¿ÉÄÜÀ´×Ô²»Í¬½×¶Î£© -->
+		<!-- ï¿½Ð³ï¿½ï¿½ï¿½ï¿½ï¿½ runtimes ï¿½Ä¼ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô²ï¿½Í¬ï¿½×¶Î£ï¿½ -->
 		<ItemGroup>
 			<_RuntimesInOut Include="$(__outdir)runtimes\**\" />
 			<_RuntimesInTarget Include="$(__targetdir)runtimes\**\" />
 			<_RuntimesInInt Include="$(__intdir)runtimes\**\" />
 		</ItemGroup>
 
-		<!-- Òª±£ÁôµÄ RID Ä£Ê½£ºÐÞ¸ÄÎªÄãÒª±£ÁôµÄ£¨Èç win-x86 Ò²±£ÁôÔò¼ÓÈë£© -->
+		<!-- Òªï¿½ï¿½ï¿½ï¿½ï¿½ RID Ä£Ê½ï¿½ï¿½ï¿½Þ¸ï¿½Îªï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ win-x86 Ò²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë£© -->
 		<ItemGroup>
 			<_KeepPatterns Include="$(__outdir)runtimes\win-x64\**\" />
 			<_KeepPatterns Include="$(__targetdir)runtimes\win-x64\**\" />
 			<_KeepPatterns Include="$(__intdir)runtimes\win-x64\**\" />
-			<!-- ÈôÏëÍ¬Ê±±£Áô win-x86£¬ÇëÈ¡Ïû×¢ÊÍÏÂÒ»ÐÐ -->
+			<!-- ï¿½ï¿½ï¿½ï¿½Í¬Ê±ï¿½ï¿½ï¿½ï¿½ win-x86ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½×¢ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ -->
 			<!-- <_KeepPatterns Include="$(__outdir)runtimes\win-x86\**\" /> -->
 		</ItemGroup>
 
-		<!-- ¼ÆËãÐèÒªÉ¾³ýµÄÄ¿Â¼£¨All - Keep£© -->
+		<!-- ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÒªÉ¾ï¿½ï¿½ï¿½ï¿½Ä¿Â¼ï¿½ï¿½All - Keepï¿½ï¿½ -->
 		<ItemGroup>
 			<_AllRuntimesDirs Include="@(_RuntimesInOut);@(_RuntimesInTarget);@(_RuntimesInInt)" />
 			<_ToDeleteDirs Include="@(_AllRuntimesDirs)" Exclude="@(_KeepPatterns)" />
 		</ItemGroup>
 
-		<!-- É¾³ýÄ¿Â¼£¨¼ÌÐø¼´±ãÊ§°Ü£© -->
+		<!-- É¾ï¿½ï¿½Ä¿Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü£ï¿½ -->
 		<RemoveDir Directories="@(_ToDeleteDirs)" ContinueOnError="true" />
 
-		<!-- ±£ÏÕ£ºÉ¾³ýµ¥¸ö²ÐÁôÎÄ¼þ£¨ÈçÎÄ¼þÖ±½Ó±»µ±×÷ÄÚÈÝ¸´ÖÆ£© -->
+		<!-- ï¿½ï¿½ï¿½Õ£ï¿½É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½Ö±ï¿½Ó±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¸ï¿½ï¿½Æ£ï¿½ -->
 		<ItemGroup>
 			<_AllRuntimesFiles Include="$(__outdir)runtimes\**\*.*;$(__targetdir)runtimes\**\*.*;$(__intdir)runtimes\**\*.*" />
 			<_FilesToDelete Include="@(_AllRuntimesFiles)" Exclude="@(_KeepPatterns)" />
