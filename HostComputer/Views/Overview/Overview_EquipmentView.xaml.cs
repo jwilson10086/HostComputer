@@ -22,18 +22,9 @@ namespace HostComputer.Views.Overview
     /// </summary>
     public partial class Overview_EquipmentView : UserControl
     {
-        private DispatcherTimer autoRotationTimer;
-        private bool isAutoRotating = false;
-        private FloatingPanel _floatingPanel;
-
-        private void InitRobotPanel()
-        {
-            
-        }
         public Overview_EquipmentView()
         {
             InitializeComponent();
-            InitRobotPanel();
         }
     }
 }

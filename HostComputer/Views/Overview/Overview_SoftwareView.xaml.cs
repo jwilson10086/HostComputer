@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HostComputer.ViewModels.Overview;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,7 @@ namespace HostComputer.Views.Overview
         public Overview_SoftwareView()
         {
             InitializeComponent();
+            this.DataContext = new SoftwareVersionViewModel();
         }
     }
 }

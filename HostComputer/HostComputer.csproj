@@ -2,11 +2,14 @@
 
 
   <PropertyGroup>
+	
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <AssemblyVersion>1.3.0.0</AssemblyVersion>
+    <FileVersion>1.3.0.0</FileVersion>
 	  <!-- 保留 AnyCPU，但限制 runtime 只生成 Windows x64 -->
 	  <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <!-- 只保留默认语言英文资源，其他语言不复制 -->
