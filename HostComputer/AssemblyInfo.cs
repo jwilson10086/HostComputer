@@ -9,6 +9,5 @@ using System.Reflection;
                                                 //(used if a resource is not found in the page,
                                              // app, or any theme specific resource dictionaries)
 )]
-[assembly: AssemblyMetadata("GitRevision", "GIT_REV_PLACEHOLDER")]
-[assembly: AssemblyMetadata("GitCommitMessage", "COMMIT_MSG_PLACEHOLDER")]
+
 
