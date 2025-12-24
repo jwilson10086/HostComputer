@@ -1,10 +1,9 @@
 name: Build WPF Project
 
-# 触发条件：push 到 master 分支
 on:
   push:
     branches:
-      - master
+      - master  # 推送到 master 分支触发
 
 jobs:
   build:
@@ -37,9 +36,9 @@ jobs:
       id: buildnum
       shell: pwsh
       run: |
-        # Build = 当前日期时间转整数（保证 0~65535 范围）
+        # Build = 当前 Unix 时间戳 % 65535
         $BUILD = [int]((Get-Date -UFormat %s) % 65535)
-        # Revision = 当前秒数 % 65535
+        # Revision = 当前 HHmmss % 65535
         $REV = [int]((Get-Date).ToString('HHmmss') % 65535)
         Write-Host "Build Number: $BUILD, Revision Number: $REV"
         echo "BUILD_NUMBER=$BUILD" >> $env:GITHUB_ENV
