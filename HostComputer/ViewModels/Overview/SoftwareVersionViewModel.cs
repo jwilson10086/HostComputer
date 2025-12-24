@@ -33,7 +33,7 @@ namespace HostComputer.ViewModels.Overview
 
             CommitMessage = assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
                                   .FirstOrDefault(a => a.Key == "GitCommitMessage")?.Value ?? "N/A";
-
+            App.Logger.Info("CommitMessage: " + CommitMessage);
             BuildTime = File.GetLastWriteTime(assembly.Location)
                             .ToString("yyyy-MM-dd HH:mm:ss");
         }
