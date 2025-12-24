@@ -1,142 +1,139 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UseWPF>true</UseWPF>
 
-  <PropertyGroup>
-	
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
+		<!-- 默认版本号，CI 会覆盖 -->
+		<Version>1.3.1</Version>
+		<AssemblyVersion>1.3.1.0</AssemblyVersion>
+		<FileVersion>1.3.1.0</FileVersion>
 
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UseWPF>true</UseWPF>
-	  <Version>1.3.1</Version>
-	  <AssemblyVersion>1.3.1.0</AssemblyVersion>
-	  <FileVersion>1.3.1.0</FileVersion>
-	  <!-- ���� AnyCPU�������� runtime ֻ���� Windows x64 -->
-	  <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
-    <!-- ֻ����Ĭ������Ӣ����Դ���������Բ����� -->
-    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-    
-    <!-- ��ѡ����ֹ���������ǳ��򼯸��ƣ������ף� -->
-    <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-    <ApplicationIcon>Assets\Icons\after_invert.ico</ApplicationIcon>
-  </PropertyGroup>
+		<RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
 
-  <ItemGroup>
-    <None Remove="Assets\Fonts\digital_display.ttf" />
-    <None Remove="Assets\Fonts\iconfont.ttf" />
-    <None Remove="Assets\Icons\AppIcon.ico" />
-    <None Remove="Assets\Icons\Smiley_happy.ico" />
-    <None Remove="Assets\Icons\TrayIcon.ico" />
-    <None Remove="Assets\Images\loginbg.png" />
-  </ItemGroup>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+		<ApplicationIcon>Assets\Icons\after_invert.ico</ApplicationIcon>
 
-  <ItemGroup>
-    <Page Remove="Assets\Styles\Common\ButtonStyle.xaml" />
-    <Page Remove="Assets\Styles\Common\IconMenuRadioButtonStyle.xaml" />
-    <Page Remove="Assets\Styles\Common\ToggleButtonStyle.xaml" />
-    <Page Remove="Assets\Styles\Common\WindowStyles.xaml" />
-    <Page Remove="Assets\Styles\Themes\Dark.xaml" />
-    <Page Remove="Assets\Styles\Themes\Light.xaml" />
-  </ItemGroup>
+		<!-- CI 通过环境变量注入 GitRevision / CommitMessage -->
+		<GitRevision>$([System.Environment]::GetEnvironmentVariable('GIT_REV'))</GitRevision>
+		<CommitMessage>$([System.Environment]::GetEnvironmentVariable('COMMIT_MSG'))</CommitMessage>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Content Include="Assets\Icons\after_invert.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\ComponentEntities\ComponentEntities.csproj" />
-    <ProjectReference Include="..\CustomControls\CustomControls.csproj" />
-    <ProjectReference Include="..\DbFramework\DbFramework.csproj" />
-    <ProjectReference Include="..\IDataAccess\IDataAccess.csproj" />
-    <ProjectReference Include="..\MyLogger\MyLogger.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Assets\Fonts\digital_display.ttf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Fonts\iconfont.ttf" />
-    <Resource Include="Assets\Icons\AppIcon.ico">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Icons\Smiley_happy.ico">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Icons\TrayIcon.ico" />
-    <Resource Include="Assets\Images\loginbg.png" />
-    <Resource Include="Assets\Styles\Common\ButtonStyle.xaml" />
-    <Resource Include="Assets\Styles\Common\IconMenuRadioButtonStyle.xaml" />
-    <Resource Include="Assets\Styles\Common\ToggleButtonStyle.xaml" />
-    <Resource Include="Assets\Styles\Common\WindowStyles.xaml" />
-    <Resource Include="Assets\Styles\Themes\Dark.xaml" />
-    <Resource Include="Assets\Styles\Themes\Light.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Common\DataAccess\" />
-    <Folder Include="Properties\" />
-    <Folder Include="ViewModels\3thViews\" />
-    <Folder Include="ViewModels\Equipment_Setup\" />
-    <Folder Include="ViewModels\History\" />
-    <Folder Include="ViewModels\Lot_Operation\" />
-    <Folder Include="ViewModels\Maintenance\" />
-    <Folder Include="ViewModels\Parameter\" />
-    <Folder Include="ViewModels\Recipe_Editor\" />
-    <Folder Include="Views\3thViews\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="ClosedXML" Version="0.105.0" />
-    <PackageReference Include="Hardcodet.Wpf.TaskbarNotification" Version="1.0.5" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
-    <PackageReference Include="MiniExcel" Version="1.41.4" />
-  </ItemGroup>
+	<!-- 将 GitRevision / CommitMessage 写入 AssemblyMetadata -->
+	<ItemGroup>
+		<AssemblyMetadata Include="GitRevision" Value="$(GitRevision)" />
+		<AssemblyMetadata Include="CommitMessage" Value="$(CommitMessage)" />
+	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.0">
-		</PackageReference>
+		<None Remove="Assets\Fonts\digital_display.ttf" />
+		<None Remove="Assets\Fonts\iconfont.ttf" />
+		<None Remove="Assets\Icons\AppIcon.ico" />
+		<None Remove="Assets\Icons\Smiley_happy.ico" />
+		<None Remove="Assets\Icons\TrayIcon.ico" />
+		<None Remove="Assets\Images\loginbg.png" />
 	</ItemGroup>
+
+	<ItemGroup>
+		<Page Remove="Assets\Styles\Common\ButtonStyle.xaml" />
+		<Page Remove="Assets\Styles\Common\IconMenuRadioButtonStyle.xaml" />
+		<Page Remove="Assets\Styles\Common\ToggleButtonStyle.xaml" />
+		<Page Remove="Assets\Styles\Common\WindowStyles.xaml" />
+		<Page Remove="Assets\Styles\Themes\Dark.xaml" />
+		<Page Remove="Assets\Styles\Themes\Light.xaml" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="Assets\Icons\after_invert.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\ComponentEntities\ComponentEntities.csproj" />
+		<ProjectReference Include="..\CustomControls\CustomControls.csproj" />
+		<ProjectReference Include="..\DbFramework\DbFramework.csproj" />
+		<ProjectReference Include="..\IDataAccess\IDataAccess.csproj" />
+		<ProjectReference Include="..\MyLogger\MyLogger.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="Assets\Fonts\digital_display.ttf">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Assets\Fonts\iconfont.ttf" />
+		<Resource Include="Assets\Icons\AppIcon.ico">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Assets\Icons\Smiley_happy.ico">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Assets\Icons\TrayIcon.ico" />
+		<Resource Include="Assets\Images\loginbg.png" />
+		<Resource Include="Assets\Styles\Common\ButtonStyle.xaml" />
+		<Resource Include="Assets\Styles\Common\IconMenuRadioButtonStyle.xaml" />
+		<Resource Include="Assets\Styles\Common\ToggleButtonStyle.xaml" />
+		<Resource Include="Assets\Styles\Common\WindowStyles.xaml" />
+		<Resource Include="Assets\Styles\Themes\Dark.xaml" />
+		<Resource Include="Assets\Styles\Themes\Light.xaml" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Common\DataAccess\" />
+		<Folder Include="Properties\" />
+		<Folder Include="ViewModels\3thViews\" />
+		<Folder Include="ViewModels\Equipment_Setup\" />
+		<Folder Include="ViewModels\History\" />
+		<Folder Include="ViewModels\Lot_Operation\" />
+		<Folder Include="ViewModels\Maintenance\" />
+		<Folder Include="ViewModels\Parameter\" />
+		<Folder Include="ViewModels\Recipe_Editor\" />
+		<Folder Include="Views\3thViews\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="ClosedXML" Version="0.105.0" />
+		<PackageReference Include="Hardcodet.Wpf.TaskbarNotification" Version="1.0.5" />
+		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
+		<PackageReference Include="MiniExcel" Version="1.41.4" />
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.0" />
+	</ItemGroup>
+
 	<Target Name="PruneRuntimes_Output" AfterTargets="CopyFilesToOutputDirectory;ResolvePackageAssets;AfterBuild">
 		<Message Text="PruneRuntimes_Output: removing non-win runtimes from output and intermediates..." Importance="high" />
 
-		<!-- ���Ŀ¼��VS/CLI ����������� -->
 		<PropertyGroup>
 			<__outdir>$(OutputPath)</__outdir>
 			<__intdir>$(IntermediateOutputPath)</__intdir>
 			<__targetdir>$(TargetDir)</__targetdir>
 		</PropertyGroup>
 
-		<!-- �г����� runtimes �ļ��У��������Բ�ͬ�׶Σ� -->
 		<ItemGroup>
 			<_RuntimesInOut Include="$(__outdir)runtimes\**\" />
 			<_RuntimesInTarget Include="$(__targetdir)runtimes\**\" />
 			<_RuntimesInInt Include="$(__intdir)runtimes\**\" />
 		</ItemGroup>
 
-		<!-- Ҫ����� RID ģʽ���޸�Ϊ��Ҫ����ģ��� win-x86 Ҳ��������룩 -->
 		<ItemGroup>
 			<_KeepPatterns Include="$(__outdir)runtimes\win-x64\**\" />
 			<_KeepPatterns Include="$(__targetdir)runtimes\win-x64\**\" />
 			<_KeepPatterns Include="$(__intdir)runtimes\win-x64\**\" />
-			<!-- ����ͬʱ���� win-x86����ȡ��ע����һ�� -->
-			<!-- <_KeepPatterns Include="$(__outdir)runtimes\win-x86\**\" /> -->
 		</ItemGroup>
 
-		<!-- ������Ҫɾ����Ŀ¼��All - Keep�� -->
 		<ItemGroup>
 			<_AllRuntimesDirs Include="@(_RuntimesInOut);@(_RuntimesInTarget);@(_RuntimesInInt)" />
 			<_ToDeleteDirs Include="@(_AllRuntimesDirs)" Exclude="@(_KeepPatterns)" />
 		</ItemGroup>
 
-		<!-- ɾ��Ŀ¼����������ʧ�ܣ� -->
 		<RemoveDir Directories="@(_ToDeleteDirs)" ContinueOnError="true" />
 
-		<!-- ���գ�ɾ�����������ļ������ļ�ֱ�ӱ��������ݸ��ƣ� -->
 		<ItemGroup>
 			<_AllRuntimesFiles Include="$(__outdir)runtimes\**\*.*;$(__targetdir)runtimes\**\*.*;$(__intdir)runtimes\**\*.*" />
 			<_FilesToDelete Include="@(_AllRuntimesFiles)" Exclude="@(_KeepPatterns)" />
 		</ItemGroup>
+
 		<Delete Files="@(_FilesToDelete)" ContinueOnError="true" />
 
 		<Message Text="PruneRuntimes_Output: done. Deleted @( _ToDeleteDirs -> '%(fullpath)') and @( _FilesToDelete -> '%(fullpath)')" Importance="normal" />
