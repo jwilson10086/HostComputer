@@ -1,0 +1,44 @@
+name: Build HostComputer Project
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    # 1. 检出代码
+    - uses: actions/checkout@v3
+
+    # 2. 获取 Git short hash
+    - name: Get Git Revision
+      id: git
+      run: echo "GIT_REV=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+    # 3. 获取最近一次 commit message
+    - name: Get Commit Message
+      id: msg
+      run: echo "COMMIT_MSG=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
+
+    # 4. 生成 Build 和 Revision（合法整数）
+    - name: Generate Build Number
+      id: buildnum
+      run: |
+        BUILD=$(( $(date +%Y%m%d%H%M%S) % 65535 ))
+        REV=$(( $(date +%s) % 65535 ))
+        echo "BUILD_NUMBER=$BUILD" >> $GITHUB_ENV
+        echo "REVISION_NUMBER=$REV" >> $GITHUB_ENV
+
+    # 5. 替换 AssemblyInfo.cs 占位符
+    - name: Replace AssemblyInfo Placeholders
+      run: |
+        powershell -Command "(gc Properties\AssemblyInfo.cs) -replace 'GIT_REV_PLACEHOLDER', '$env:GIT_REV' | Out-File -encoding utf8 Properties\AssemblyInfo.cs"
+        powershell -Command "(gc Properties\AssemblyInfo.cs) -replace 'COMMIT_MSG_PLACEHOLDER', '$env:COMMIT_MSG' | Out-File -encoding utf8 Properties\AssemblyInfo.cs"
+        powershell -Command "(gc Properties\AssemblyInfo.cs) -replace '1.3.0.0', '1.3.$env:BUILD_NUMBER.$env:REVISION_NUMBER' | Out-File -encoding utf8 Properties\AssemblyInfo.cs"
+
+    # 6. Build WPF 项目
+    - name: HostComputer WPF
+      run: msbuild HostComputer.sln /p:Configuration=Release
