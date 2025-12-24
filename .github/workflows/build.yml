@@ -3,66 +3,45 @@ name: Build WPF Project
 on:
   push:
     branches:
-      - master  # 推送到 master 分支触发
+      - master
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-    # 1️⃣ 检出代码
     - uses: actions/checkout@v3
 
-    # 2️⃣ 获取 Git short hash
     - name: Get Git Revision
-      id: git
       shell: pwsh
       run: |
         $gitRev = git rev-parse --short HEAD
-        Write-Host "Git Revision: $gitRev"
         echo "GIT_REV=$gitRev" >> $env:GITHUB_ENV
 
-    # 3️⃣ 获取最近一次 commit message
     - name: Get Commit Message
-      id: msg
       shell: pwsh
       run: |
         $commitMsg = git log -1 --pretty=%B
-        Write-Host "Commit Message: $commitMsg"
         echo "COMMIT_MSG=$commitMsg" >> $env:GITHUB_ENV
 
-    # 4️⃣ 生成 Build 和 Revision（合法整数）
     - name: Generate Build Number
-      id: buildnum
       shell: pwsh
       run: |
-        # Build = 当前 Unix 时间戳 % 65535
         $BUILD = [int]((Get-Date -UFormat %s) % 65535)
-        # Revision = 当前 HHmmss % 65535
         $REV = [int]((Get-Date).ToString('HHmmss') % 65535)
-        Write-Host "Build Number: $BUILD, Revision Number: $REV"
         echo "BUILD_NUMBER=$BUILD" >> $env:GITHUB_ENV
         echo "REVISION_NUMBER=$REV" >> $env:GITHUB_ENV
 
-    # 5️⃣ 替换 AssemblyInfo.cs 占位符
-    - name: Replace AssemblyInfo Placeholders
-    shell: pwsh
-    run: |
-        $assemblyFile = "HostComputer\Properties\AssemblyInfo.cs"
+    - name: Update Version in csproj
+      shell: pwsh
+      run: |
+        $csproj = "HostComputer/HostComputer.csproj"
+        (Get-Content $csproj) `
+          -replace '<AssemblyVersion>.*?</AssemblyVersion>', "<AssemblyVersion>1.3.$env:BUILD_NUMBER.$env:REVISION_NUMBER</AssemblyVersion>" `
+          -replace '<FileVersion>.*?</FileVersion>', "<FileVersion>1.3.$env:BUILD_NUMBER.$env:REVISION_NUMBER</FileVersion>" `
+          -replace '<Version>.*?</Version>', "<Version>1.3.$env:BUILD_NUMBER</Version>" `
+          | Set-Content -Encoding utf8 $csproj
 
-    if (!(Test-Path $assemblyFile)) {
-      Write-Error "AssemblyInfo.cs not found at $assemblyFile"
-      exit 1
-    }
-
-    (Get-Content $assemblyFile) `
-      -replace 'GIT_REV_PLACEHOLDER', $env:GIT_REV `
-      -replace 'COMMIT_MSG_PLACEHOLDER', $env:COMMIT_MSG `
-      -replace '1.3.0.0', "1.3.$env:BUILD_NUMBER.$env:REVISION_NUMBER" `
-      | Set-Content -Encoding UTF8 $assemblyFile
-
-
-    # 6️⃣ Build WPF 项目
     - name: Build WPF
       shell: pwsh
       run: |
