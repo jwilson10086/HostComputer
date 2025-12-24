@@ -436,7 +436,7 @@ namespace HostComputer.ViewModels
                 {
                     // 第一次进这个页面，才加载
                     LoadLayoutFromFile(pageName);
-                    int i = 9;
+                 
                 }
             };
         }
