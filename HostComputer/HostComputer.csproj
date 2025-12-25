@@ -15,20 +15,24 @@
 		<CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
 		<ApplicationIcon>Assets\Icons\after_invert.ico</ApplicationIcon>
 
-		<!-- 默认版本号，CI 会覆盖 -->
 		<Version>1.3.1</Version>
 		<AssemblyVersion>1.3.1.0</AssemblyVersion>
 		<FileVersion>1.3.1.0</FileVersion>
 
-		<!-- CI 环境变量注入 -->
-		<GitRevision>$(GitRevision)</GitRevision>
-		<CommitMessage>$(CommitMessage)</CommitMessage>
+		<GitRevision Condition="'$(GitRevision)' == ''">N/A-Local</GitRevision>
+		<GitCommitMessage Condition="'$(GitCommitMessage)' == ''">N/A-Local</GitCommitMessage>
 	</PropertyGroup>
 
 	<!-- 将 GitRevision / CommitMessage 写入 AssemblyMetadata -->
 	<ItemGroup>
-		<AssemblyMetadata Include="GitRevision" Value="$(GitRevision)" />
-		<AssemblyMetadata Include="CommitMessage" Value="$(CommitMessage)" />
+		<AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+			<_Parameter1>GitRevision</_Parameter1>
+			<_Parameter2>$(GitRevision)</_Parameter2>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+			<_Parameter1>GitCommitMessage</_Parameter1>
+			<_Parameter2>$(GitCommitMessage)</_Parameter2>
+		</AssemblyAttribute>
 	</ItemGroup>
 
 	<ItemGroup>
