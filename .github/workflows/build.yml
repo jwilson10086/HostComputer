@@ -27,6 +27,6 @@ jobs:
     - name: Build (PASS TO MSBUILD)
       shell: pwsh
       run: |
-        dotnet build HostComputer.sln -c Release `
+        dotnet build HostComputer.sln -c debug `
           /p:GitRevision="$env:GIT_REV" `
           /p:GitCommitMessage="$env:COMMIT_MSG"
