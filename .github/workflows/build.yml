@@ -13,24 +13,23 @@ jobs:
     # 1️⃣ 拉代码
     - uses: actions/checkout@v3
 
-    # 2️⃣ 计算 Git 信息（不走 GITHUB_ENV，直接用变量）
+    # 2️⃣ 计算 Git 信息
     - name: Get Git Info
       shell: pwsh
       run: |
         $gitRev = git rev-parse --short HEAD
-        $commitMsg = git log -1 --pretty=%s   # ⚠️ 必须用 %s（单行）
+        $commitMsg = git log -1 --pretty=%s
 
         Write-Host "========== GIT INFO =========="
         Write-Host "GitRevision     = [$gitRev]"
         Write-Host "CommitMessage   = [$commitMsg]"
         Write-Host "================================"
 
-        # 暂存到文件，给下一个 step 用（最稳）
         Set-Content gitrev.txt $gitRev
         Set-Content commitmsg.txt $commitMsg
 
-    # 3️⃣ Build，并把值明确传给 MSBuild
-    - name: Build with Git Metadata
+    # 3️⃣ Build Debug，并把值传给 MSBuild
+    - name: Build Debug with Git Metadata
       shell: pwsh
       run: |
         $gitRev = Get-Content gitrev.txt
@@ -41,16 +40,16 @@ jobs:
         Write-Host "CommitMessage   = [$commitMsg]"
         Write-Host "=================================="
 
-        dotnet build HostComputer.sln -c Release `
+        dotnet build HostComputer.sln -c Debug `
           /p:GitRevision="$gitRev" `
           /p:GitCommitMessage="$commitMsg" `
           /v:minimal
 
-    # 4️⃣ 直接在 CI 中读取 exe，验证 AssemblyMetadata（终极确认）
-    - name: Verify AssemblyMetadata in EXE
+    # 4️⃣ 读取 Debug exe 验证 AssemblyMetadata
+    - name: Verify AssemblyMetadata in Debug EXE
       shell: pwsh
       run: |
-        $exe = "HostComputer/bin/Release/net8.0-windows/HostComputer.exe"
+        $exe = "HostComputer/bin/Debug/net8.0-windows/HostComputer.exe"
 
         if (!(Test-Path $exe)) {
           Write-Error "EXE not found: $exe"
