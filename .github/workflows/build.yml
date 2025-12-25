@@ -11,26 +11,22 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0 # 获取完整历史以确保 git log 可用
 
     - name: Get Git Info
       shell: pwsh
       run: |
-        # 获取短哈希
         $gitRev = git rev-parse --short HEAD
-        
-        # 获取第一行 commit message 并清理可能破坏命令行的双引号
-        $commitMsg = git log -1 --pretty=%s
-        $commitMsg = $commitMsg -replace '"', '' 
-        
+        $commitMsg = git log -1 --pretty=%B
+
+        Write-Host "GIT_REV=$gitRev"
+        Write-Host "COMMIT_MSG=$commitMsg"
+
         echo "GIT_REV=$gitRev" >> $env:GITHUB_ENV
         echo "COMMIT_MSG=$commitMsg" >> $env:GITHUB_ENV
 
-    - name: Build WPF (Debug)
+    - name: Build (PASS TO MSBUILD)
       shell: pwsh
       run: |
-        # 注意：/p: 后的变量名必须和 .csproj 里的 $(变量名) 一致
-        dotnet build HostComputer.sln -c Debug `
-          "/p:GitRevision=${{ env.GIT_REV }}" `
-          "/p:GitCommitMessage=${{ env.COMMIT_MSG }}"
+        dotnet build HostComputer.sln -c Release `
+          /p:GitRevision="$env:GIT_REV" `
+          /p:GitCommitMessage="$env:COMMIT_MSG"

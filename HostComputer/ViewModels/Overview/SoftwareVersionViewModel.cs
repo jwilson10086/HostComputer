@@ -33,14 +33,13 @@ namespace HostComputer.ViewModels.Overview
             SoftwareName = assemblyName.Name ?? "Unknown";
             SoftwareVersion = assembly.GetName().Version?.ToString() ?? "N/A";
             PlcFirmwareVersion = "Melsoft FX5U Ver 1.10"; // 假设从某个配置或服务获取PLC固件版本
-            var gitRevision = assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
-                     .FirstOrDefault(a => a.Key == "GitRevision")?.Value ?? "N/A";
+            GitRevision = assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
+                                  .FirstOrDefault(a => a.Key == "GitRevision")?.Value ?? "N/A";
+            App.Logger.Info("GitRevision: " + GitRevision);
 
-            var commitMessage = assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
-                                .FirstOrDefault(a => a.Key == "GitCommitMessage")?.Value ?? "N/A";
-
-            App.Logger.Info($"GitRevision: {gitRevision}");
-            App.Logger.Info($"CommitMessage: {commitMessage}");
+            CommitMessage = assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
+                                  .FirstOrDefault(a => a.Key == "GitCommitMessage")?.Value ?? "N/A";
+            App.Logger.Info("CommitMessage: " + CommitMessage);
             BuildTime = File.GetLastWriteTime(assembly.Location)
                             .ToString("yyyy-MM-dd HH:mm:ss");
         }
