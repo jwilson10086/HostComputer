@@ -28,6 +28,10 @@
 		<AssemblyMetadata Include="GitRevision" Value="$(GitRevision)" />
 		<AssemblyMetadata Include="GitCommitMessage" Value="$(GitCommitMessage)" />
 	</ItemGroup>
+	<Target Name="DumpGitProps" BeforeTargets="BeforeBuild">
+		<Message Importance="high" Text="MSBuild GitRevision = '$(GitRevision)'" />
+		<Message Importance="high" Text="MSBuild CommitMessage = '$(GitCommitMessage)'" />
+	</Target>
 
 	<ItemGroup>
 		<None Remove="Assets\Fonts\digital_display.ttf" />
