@@ -1,4 +1,4 @@
-name: Build WPF Project (Debug Trace)
+name: Build WPF Project
 
 on:
   push:
@@ -10,58 +10,23 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    # 1️⃣ 拉代码
     - uses: actions/checkout@v3
 
-    # 2️⃣ 计算 Git 信息
     - name: Get Git Info
       shell: pwsh
       run: |
         $gitRev = git rev-parse --short HEAD
-        $commitMsg = git log -1 --pretty=%s
+        $commitMsg = git log -1 --pretty=%B
 
-        Write-Host "========== GIT INFO =========="
-        Write-Host "GitRevision     = [$gitRev]"
-        Write-Host "CommitMessage   = [$commitMsg]"
-        Write-Host "================================"
+        Write-Host "GIT_REV=$gitRev"
+        Write-Host "COMMIT_MSG=$commitMsg"
 
-        Set-Content gitrev.txt $gitRev
-        Set-Content commitmsg.txt $commitMsg
+        echo "GIT_REV=$gitRev" >> $env:GITHUB_ENV
+        echo "COMMIT_MSG=$commitMsg" >> $env:GITHUB_ENV
 
-    # 3️⃣ Build Debug，并把值传给 MSBuild
-    - name: Build Debug with Git Metadata
+    - name: Build (PASS TO MSBUILD)
       shell: pwsh
       run: |
-        $gitRev = Get-Content gitrev.txt
-        $commitMsg = Get-Content commitmsg.txt
-
-        Write-Host "========== MSBUILD INPUT =========="
-        Write-Host "GitRevision     = [$gitRev]"
-        Write-Host "CommitMessage   = [$commitMsg]"
-        Write-Host "=================================="
-
-        dotnet build HostComputer.sln -c Debug `
-          /p:GitRevision="$gitRev" `
-          /p:GitCommitMessage="$commitMsg" `
-          /v:minimal
-
-    # 4️⃣ 读取 Debug exe 验证 AssemblyMetadata
-    - name: Verify AssemblyMetadata in Debug EXE
-      shell: pwsh
-      run: |
-        $exe = "HostComputer/bin/Debug/net8.0-windows/HostComputer.exe"
-
-        if (!(Test-Path $exe)) {
-          Write-Error "EXE not found: $exe"
-          exit 1
-        }
-
-        Write-Host "========== ASSEMBLY METADATA =========="
-        Add-Type -AssemblyName System.Reflection
-        $asm = [System.Reflection.Assembly]::LoadFrom($exe)
-        $meta = $asm.GetCustomAttributes([System.Reflection.AssemblyMetadataAttribute], $false)
-
-        foreach ($m in $meta) {
-          Write-Host "$($m.Key) = [$($m.Value)]"
-        }
-        Write-Host "======================================="
+        dotnet build HostComputer.sln -c debug `
+          /p:GitRevision="$env:GIT_REV" `
+          /p:GitCommitMessage="$env:COMMIT_MSG"
