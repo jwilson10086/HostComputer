@@ -45,6 +45,7 @@
 	<ItemGroup>
 		<Page Remove="Assets\Styles\Common\ButtonStyle.xaml" />
 		<Page Remove="Assets\Styles\Common\IconMenuRadioButtonStyle.xaml" />
+		<Page Remove="Assets\Styles\Common\TextBoxStyle.xaml" />
 		<Page Remove="Assets\Styles\Common\ToggleButtonStyle.xaml" />
 		<Page Remove="Assets\Styles\Common\WindowStyles.xaml" />
 		<Page Remove="Assets\Styles\Themes\Dark.xaml" />
@@ -78,6 +79,7 @@
 		<Resource Include="Assets\Images\loginbg.png" />
 		<Resource Include="Assets\Styles\Common\ButtonStyle.xaml" />
 		<Resource Include="Assets\Styles\Common\IconMenuRadioButtonStyle.xaml" />
+		<Resource Include="Assets\Styles\Common\TextBoxStyle.xaml" />
 		<Resource Include="Assets\Styles\Common\ToggleButtonStyle.xaml" />
 		<Resource Include="Assets\Styles\Common\WindowStyles.xaml" />
 		<Resource Include="Assets\Styles\Themes\Dark.xaml" />
@@ -93,7 +95,6 @@
 		<Folder Include="ViewModels\Lot_Operation\" />
 		<Folder Include="ViewModels\Maintenance\" />
 		<Folder Include="ViewModels\Parameter\" />
-		<Folder Include="ViewModels\Recipe_Editor\" />
 		<Folder Include="Views\3thViews\" />
 	</ItemGroup>
 
