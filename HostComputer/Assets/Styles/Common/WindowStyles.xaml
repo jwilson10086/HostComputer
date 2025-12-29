@@ -1,10 +1,10 @@
-﻿<ResourceDictionary
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!-- ===============================
-         通用主窗体 Style（无边框）
-         =============================== -->
+    <!--
+        ===============================
+        通用主窗体 Style（无边框）
+        ===============================
+    -->
     <Style x:Key="HostMainWindowStyle" TargetType="Window">
         <Setter Property="WindowStyle" Value="None" />
         <Setter Property="ResizeMode" Value="NoResize" />
@@ -14,7 +14,7 @@
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
 
-        <!-- 窗口默认行为 -->
+        <!--  窗口默认行为  -->
         <Setter Property="WindowStartupLocation" Value="CenterScreen" />
 
         <Setter Property="Template">
@@ -25,7 +25,7 @@
                         BorderBrush="#444"
                         BorderThickness="1">
 
-                        <!-- 内容交给 Window.Content -->
+                        <!--  内容交给 Window.Content  -->
                         <AdornerDecorator>
                             <ContentPresenter />
                         </AdornerDecorator>

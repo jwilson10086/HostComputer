@@ -95,7 +95,6 @@
 		<Folder Include="ViewModels\Lot_Operation\" />
 		<Folder Include="ViewModels\Maintenance\" />
 		<Folder Include="ViewModels\Parameter\" />
-		<Folder Include="ViewModels\Recipe_Editor\" />
 		<Folder Include="Views\3thViews\" />
 	</ItemGroup>
 

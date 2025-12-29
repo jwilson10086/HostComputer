@@ -1,1 +1,86 @@
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"                    xmlns:helper="clr-namespace:HostComputer.Assets.Styles.Helper;assembly=HostComputer">    <!--  通用阴影效果  -->    <DropShadowEffect        x:Key="DropShadow"        BlurRadius="12"        Opacity="0.35"        ShadowDepth="2"        Color="Black" />    <!--  IconFont 按钮样式（图标在上，文字在下）  -->    <!--        约定：        Content   = 图标字符（如 \uE610 / &#xE610;）        ToolTip   = 按钮文字        FontFamily= IconFont（如 Segoe MDL2 Assets / 阿里图标库）        Tag       = 图标大小        FontSize  = 文字大小    -->    <Style x:Key="ButtonStyle" TargetType="Button">        <Setter Property="Padding" Value="8" />        <Setter Property="Margin" Value="3" />        <Setter Property="FontWeight" Value="Bold" />        <Setter Property="FontSize" Value="12" />        <Setter Property="Cursor" Value="Hand" />        <Setter Property="FontFamily" Value="Segoe UI" />        <Setter Property="Background" Value="#333" />        <Setter Property="Foreground" Value="White" />        <Setter Property="BorderThickness" Value="0" />        <Setter Property="Template">            <Setter.Value>                <ControlTemplate TargetType="Button">                    <Border                        x:Name="Border"                        Background="{TemplateBinding Background}"                        CornerRadius="8"                        Effect="{DynamicResource DropShadow}">                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">                            <!--  IconFont 图标  -->                            <TextBlock                                x:Name="Icon"                                Margin="0,2,0,4"                                HorizontalAlignment="Center"                                FontFamily="{TemplateBinding FontFamily}"                                FontSize="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(helper:StyleHelper.IconFontSize)}"                                Foreground="{TemplateBinding Foreground}"                                Text="{TemplateBinding Content}" />                            <!--  按钮文字  -->                            <TextBlock                                x:Name="Text"                                HorizontalAlignment="Center"                                FontSize="{TemplateBinding FontSize}"                                Foreground="{TemplateBinding Foreground}"                                Text="{TemplateBinding ToolTip}" />                        </StackPanel>                    </Border>                    <ControlTemplate.Triggers>                        <Trigger Property="IsMouseOver" Value="True">                            <Setter TargetName="Border" Property="Background" Value="#555" />                        </Trigger>                        <Trigger Property="IsPressed" Value="True">                            <Setter TargetName="Border" Property="Background" Value="#777" />                            <Setter TargetName="Border" Property="Effect" Value="{x:Null}" />                        </Trigger>                        <Trigger Property="IsEnabled" Value="False">                            <Setter TargetName="Border" Property="Background" Value="#666" />                            <Setter TargetName="Icon" Property="Foreground" Value="#AAA" />                            <Setter TargetName="Text" Property="Foreground" Value="#AAA" />                        </Trigger>                    </ControlTemplate.Triggers>                </ControlTemplate>            </Setter.Value>        </Setter>    </Style></ResourceDictionary>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:helper="clr-namespace:HostComputer.Assets.Styles.Helper;assembly=HostComputer">
+
+    <!--  通用阴影效果  -->
+    <DropShadowEffect
+        x:Key="DropShadow"
+        BlurRadius="12"
+        Opacity="0.35"
+        ShadowDepth="2"
+        Color="Black" />
+
+    <!--  IconFont 按钮样式（图标在上，文字在下）  -->
+    <!--
+        约定：
+        Content   = 图标字符（如 \uE610 / &#xE610;）
+        ToolTip   = 按钮文字
+        FontFamily= IconFont（如 Segoe MDL2 Assets / 阿里图标库）
+        Tag       = 图标大小
+        FontSize  = 文字大小
+    -->
+    <Style x:Key="ButtonStyle" TargetType="Button">
+        <Setter Property="Padding" Value="8" />
+        <Setter Property="Margin" Value="3" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="Background" Value="#333" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border
+                        x:Name="Border"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="8"
+                        Effect="{DynamicResource DropShadow}">
+
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                            <!--  IconFont 图标  -->
+                            <TextBlock
+                                x:Name="Icon"
+                                Margin="0,2,0,4"
+                                HorizontalAlignment="Center"
+                                FontFamily="{TemplateBinding FontFamily}"
+                                FontSize="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(helper:StyleHelper.IconFontSize)}"
+                                Foreground="{TemplateBinding Foreground}"
+                                Text="{TemplateBinding Content}" />
+
+
+                            <!--  按钮文字  -->
+                            <TextBlock
+                                x:Name="Text"
+                                HorizontalAlignment="Center"
+                                FontSize="{TemplateBinding FontSize}"
+                                Foreground="{TemplateBinding Foreground}"
+                                Text="{TemplateBinding ToolTip}" />
+                        </StackPanel>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="#555" />
+                        </Trigger>
+
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="#777" />
+                            <Setter TargetName="Border" Property="Effect" Value="{x:Null}" />
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Border" Property="Background" Value="#666" />
+                            <Setter TargetName="Icon" Property="Foreground" Value="#AAA" />
+                            <Setter TargetName="Text" Property="Foreground" Value="#AAA" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>
+
