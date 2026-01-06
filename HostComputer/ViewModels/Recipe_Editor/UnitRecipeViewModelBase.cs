@@ -4,45 +4,12 @@ using System.Collections.ObjectModel;
 
 namespace HostComputer.ViewModels.Recipe_Editor
 {
-    public class UnitRecipeViewModelBase : ViewModelBase
+    public abstract class UnitRecipeViewModelBase
     {
-        public string UnitName { get; set; }
-        public ObservableCollection<RecipeParamRow> ParamRows { get; } = new();
-        public ObservableCollection<UnitStepModel> Steps { get; } = new();
+        public string UnitName { get; protected set; }
+        public int StepCount { get; protected set; }
 
-        public void LoadRecipe(RecipeModel recipe)
-        {
-            Steps.Clear();
-            ParamRows.Clear();
-
-            foreach (var step in recipe.Steps)
-                Steps.Add(step);
-
-            var defines = BuildParamDefines();
-
-            foreach (var def in defines)
-            {
-                var row = new RecipeParamRow
-                {
-                    Item = def.DisplayName,
-                    //Unit = def.Unit,
-                    //Definition = def
-                };
-
-                for (int i = 0; i < Steps.Count; i++)
-                {
-                    var step = Steps[i];
-                    step.Parameters.TryGetValue(def.Key, out var v);
-                    row.StepValues.Add(new RecipeStepValue { Value = v ?? string.Empty });
-                }
-
-                ParamRows.Add(row);
-            }
-        }
-
-        protected virtual List<UnitParamDefinition> BuildParamDefines()
-        {
-            return new List<UnitParamDefinition>();
-        }
+        public abstract IReadOnlyList<UnitItemDefinition> Items { get; }
     }
+
 }

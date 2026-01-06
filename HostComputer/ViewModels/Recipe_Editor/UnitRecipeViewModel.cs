@@ -90,12 +90,21 @@ namespace HostComputer.ViewModels.Recipe_Editor
         private void LoadUnits()
         {
             Units.Clear();
-            string root = AppDomain.CurrentDomain.BaseDirectory;
-            foreach (var dir in Directory.GetDirectories(Path.Combine(root, "Recipe", "unit")))
+
+            string root = Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "Recipe",
+                "unit");
+
+            if (!Directory.Exists(root))
+                return;
+
+            foreach (var dir in Directory.GetDirectories(root))
             {
-                //Units.Add(new GenericUnitRecipeViewModel(dir));
+                Units.Add(new GenericUnitRecipeViewModel(dir));
             }
         }
+        #region Load Recipes
 
         private void LoadUnitRecipes(UnitRecipeViewModelBase unit)
         {
@@ -103,25 +112,31 @@ namespace HostComputer.ViewModels.Recipe_Editor
             ParamRows.Clear();
             Columns.Clear();
 
-            if (unit == null)
-                return;
+            if (unit == null) return;
 
-            string root = AppDomain.CurrentDomain.BaseDirectory;
-            string path = Path.Combine(root, @"Recipe\unit", unit.UnitName);
-            if (!Directory.Exists(path))
-                return;
+            // ① 先建列
+            BuildColumns();
 
-            foreach (var file in Directory.GetFiles(path, "*.rcp"))
+            // ② 先按 unit.json 建“空行”
+            BuildEmptyRows();
+
+            // ③ 再加载 recipe 列表
+            string unitPath = Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "Recipe", "unit", unit.UnitName);
+
+            foreach (var file in Directory.GetFiles(unitPath, "*.rcp"))
             {
-                try
-                {
-                    UnitRecipes.Add(RecipeModel.LoadFromXml(file));
-                }
-                catch { }
+                UnitRecipes.Add(RecipeModel.LoadFromXml(file));
             }
 
-            //SelectedUnitRecipe = UnitRecipes.FirstOrDefault();
+            // 可选：自动选第一个
+            SelectedUnitRecipe = UnitRecipes.FirstOrDefault();
         }
+
+
+        #endregion
+
 
         #endregion
 
@@ -129,69 +144,87 @@ namespace HostComputer.ViewModels.Recipe_Editor
 
         private void ShowRecipe(RecipeModel recipe)
         {
+            if (recipe == null || SelectedUnit == null)
+                return;
+
             RecipeName = recipe.UnitRecipeName;
             Raise(nameof(RecipeName));
 
-            BuildColumns(recipe);
+            // 不再 BuildColumns / BuildRows
             BuildRows(recipe);
         }
 
-        private void BuildRows(RecipeModel recipe)
+        private void BuildEmptyRows()
         {
             ParamRows.Clear();
-            var allParams = recipe.Steps
-                .SelectMany(s => s.Parameters.Keys)
-                .Distinct()
-                .ToList();
 
-            foreach (var param in allParams)
+            foreach (var item in SelectedUnit.Items)
             {
-                var row = new RecipeParamRow { Item = param };
-
-                for (int i = 0; i < recipe.Steps.Count; i++)
+                var row = new RecipeParamRow
                 {
-                    row.StepValues.Add(
-                        new RecipeStepValue
-                        {
-                            Value = recipe.Steps[i].Parameters.TryGetValue(param, out var v)
-                                ? v
-                                : string.Empty,
-                        }
-                    );
+                    Item = item.Name,
+                    Definition = item
+                };
+
+                for (int i = 0; i < SelectedUnit.StepCount; i++)
+                {
+                    row.StepValues.Add(new RecipeStepValue
+                    {
+                        Value = string.Empty
+                    });
                 }
 
                 ParamRows.Add(row);
             }
         }
 
-        private void BuildColumns(RecipeModel recipe)
+        private void BuildRows(RecipeModel recipe)
+        {
+            if (recipe == null) return;
+
+            foreach (var row in ParamRows)
+            {
+                for (int i = 0; i < SelectedUnit.StepCount; i++)
+                {
+                    string value = string.Empty;
+
+                    if (i < recipe.Steps.Count &&
+                        recipe.Steps[i].Parameters.TryGetValue(row.Item, out var v))
+                    {
+                        value = v;
+                    }
+
+                    row.StepValues[i].Value = value;
+                }
+            }
+        }
+
+
+        private void BuildColumns()
         {
             Columns.Clear();
-            Columns.Add(
-                new DataGridTextColumn
-                {
-                    Header = "ITEM",
-                    Binding = new Binding(nameof(RecipeParamRow.Item)),
-                    IsReadOnly = true,
-                    Width = 180,
-                }
-            );
 
-            for (int i = 0; i < recipe.StepCount; i++)
+            Columns.Add(new DataGridTextColumn
+            {
+                Header = "ITEM",
+                Binding = new Binding(nameof(RecipeParamRow.Item)),
+                IsReadOnly = true,
+                Width = 180
+            });
+
+            for (int i = 0; i < SelectedUnit.StepCount; i++)
             {
                 int index = i;
-                Columns.Add(
-                    new DataGridTextColumn
+                Columns.Add(new DataGridTextColumn
+                {
+                    Header = $"Step {i + 1}",
+                    Width = 120,
+                    Binding = new Binding($"StepValues[{index}].Value")
                     {
-                        Header = $"Step {i + 1}",
-                        Width = 120,
-                        Binding = new Binding($"StepValues[{index}].Value")
-                        {
-                            Mode = BindingMode.TwoWay,
-                            UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                        },
+                        Mode = BindingMode.TwoWay,
+                        UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
                     }
-                );
+                });
             }
         }
 

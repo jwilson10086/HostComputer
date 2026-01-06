@@ -302,7 +302,7 @@
                     Foreground="LightSkyBlue"
                     Text="{Binding Source={x:Static local:App.UserSession}, Path=Level}" />
 
-                <!--  右两列你自行扩展  -->
+                <!--  右两列扩展  -->
                 <TextBlock
                     Grid.Row="0"
                     Grid.Column="2"
@@ -379,6 +379,7 @@
                 Command="{Binding BellCommand}"
                 CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                 Content="&#xe643;"
+                ToolTip="&#xe604;"
                 FontFamily="{StaticResource iconfont}"
                 FontSize="18"
                 Style="{StaticResource ToggleButtonStyle}"

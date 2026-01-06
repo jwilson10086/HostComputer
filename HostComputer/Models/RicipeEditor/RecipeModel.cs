@@ -47,6 +47,20 @@ namespace HostComputer.Models.RicipeEditor
         }
 
     }
+    public class UnitConfig
+    {
+        public string UnitName { get; set; }
+        public int StepCount { get; set; }
+        public List<UnitItemDefinition> Items { get; set; }
+    }
+
+    public class UnitItemDefinition
+    {
+        public string Name { get; set; }
+        public string Type { get; set; }   // int / double / bool / string
+        public double? Min { get; set; }
+        public double? Max { get; set; }
+    }
 
     public class UnitStepModel
     {
@@ -55,61 +69,44 @@ namespace HostComputer.Models.RicipeEditor
         public Dictionary<string, string> Parameters { get; set; } = new();
     }
 
-    public class RecipeParamRow
+    public class RecipeParamRow : ViewModelBase
     {
+        /// <summary>
+        /// 参数名（DataGrid ITEM 列显示）
+        /// </summary>
         public string Item { get; set; }
 
-        //public string Unit { get; set; }
-        //public UnitParamDefinition Definition { get; set; }
-        public ObservableCollection<RecipeStepValue> StepValues { get; set; } = new();
+        /// <summary>
+        /// 参数定义（来自 unit.json）
+        /// </summary>
+        public UnitItemDefinition Definition { get; set; }
+
+        /// <summary>
+        /// 每个 Step 的值
+        /// </summary>
+        public ObservableCollection<RecipeStepValue> StepValues { get; } = new();
     }
+
 
     public class RecipeStepValue : ViewModelBase
     {
         private string _value;
-        private string _originalValue;
-        private bool _isDirty;
-
         public string Value
         {
             get => _value;
-            set
-            {
-                if (value != _originalValue)
-                {
-                    _isDirty = true;
-                }
-                Set(ref _value, value);
-            }
+            set => Set(ref _value, value);
         }
 
-        public bool IsDirty
-        {
-            get => _isDirty;
-            private set => Set(ref _isDirty, value);
-        }
+        public bool IsDirty { get; private set; }
 
-        public void SetOriginal(string value)
-        {
-            _originalValue = value;
-            _value = value;
-            IsDirty = false;
-            Raise(nameof(Value));
-        }
+        public void AcceptChanges() => IsDirty = false;
 
-        public void AcceptChanges()
+        protected override void OnPropertyChanged(string propertyName)
         {
-            _originalValue = _value;
-            IsDirty = false;
+            base.OnPropertyChanged(propertyName);
+            if (propertyName == nameof(Value))
+                IsDirty = true;
         }
     }
 
-    public class UnitParamDefinition
-    {
-        public string Key { get; set; }
-        public string DisplayName { get; set; }
-        public string Unit { get; set; }
-        public string XmlTag { get; set; }
-        public string XmlType { get; set; }
-    }
 }
