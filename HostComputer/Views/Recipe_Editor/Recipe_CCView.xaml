@@ -7,6 +7,7 @@
     xmlns:ctrl="clr-namespace:CustomControls.Helpers;assembly=CustomControls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:helper="clr-namespace:HostComputer.Assets.Styles.Helper"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:lang="clr-namespace:HostComputer.Common.Languages"
     xmlns:local="clr-namespace:HostComputer.Views.Recipe_Editor"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -68,98 +69,156 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </Border>
-        <StackPanel
-            Grid.Row="0"
-            Grid.Column="1"
-            Orientation="Vertical">
-            <TextBox
-                ctrl:SoftKeyboard.IsEnabled="False"
-                ctrl:SoftKeyboard.Mode="Full"
-                helper:StyleHelper.IconFontSize="18"
-                helper:StyleHelper.IconText="&#xe610;"
-                helper:StyleHelper.MaskText="模糊搜索"
-                FontFamily="{StaticResource iconfont}"
-                Style="{StaticResource TextBoxStyle}"
-                Text="{Binding UserViewModel.UserName, UpdateSourceTrigger=PropertyChanged}" />
-            <ListBox
-                Background="DarkSlateBlue"
-                BorderThickness="0"
-                ItemsSource="{Binding UnitRecipes}"
-                SelectedItem="{Binding SelectedUnitRecipe}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock
-                            Padding="8"
-                            Foreground="White"
-                            Text="{Binding UnitRecipeName}" />
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </StackPanel>
-        <Grid Grid.Column="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <DataGrid
-                Grid.Row="0"
-                Margin="5,10,0,0"
-                behaviors:DataGridColumnsBehavior.BindableColumns="{Binding Columns}"
-                AlternatingRowBackground="#2D2D30"
-                AutoGenerateColumns="True"
-                Background="#1E1E1E"
-                CanUserSortColumns="False"
-                Foreground="Black"
-                HorizontalGridLinesBrush="#3F3F46"
-                HorizontalScrollBarVisibility="Visible"
-                ItemsSource="{Binding ParamRows}"
-                RowBackground="#252526"
-                SelectionUnit="Cell"
-                VerticalGridLinesBrush="#3F3F46"
-                VerticalScrollBarVisibility="Visible">
-                <DataGrid.Resources>
-                    <!--  自定义列Header样式  -->
-                    <Style TargetType="DataGridColumnHeader">
-                        <Setter Property="Background" Value="DarkSlateGray" />
-                        <Setter Property="Foreground" Value="White" />
-                        <Setter Property="FontWeight" Value="Bold" />
-                    </Style>
-                    <!--  自定义Cell样式  -->
-                    <Style TargetType="DataGridCell">
-                        <Setter Property="Background" Value="#1E1E1E" />
-                        <Setter Property="Foreground" Value="White" />
-                        <Setter Property="BorderBrush" Value="#3F3F46" />
-                        <Setter Property="BorderThickness" Value="0.5" />
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsDirty}" Value="True">
-                                <Setter Property="Background" Value="Yellow" />
-                            </DataTrigger>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="#007ACC" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </DataGrid.Resources>
-            </DataGrid>
-
-            <StackPanel Grid.Row="1" Orientation="Horizontal">
-                <Button
-                    Width="80"
-                    Height="30"
-                    Background="AliceBlue"
-                    Content="之前插入步" />
-                <Button
-                    Width="80"
-                    Height="30"
-                    Background="AliceBlue"
-                    Content="之后插入步" />
-                <Button
-                    Width="80"
-                    Height="30"
-                    Background="AliceBlue"
-                    Content="删除步" />
+        <Border Grid.Row="0" Grid.Column="1">
+            <StackPanel Orientation="Vertical">
+                <TextBox
+                    ctrl:SoftKeyboard.IsEnabled="False"
+                    ctrl:SoftKeyboard.Mode="Full"
+                    helper:StyleHelper.IconFontSize="18"
+                    helper:StyleHelper.IconText="&#xe610;"
+                    helper:StyleHelper.MaskText="模糊搜索"
+                    FontFamily="{StaticResource iconfont}"
+                    Style="{StaticResource TextBoxStyle}"
+                    Text="{Binding UserViewModel.UserName, UpdateSourceTrigger=PropertyChanged}" />
+                <ListBox
+                    Background="DarkSlateBlue"
+                    BorderThickness="0"
+                    ItemsSource="{Binding UnitRecipes}"
+                    ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                    SelectedItem="{Binding SelectedUnitRecipe}"
+                    ToolTip="{Binding SelectedUnitRecipe.UnitRecipeName}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock
+                                Padding="8"
+                                Foreground="White"
+                                Text="{Binding UnitRecipeName}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </StackPanel>
-        </Grid>
+        </Border>
+        <Border Grid.Column="2">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <DataGrid
+                    Margin="5,10,0,0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    behaviors:DataGridColumnsBehavior.BindableColumns="{Binding Columns}"
+                    AlternatingRowBackground="#2D2D30"
+                    AutoGenerateColumns="False"
+                    Background="#1E1E1E"
+                    CanUserAddRows="False"
+                    CanUserSortColumns="False"
+                    Foreground="Black"
+                    HorizontalGridLinesBrush="#3F3F46"
+                    ItemsSource="{Binding ParamRows}"
+                    RowBackground="#252526"
+                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    SelectionUnit="Cell"
+                    VerticalGridLinesBrush="#3F3F46">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                            <i:InvokeCommandAction Command="{Binding CellClickCommand}" PassEventArgsToCommand="True" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <DataGrid.Resources>
+                        <!--  自定义列Header样式  -->
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="Background" Value="DarkSlateGray" />
+                            <Setter Property="Foreground" Value="White" />
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Style>
+                        <!--  自定义Cell样式  -->
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="Background" Value="#1E1E1E" />
+                            <Setter Property="Foreground" Value="White" />
+                            <Setter Property="BorderBrush" Value="#3F3F46" />
+                            <Setter Property="BorderThickness" Value="0.5" />
+                            <Style.Triggers>
+                                <!--<DataTrigger Binding="{Binding IsDirty}" Value="True">
+                                    <Setter Property="Background" Value="Yellow" />
+                                </DataTrigger>-->
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="#007ACC" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                        <!--  自定义滚动条样式  -->
+
+                        <Style TargetType="ScrollBar">
+                            <Setter Property="Width" Value="500" />
+                            <!--  竖向滚动条宽度  -->
+                            <Setter Property="Height" Value="10" />
+                            <!--  横向滚动条高度  -->
+                            <Setter Property="Background" Value="#2D2D30" />
+                            <Setter Property="Foreground" Value="#007ACC" />
+                            <!--  Thumb颜色  -->
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ScrollBar">
+                                        <Grid Background="{TemplateBinding Background}">
+                                            <Track Name="PART_Track" IsDirectionReversed="False">
+                                                <Track.DecreaseRepeatButton>
+                                                    <RepeatButton
+                                                        Background="Transparent"
+                                                        Command="ScrollBar.LineUpCommand"
+                                                        Style="{x:Null}" />
+                                                </Track.DecreaseRepeatButton>
+                                                <Track.Thumb>
+                                                    <Thumb
+                                                        Width="50"
+                                                        Height="50"
+                                                        Background="{TemplateBinding Foreground}" />
+
+                                                </Track.Thumb>
+                                                <Track.IncreaseRepeatButton>
+                                                    <RepeatButton
+                                                        Background="Transparent"
+                                                        Command="ScrollBar.LineDownCommand"
+                                                        Style="{x:Null}" />
+                                                </Track.IncreaseRepeatButton>
+                                            </Track>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </DataGrid.Resources>
+
+                </DataGrid>
+
+                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                    <Button
+                        x:Name="btnInsertBefore"
+                        Width="80"
+                        Height="30"
+                        Background="AliceBlue"
+                        Command="{Binding InsertStepBeforeCommand}"
+                        Content="之前插入步" />
+                    <Button
+                        x:Name="btnInsertAfter"
+                        Width="80"
+                        Height="30"
+                        Background="AliceBlue"
+                        Command="{Binding InsertStepAfterCommand}"
+                        Content="之后插入步" />
+                    <Button
+                        x:Name="btnDeleteBefore"
+                        Width="80"
+                        Height="30"
+                        Background="AliceBlue"
+                        Command="{Binding DeleteStepCommand}"
+                        Content="删除步" />
+                </StackPanel>
+            </Grid>
+        </Border>
         <StackPanel
             Grid.Row="1"
             Grid.ColumnSpan="3"

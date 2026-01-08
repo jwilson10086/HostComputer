@@ -1,0 +1,178 @@
+﻿<UserControl
+    x:Class="HostComputer.Views.Dialog.DigitalInput"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ctrls="clr-namespace:CustomControls.Controls;assembly=CustomControls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:HostComputer.Views.Dialog"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="400"
+    d:DesignWidth="400"
+    mc:Ignorable="d">
+
+    <Border
+        Padding="16"
+        Background="White"
+        BorderBrush="#DDD"
+        BorderThickness="1"
+        CornerRadius="12"
+        SnapsToDevicePixels="True">
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <!--  输入框  -->
+                <RowDefinition Height="*" />
+                <!--  键盘 + Slider  -->
+                <RowDefinition Height="Auto" />
+                <!--  底部按钮  -->
+            </Grid.RowDefinitions>
+
+            <!--  ===== 顶部输入框 =====  -->
+            <Grid Grid.Row="0" Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="48" />
+                </Grid.ColumnDefinitions>
+
+                <TextBox
+                    x:Name="InputBox"
+                    Height="48"
+                    Padding="10"
+                    VerticalContentAlignment="Center"
+                    Background="#FAFAFA"
+                    BorderBrush="#CCC"
+                    BorderThickness="1"
+                    FontSize="20"
+                    Text="{Binding InputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                <Button
+                    Grid.Column="1"
+                    Background="#EEE"
+                    BorderBrush="#CCC"
+                    BorderThickness="1"
+                    Click="Clear_Click"
+                    Content="✕"
+                    FontSize="18"
+                    ToolTip="清除" />
+            </Grid>
+
+            <!--  ===== 中部区域 =====  -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="90" />
+                </Grid.ColumnDefinitions>
+
+                <!--  键盘  -->
+                <ctrls:KeyboardControl
+                    x:Name="Keyboard"
+                    Width="280"
+                    Height="250"
+                    Mode="{Binding KeyboardMode}" />
+
+                <!--  右侧扩展区域（Slider + 按钮）  -->
+                <StackPanel
+                    Grid.Column="1"
+                    Margin="10,0,0,0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Orientation="Vertical">
+
+                    <Button
+                        Width="70"
+                        Height="50"
+                        Margin="0,0,0,12"
+                        Background="#FF6B6B"
+                        BorderThickness="0"
+                        Click="Delete_Click"
+                        Content="&#xe6a3;"
+                        FontFamily="{StaticResource iconfont}"
+                        Foreground="White" />
+
+                    <!--  Slider 上限/下限显示  -->
+                    <TextBlock
+                        Margin="0,0,0,4"
+                        HorizontalAlignment="Center"
+                        FontSize="14"
+                        Foreground="#666"
+                        Text="{Binding MaxValue}" />
+
+                    <Slider
+                        Width="Auto"
+                        Height="120"
+                        Margin="0,0,0,4"
+                        VerticalAlignment="Stretch"
+                        Background="#EEE"
+                        Foreground="#4CAF50"
+                        IsDirectionReversed="True"
+                        Maximum="{Binding MaxValue}"
+                        Minimum="{Binding MinValue}"
+                        Orientation="Vertical"
+                        TickPlacement="None"
+                        Value="{Binding SliderValue, Mode=TwoWay}">
+                        <Slider.Template>
+                            <ControlTemplate TargetType="Slider">
+                                <Grid>
+                                    <!--  滑轨  -->
+                                    <Track x:Name="PART_Track" VerticalAlignment="Stretch">
+                                        <Track.DecreaseRepeatButton>
+                                            <RepeatButton Height="0" Background="#EEE" />
+                                        </Track.DecreaseRepeatButton>
+                                        <Track.Thumb>
+                                            <!--  自定义滑块大小  -->
+                                            <Thumb
+                                                Width="70"
+                                                Height="10"
+                                                Background="#4CAF50" />
+                                        </Track.Thumb>
+                                        <Track.IncreaseRepeatButton>
+                                            <RepeatButton Height="0" Background="#EEE" />
+                                        </Track.IncreaseRepeatButton>
+                                    </Track>
+                                </Grid>
+                            </ControlTemplate>
+                        </Slider.Template>
+                    </Slider>
+
+                    <TextBlock
+                        Margin="0,4,0,0"
+                        HorizontalAlignment="Center"
+                        FontSize="14"
+                        Foreground="#666"
+                        Text="{Binding MinValue}" />
+                </StackPanel>
+            </Grid>
+
+            <!--  ===== 底部按钮 =====  -->
+            <StackPanel
+                Grid.Row="2"
+                Margin="0,16,0,0"
+                HorizontalAlignment="Right"
+                Orientation="Horizontal">
+
+                <Button
+                    Width="100"
+                    Height="40"
+                    Margin="0"
+                    Background="#EEE"
+                    BorderBrush="#CCC"
+                    BorderThickness="1"
+                    Click="Cancel_Click"
+                    Content="取消"
+                    FontWeight="SemiBold"
+                    Foreground="#333" />
+
+                <Button
+                    Width="120"
+                    Height="40"
+                    Background="#4CAF50"
+                    BorderThickness="0"
+                    Click="Ok_Click"
+                    Content="确定"
+                    FontWeight="Bold"
+                    Foreground="White" />
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

@@ -15,25 +15,30 @@ namespace HostComputer.Common.Base
         internal PermissionAttribute? Permission { get; set; }
         public Action<object?>? DoExecute { get; set; }
 
-        private bool? _cachedCanExecute; // 缓存权限判断结果
+        /// <summary>业务可执行判断，每次都会调用（非缓存）</summary>
+        public Func<object?, bool>? CanExecuteFunc { get; set; }
+
+        private bool? _cachedPermission; // 缓存权限判断结果
 
         public event EventHandler? CanExecuteChanged;
 
         public bool CanExecute(object? parameter)
         {
-            // 如果缓存存在，则直接返回
-            if (_cachedCanExecute.HasValue)
-                return _cachedCanExecute.Value;
+            // ① 权限（缓存一次即可）
+            if (!_cachedPermission.HasValue)
+                _cachedPermission = PermissionService.CanExecute(Permission, Name);
 
-            // 否则进行权限判断
-            _cachedCanExecute = PermissionService.CanExecute(Permission, Name);
-            return _cachedCanExecute.Value;
+            if (!_cachedPermission.Value)
+                return false;
+
+            // ② 业务判断（每次都算）
+            return CanExecuteFunc?.Invoke(parameter) ?? true;
         }
 
         public void Execute(object? parameter)
         {
 
-            if(parameter is MouseEventArgs e )
+            if(parameter is MouseEventArgs)
             {
                 DoExecute?.Invoke(parameter);
                 return;
@@ -54,7 +59,7 @@ namespace HostComputer.Common.Base
 
         public void RaiseCanExecuteChanged()
         {
-            _cachedCanExecute = null; // 清空缓存，下一次 CanExecute 会重新计算
+            _cachedPermission = null; // 清空缓存，下一次 CanExecute 会重新计算
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
 

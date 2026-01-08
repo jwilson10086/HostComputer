@@ -19,6 +19,7 @@ namespace HostComputer.Models.RicipeEditor
         public static RecipeModel LoadFromXml(string filePath)
         {
             var xml = XDocument.Load(filePath);
+
             var recipe = new RecipeModel
             {
                 UnitRecipeName = Path.GetFileNameWithoutExtension(filePath),
@@ -26,14 +27,15 @@ namespace HostComputer.Models.RicipeEditor
 
             foreach (var stepNode in xml.Root.Elements())
             {
-                if (stepNode.Name == "step0")
-                    continue; //  跳过 step0 标记
-                int stepIndex =
-                    stepNode.Attribute("sid") != null
-                        ? int.Parse(stepNode.Attribute("sid").Value)
-                        : recipe.Steps.Count + 1;
+                if (!stepNode.Name.LocalName.StartsWith("step"))
+                    continue;
 
-                var step = new UnitStepModel { StepIndex = stepIndex };
+                int stepIndex = int.Parse(stepNode.Attribute("sid")?.Value ?? "0");
+
+                var step = new UnitStepModel
+                {
+                    StepIndex = stepIndex
+                };
 
                 foreach (var paramNode in stepNode.Elements())
                 {
@@ -46,6 +48,7 @@ namespace HostComputer.Models.RicipeEditor
             return recipe;
         }
 
+
     }
     public class UnitConfig
     {
@@ -53,11 +56,23 @@ namespace HostComputer.Models.RicipeEditor
         public int StepCount { get; set; }
         public List<UnitItemDefinition> Items { get; set; }
     }
+    public enum ParamDataType
+    {
+        Int,
+        Double,
+        Bool,
+        String
+    }
 
     public class UnitItemDefinition
     {
-        public string Name { get; set; }
-        public string Type { get; set; }   // int / double / bool / string
+        public string Key { get; set; } = string.Empty;        // Delay / Speed
+        public string DisplayName { get; set; } = string.Empty;
+        public ParamDataType DataType { get; set; }
+
+        public object? Value { get; set; }
+
+        public string? Unit { get; set; }                      // ms / rpm / ℃
         public double? Min { get; set; }
         public double? Max { get; set; }
     }
@@ -97,7 +112,7 @@ namespace HostComputer.Models.RicipeEditor
             set => Set(ref _value, value);
         }
 
-        public bool IsDirty { get; private set; }
+        public bool IsDirty { get;  set; }
 
         public void AcceptChanges() => IsDirty = false;
 

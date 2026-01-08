@@ -33,7 +33,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="6">
+                        <Border Background="{TemplateBinding Background}" >
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
                         <ControlTemplate.Triggers>
@@ -113,7 +113,7 @@
                                     Background="#3A3A3D"
                                     BorderBrush="#5A5A5A"
                                     BorderThickness="1"
-                                    CornerRadius="6">
+                                    >
 
                                     <ScrollViewer MaxHeight="200">
                                         <ItemsPresenter />

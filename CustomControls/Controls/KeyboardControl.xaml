@@ -21,7 +21,7 @@
                     <ControlTemplate TargetType="Button">
                         <Border
                             Background="{TemplateBinding Background}"
-                            CornerRadius="6"
+                            
                             Effect="{DynamicResource DropShadow}"
                             SnapsToDevicePixels="True">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />

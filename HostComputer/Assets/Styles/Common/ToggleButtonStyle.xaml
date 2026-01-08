@@ -54,9 +54,8 @@
                         <!--  选中  -->
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="Border" Property="Background" Value="#005A9E" />
-                            <!-- 选中后 Icon 内容 -->
-                            <Setter TargetName="Icon" Property="Text" Value="{Binding RelativeSource={RelativeSource TemplatedParent},
-                            Path=ToolTip}" />
+                            <!--  选中后 Icon 内容  -->
+                            <Setter TargetName="Icon" Property="Text" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ToolTip}" />
                         </Trigger>
 
                         <!--  没文字就隐藏（兼容你原来的空占位）  -->

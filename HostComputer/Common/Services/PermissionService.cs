@@ -17,14 +17,12 @@ namespace HostComputer.Common.Services
         {
             var session = App.UserSession;
             string cmdInfo = commandName ?? "(未知命令)";
-            string sessionInfo =
-                session == null
-                    ? "Session=null"
-                    : $"User={session.UserName}, Level={session.Level}, Group={session.Group}";
 
-            // 登录按钮只判断一次
-            if (cmdInfo == "LoginCommand" && _loginChecked)
+            // 登录前直接允许，不打印日志
+            if (session == null || session.IsLogin)
                 return true;
+
+            string sessionInfo = $"User={session.UserName}, Level={session.Level}, Group={session.Group}";
 
             bool result;
 
@@ -34,11 +32,7 @@ namespace HostComputer.Common.Services
                 App.Logger.Info($"[Permission] {cmdInfo}: 没有 Permission 特性 → 允许 | {sessionInfo}");
                 result = true;
             }
-            else if (session == null || !session.IsLogin)
-            {
-                App.Logger.Info($"[Permission] {cmdInfo}: Session 未登录 → 禁用 | {sessionInfo}");
-                result = false;
-            }
+            // Level 不够
             else if (permission.Level > 0 && session.Level < permission.Level)
             {
                 App.Logger.Info(
@@ -46,10 +40,8 @@ namespace HostComputer.Common.Services
                 );
                 result = false;
             }
-            else if (
-                !string.IsNullOrEmpty(permission.PermissionKey)
-                && session.Group != permission.PermissionKey
-            )
+            // Group 不匹配
+            else if (!string.IsNullOrEmpty(permission.PermissionKey) && session.Group != permission.PermissionKey)
             {
                 App.Logger.Info(
                     $"[Permission] {cmdInfo}: Group 不匹配 → 禁用 | Required={permission.PermissionKey}, Current={session.Group} | {sessionInfo}"
@@ -62,11 +54,9 @@ namespace HostComputer.Common.Services
                 result = true;
             }
 
-            if (cmdInfo == "LoginCommand" && result)
-                _loginChecked = true; // 登录按钮已验证过
-
             return result;
         }
+
 
         // 可选：登录后刷新所有命令权限
         public static void RefreshAllCommands()

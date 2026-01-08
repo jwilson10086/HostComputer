@@ -29,7 +29,7 @@ using HostComputer.Models.RicipeEditor;using System;using System.Collections.G
                 ? unitName
                 : config.UnitName;
 
-            StepCount = config.StepCount > 0 ? config.StepCount : 4;
+            StepCount = config.StepCount > 0 ? config.StepCount : 1;
 
             _items.AddRange(
                 (config.Items != null && config.Items.Any())
@@ -45,13 +45,35 @@ using HostComputer.Models.RicipeEditor;using System;using System.Collections.G
             var defaultConfig = new UnitConfig
             {
                 UnitName = unitName,
-                StepCount = 4,
+                StepCount = 1,
                 Items = new List<UnitItemDefinition>
             {
                 new UnitItemDefinition
                 {
-                    Name = "Param1",
-                    Type = "string"
+                    DisplayName = "Param1",
+                    DataType =ParamDataType.String,
+                    Key = "Param1",
+                    Value = "",
+                },
+                new UnitItemDefinition
+                {
+                    DisplayName = "Param2",
+                    DataType =ParamDataType.Int,
+                    Key = "Param2",
+                    Value = 0,
+                    Unit = "units",
+                    Min = 0,
+                    Max = 100
+                },
+                new UnitItemDefinition
+                {
+                    DisplayName = "Param3",
+                    DataType =ParamDataType.Double,
+                    Key = "Param3",
+                    Value = 0.0,
+                    Unit = "units",
+                    Min = 0.0,
+                    Max = 100.0
                 }
             }
             };
@@ -68,7 +90,7 @@ using HostComputer.Models.RicipeEditor;using System;using System.Collections.G
             return new UnitConfig
             {
                 UnitName = unitName,
-                StepCount = 4,
+                StepCount = 1,
                 Items = CreateFallbackItems()
             };
         }
@@ -77,11 +99,33 @@ using HostComputer.Models.RicipeEditor;using System;using System.Collections.G
         {
             return new List<UnitItemDefinition>
         {
-            new UnitItemDefinition
-            {
-                Name = "Param1",
-                Type = "string"
-            }
+             new UnitItemDefinition
+                {
+                    DisplayName = "Param1",
+                    DataType =ParamDataType.String,
+                    Key = "Param1",
+                    Value = "",
+                },
+                new UnitItemDefinition
+                {
+                    DisplayName = "Param2",
+                    DataType =ParamDataType.Int,
+                    Key = "Param2",
+                    Value = 0,
+                    Unit = "units",
+                    Min = 0,
+                    Max = 100
+                },
+                new UnitItemDefinition
+                {
+                    DisplayName = "Param3",
+                    DataType =ParamDataType.Double,
+                    Key = "Param3",
+                    Value = 0.0,
+                    Unit = "units",
+                    Min = 0.0,
+                    Max = 100.0
+                }
         };
         }
 

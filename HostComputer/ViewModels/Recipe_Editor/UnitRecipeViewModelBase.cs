@@ -7,7 +7,7 @@ namespace HostComputer.ViewModels.Recipe_Editor
     public abstract class UnitRecipeViewModelBase
     {
         public string UnitName { get; protected set; }
-        public int StepCount { get; protected set; }
+        public int StepCount { get;  set; }
 
         public abstract IReadOnlyList<UnitItemDefinition> Items { get; }
     }
