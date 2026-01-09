@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Recipe>
+  <step1 sid="1">
+    <Param1>1</Param1>
+    <Param2></Param2>
+    <Param3>y</Param3>
+    <Param4>y</Param4>
+    <Param5>y</Param5>
+  </step1>
+  <step2 sid="2">
+    <Param1></Param1>
+    <Param2>i</Param2>
+    <Param3>y</Param3>
+    <Param4>gs</Param4>
+    <Param5>y</Param5>
+  </step2>
+  <step3 sid="3">
+    <Param1>u</Param1>
+    <Param2>u</Param2>
+    <Param3>s</Param3>
+    <Param4></Param4>
+    <Param5>o</Param5>
+  </step3>
+  <step4 sid="4">
+    <Param1></Param1>
+    <Param2></Param2>
+    <Param3></Param3>
+    <Param4>4</Param4>
+    <Param5></Param5>
+  </step4>
+  <step5 sid="5" />
+</Recipe>

@@ -4,6 +4,7 @@ using HostComputer.Common.Services;
 using HostComputer.Models.RicipeEditor;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -115,6 +116,8 @@ namespace HostComputer.ViewModels.Recipe_Editor
 
         public ICommand SelectUnitCommand { get; }
         public ICommand NewCommand { get; }
+        public ICommand EditCommand { get; }
+        public ICommand ReNameCommand { get; }
         public ICommand SaveCommand { get; }
         public ICommand SaveAsCommand { get; }
         public ICommand DeleteCommand { get; }
@@ -128,7 +131,6 @@ namespace HostComputer.ViewModels.Recipe_Editor
         public ICommand InsertStepBeforeCommand { get; }
         public ICommand InsertStepAfterCommand { get; }
         public ICommand DeleteStepCommand { get; }
-        public ICommand EditCommand { get; }
 
         #endregion
 
@@ -159,6 +161,20 @@ namespace HostComputer.ViewModels.Recipe_Editor
                         CurrentStepIndex = 0;
                 }
             };
+            ReNameCommand = new CommandBase
+            {
+                DoExecute = _ =>
+                {
+                  
+                    if (SelectedUnitRecipe != null)
+                    {
+                        SelectedUnitRecipe.UnitRecipeName += "_Renamed";
+                        Raise(nameof(RecipeName));
+                    }
+                }
+            };
+
+
             DeleteCommand = new CommandBase { DoExecute = _ => DeleteRecipe() };
             ImportCommand = new CommandBase { DoExecute = _ => ImportRecipe() };
             ExportCommand = new CommandBase { DoExecute = _ => ExportRecipe() };
@@ -201,7 +217,8 @@ namespace HostComputer.ViewModels.Recipe_Editor
 
         private void OnCellClick(MouseButtonEventArgs e)
         {
-            if (e == null) return;
+            if (e == null)
+                return;
 
             DependencyObject dep = (DependencyObject)e.OriginalSource;
 
@@ -209,7 +226,8 @@ namespace HostComputer.ViewModels.Recipe_Editor
             while (dep != null && dep is not DataGridCell)
                 dep = VisualTreeHelper.GetParent(dep);
 
-            if (dep is not DataGridCell cell) return;
+            if (dep is not DataGridCell cell)
+                return;
 
             // 当前列索引
             int columnIndex = cell.Column.DisplayIndex;
@@ -219,7 +237,8 @@ namespace HostComputer.ViewModels.Recipe_Editor
 
             // 如果第0列是 ITEM 列，跳过
             int stepIndex = columnIndex - 1;
-            if (stepIndex < 0) return;
+            if (stepIndex < 0)
+                return;
 
             // 更新 VM 属性（数据流转 → 当前步骤索引）
             CurrentStepIndex = stepIndex;
@@ -236,7 +255,8 @@ namespace HostComputer.ViewModels.Recipe_Editor
         {
             Units.Clear();
             string root = Path.Combine(PathManager.RecipeDir, "unit");
-            if (!Directory.Exists(root)) return;
+            if (!Directory.Exists(root))
+                return;
 
             foreach (var dir in Directory.GetDirectories(root))
                 Units.Add(new GenericUnitRecipeViewModel(dir));
@@ -247,7 +267,8 @@ namespace HostComputer.ViewModels.Recipe_Editor
             UnitRecipes.Clear();
             ParamRows.Clear();
             Columns.Clear();
-            if (unit == null) return;
+            if (unit == null)
+                return;
 
             // 构建 UI 列和空行
             BuildColumns();
@@ -279,7 +300,8 @@ namespace HostComputer.ViewModels.Recipe_Editor
                 recipe,
                 SelectedUnit.Items,
                 ParamRows,
-                SelectedUnit.StepCount);
+                SelectedUnit.StepCount
+            );
         }
 
         private void BuildEmptyRows()
@@ -287,11 +309,7 @@ namespace HostComputer.ViewModels.Recipe_Editor
             ParamRows.Clear();
             foreach (var item in SelectedUnit.Items)
             {
-                var row = new RecipeParamRow
-                {
-                    Item = item.DisplayName,
-                    Definition = item
-                };
+                var row = new RecipeParamRow { Item = item.DisplayName, Definition = item };
                 for (int i = 0; i < SelectedUnit.StepCount; i++)
                     row.StepValues.Add(new RecipeStepValue { Value = string.Empty });
                 ParamRows.Add(row);
@@ -303,25 +321,32 @@ namespace HostComputer.ViewModels.Recipe_Editor
             Columns.Clear();
 
             // UI 第一列：ITEM 列，显示行名
-            Columns.Add(new DataGridTextColumn
-            {
-                Header = "ITEM",
-                Binding = new Binding("Item"),
-                IsReadOnly = true,
-                MinWidth = 150,
-                Width = DataGridLength.Auto
-            });
+            Columns.Add(
+                new DataGridTextColumn
+                {
+                    Header = "ITEM",
+                    Binding = new Binding("Item"),
+                    IsReadOnly = true,
+                    MinWidth = 150,
+                    Width = DataGridLength.Auto
+                }
+            );
 
             // 后续列：步骤列，绑定 StepValues（数据流转）
             for (int i = 0; i < SelectedUnit.StepCount; i++)
             {
                 int index = i;
-                Columns.Add(new DataGridTextColumn
-                {
-                    Header = $"STEP {i + 1}",
-                    Binding = new Binding($"StepValues[{index}].Value") { Mode = BindingMode.TwoWay },
-                    Width = 100
-                });
+                Columns.Add(
+                    new DataGridTextColumn
+                    {
+                        Header = $"STEP {i + 1}",
+                        Binding = new Binding($"StepValues[{index}].Value")
+                        {
+                            Mode = BindingMode.TwoWay
+                        },
+                        Width = 100
+                    }
+                );
             }
         }
 
@@ -331,28 +356,42 @@ namespace HostComputer.ViewModels.Recipe_Editor
 
         private void NewRecipe()
         {
-            if (SelectedUnit == null) return;
+            if (SelectedUnit == null)
+                return;
 
             var newRecipe = new RecipeModel
             {
-                UnitRecipeName = $"NewRecipe_{DateTime.Now:yyyyMMdd_HHmmss}"
+                UnitRecipeName = $"NewRecipe_{DateTime.Now:yyyyMMdd_HHmmss}",
+                SourceFile = Path.Combine(PathManager.RecipeDir, "unit", SelectedUnit.UnitName,
+                                 $"NewRecipe_{DateTime.Now:yyyyMMdd_HHmmss}.rcp")
             };
-            UnitRecipes.Add(newRecipe);
 
-            SelectedUnitRecipe = newRecipe; // UI 更新
+            // 初始化 Steps
+            for (int i = 0; i < SelectedUnit.StepCount; i++)
+                newRecipe.Steps.Add(new UnitStepModel { StepIndex = i + 1 });
+
+            UnitRecipes.Add(newRecipe);
+            SelectedUnitRecipe = newRecipe;
+
+            // 构建空行用于 UI 显示
+            BuildEmptyRows();
         }
 
         private void SaveRecipe()
         {
-            if (SelectedUnitRecipe == null) return;
+            if (SelectedUnitRecipe == null)
+                return;
 
             // 数据流转：把 ParamRows 同步到 RecipeModel
             SyncParamsToRecipe();
 
             string folder = Path.Combine(PathManager.RecipeDir, "unit", SelectedUnit.UnitName);
-            if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
 
-            string path = SelectedUnitRecipe.SourceFile ?? Path.Combine(folder, SelectedUnitRecipe.UnitRecipeName + ".rcp");
+            string path =
+                SelectedUnitRecipe.SourceFile
+                ?? Path.Combine(folder, SelectedUnitRecipe.UnitRecipeName + ".rcp");
             WriteRecipeXml(path, SelectedUnitRecipe);
 
             SelectedUnitRecipe.SourceFile = path;
@@ -363,20 +402,30 @@ namespace HostComputer.ViewModels.Recipe_Editor
 
         private void SaveAsRecipe()
         {
-            if (SelectedUnitRecipe == null || SelectedUnit == null) return;
+            if (SelectedUnitRecipe == null || SelectedUnit == null)
+                return;
 
             SyncParamsToRecipe();
 
             string folder = Path.Combine(PathManager.RecipeDir, "unit", SelectedUnit.UnitName);
-            if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
 
-            string path = Path.Combine(folder, SelectedUnitRecipe.UnitRecipeName + "_Copy_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".rcp");
+            string path = Path.Combine(
+                folder,
+                SelectedUnitRecipe.UnitRecipeName
+                    + "_Copy_"
+                    + DateTime.Now.ToString("yyyyMMddHHmmss")
+                    + ".rcp"
+            );
             WriteRecipeXml(path, SelectedUnitRecipe);
         }
 
         /// <summary>数据流转：把 ParamRows 同步到 RecipeModel 的 Steps</summary>
         private void SyncParamsToRecipe()
         {
+            if (SelectedUnitRecipe.StepCount == 0)
+                return;
             foreach (var step in SelectedUnitRecipe.Steps)
                 step.Parameters.Clear();
 
@@ -392,8 +441,12 @@ namespace HostComputer.ViewModels.Recipe_Editor
 
         private void DeleteRecipe()
         {
-            if (SelectedUnitRecipe == null) return;
-            if (File.Exists(SelectedUnitRecipe.SourceFile)) File.Delete(SelectedUnitRecipe.SourceFile);
+            if (SelectedUnitRecipe == null)
+                return;
+            SelectedUnitRecipe.SourceFile = Path.Combine(PathManager.RecipeDir, "unit", SelectedUnit.UnitName,
+                                $"{SelectedUnitRecipe.UnitRecipeName}.rcp");
+            if (File.Exists(SelectedUnitRecipe.SourceFile))
+                File.Delete(SelectedUnitRecipe.SourceFile);
 
             UnitRecipes.Remove(SelectedUnitRecipe);
 
@@ -415,7 +468,8 @@ namespace HostComputer.ViewModels.Recipe_Editor
 
         private void ExportRecipe()
         {
-            if (SelectedUnitRecipe == null) return;
+            if (SelectedUnitRecipe == null)
+                return;
 
             var dlg = new Microsoft.Win32.SaveFileDialog();
             dlg.Filter = "Recipe Files (*.rcp)|*.rcp";
@@ -453,13 +507,15 @@ namespace HostComputer.ViewModels.Recipe_Editor
         private bool CanEditStep()
         {
             // 这里可以加权限或编辑状态判断
-            if(!IsEditing) return false;
+            if (!IsEditing)
+                return false;
             return true;
         }
 
         private void InsertStep(bool before)
         {
-            if (!CanEditStep()) return;
+            if (!CanEditStep())
+                return;
 
             int insertIndex = before ? CurrentStepIndex : CurrentStepIndex + 1;
 
@@ -480,7 +536,8 @@ namespace HostComputer.ViewModels.Recipe_Editor
 
         private void DeleteStep()
         {
-            if (!CanEditStep()) return;
+            if (!CanEditStep())
+                return;
 
             SelectedUnitRecipe.Steps.RemoveAt(CurrentStepIndex);
 
@@ -508,8 +565,8 @@ namespace HostComputer.ViewModels.Recipe_Editor
         public void AcceptAllChanges()
         {
             foreach (var row in ParamRows)
-                foreach (var cell in row.StepValues)
-                    cell.AcceptChanges();
+            foreach (var cell in row.StepValues)
+                cell.AcceptChanges();
         }
 
         #endregion

@@ -9,6 +9,7 @@ namespace CustomControls.Controls
 {
     public partial class WaferRobot : ComponentBase
     {
+        public IRobotController Controller { get; private set; }
         public WaferRobot()
         {
             InitializeComponent();

@@ -58,7 +58,7 @@
                             <RadioButton.IsChecked>
                                 <MultiBinding Converter="{StaticResource RefEqConverter}" Mode="OneWay">
                                     <!--  当前选中的 Unit  -->
-                                    <Binding Path="DataContext.CurrentUnit" RelativeSource="{RelativeSource AncestorType=ItemsControl}" />
+                                    <Binding Path="DataContext.SelectedUnit" RelativeSource="{RelativeSource AncestorType=ItemsControl}" />
 
                                     <!--  当前 Item  -->
                                     <Binding Path="." />
@@ -101,12 +101,35 @@
         <Border Grid.Column="2">
             <Grid>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
+                <DockPanel Grid.Row="0" Margin="5,0,0,0">
+                    <TextBox
+                        ctrl:SoftKeyboard.IsEnabled="False"
+                        ctrl:SoftKeyboard.Mode="Full"
+                        helper:StyleHelper.IconFontSize="16"
+                        helper:StyleHelper.IconText="配方名 "
+                        helper:StyleHelper.MaskText="配方名"
+                        IsReadOnly="True"
+                        FontFamily="{StaticResource iconfont}"
+                        Style="{StaticResource TextBoxStyle}"
+                        Text="{Binding SelectedUnitRecipe.UnitRecipeName, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox
+                        ctrl:SoftKeyboard.IsEnabled="False"
+                        ctrl:SoftKeyboard.Mode="Full"
+                        helper:StyleHelper.IconFontSize="16"
+                        helper:StyleHelper.IconText="备注信息"
+                        helper:StyleHelper.MaskText="详细信息"
+                        FontFamily="{StaticResource iconfont}"
+                        Style="{StaticResource TextBoxStyle}"
+                        Text="{Binding UserViewModel.UserName, UpdateSourceTrigger=PropertyChanged}" />
 
+                </DockPanel>
                 <DataGrid
-                    Margin="5,10,0,0"
+                    Grid.Row="1"
+                    Margin="5,0,0,0"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
                     behaviors:DataGridColumnsBehavior.BindableColumns="{Binding Columns}"
@@ -194,7 +217,7 @@
 
                 </DataGrid>
 
-                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                <StackPanel Grid.Row="2" Orientation="Horizontal">
                     <Button
                         x:Name="btnInsertBefore"
                         Width="80"
@@ -247,7 +270,7 @@
                 Width="80"
                 Margin="5"
                 helper:StyleHelper.IconFontSize="30"
-                Command="{Binding RenameCommand}"
+                Command="{Binding ReNameCommand}"
                 Content="&#xe60e;"
                 FontFamily="{StaticResource iconfont}"
                 FontSize="18"
