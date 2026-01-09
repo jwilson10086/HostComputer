@@ -40,3 +40,4 @@ bld/
 !*.json
 !*.csv
 !*.rcp
+!*.xlsx
