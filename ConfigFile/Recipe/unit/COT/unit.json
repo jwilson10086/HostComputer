@@ -1,0 +1,51 @@
+{
+  "UnitName": "COT",
+  "StepCount": 4,
+  "Items": [
+    {
+      "Key": "Param1",
+      "DisplayName": "Param1",
+      "DataType": 3,
+      "Value": "",
+      "Unit": null,
+      "Min": null,
+      "Max": null
+    },
+    {
+      "Key": "Param2",
+      "DisplayName": "Param2",
+      "DataType": 0,
+      "Value": 0,
+      "Unit": "units",
+      "Min": 0,
+      "Max": 100
+    },
+    {
+      "Key": "Param3",
+      "DisplayName": "Param3",
+      "DataType": 1,
+      "Value": 0,
+      "Unit": "units",
+      "Min": 0,
+      "Max": 100
+    },
+	 {
+      "Key": "Param4",
+      "DisplayName": "Param4",
+      "DataType": 1,
+      "Value": 0,
+      "Unit": "units",
+      "Min": 0,
+      "Max": 100
+    },
+	 {
+      "Key": "Param5",
+      "DisplayName": "Param5",
+      "DataType": 1,
+      "Value": 0,
+      "Unit": "units",
+      "Min": 0,
+      "Max": 100
+    }
+  ]
+}

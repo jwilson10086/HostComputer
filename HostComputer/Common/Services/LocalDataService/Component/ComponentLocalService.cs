@@ -1,31 +1,39 @@
-﻿using HostComputer.Common.Base;
+﻿using System.IO;
+using HostComputer.Common.Base;
 using HostComputer.Common.Services.Components;
-using System.IO;
 
 namespace HostComputer.Common.Services.LocalDataService.Component
 {
+    /// <summary>
+    /// 设备组态组件本地存储服务
+    /// </summary>
     public class ComponentLocalService
     {
-        private readonly string _folder;
-        private readonly string _fileName;
+        private readonly string _configDir;
 
-        public ComponentLocalService(string folder = "DeviceConfig")
+        public ComponentLocalService()
         {
-            //_folder = Path.Combine(Environment.GetFolderPath(), folder);
-            _folder = folder;
+            // ConfigFile/DeviceConfig
+            _configDir = PathManager.ConfigDevice;
+
+            Directory.CreateDirectory(_configDir);
         }
 
-        private string FilePath => Path.Combine(_folder, _fileName);
+        /// <summary>
+        /// 获取完整文件路径
+        /// </summary>
+        private string GetFilePath(string fileName)
+        {
+            return Path.Combine(_configDir, $"{fileName}.json");
+        }
 
         /// <summary>
         /// 保存设备组态组件数据
         /// </summary>
         public bool SaveLayout(LayoutConfig config, string fileName)
         {
-            fileName = $"{fileName}.json";
-            string filepath = Path.Combine(_folder, fileName);
-
-            return JsonFileHelper.SaveToFile(filepath, config);
+            var path = GetFilePath(fileName);
+            return JsonFileHelper.SaveToFile(path, config);
         }
 
         /// <summary>
@@ -33,25 +41,26 @@ namespace HostComputer.Common.Services.LocalDataService.Component
         /// </summary>
         public LayoutConfig? LoadLayout(string fileName)
         {
-            fileName = $"{fileName}.json";
-            string filepath = Path.Combine(_folder, fileName);
-            return JsonFileHelper.LoadFromFile<LayoutConfig>(filepath);
+            var path = GetFilePath(fileName);
+            return JsonFileHelper.LoadFromFile<LayoutConfig>(path);
         }
 
         /// <summary>
         /// 删除配置文件
         /// </summary>
-        public bool DeleteLayout()
+        public bool DeleteLayout(string fileName)
         {
-            return JsonFileHelper.Delete(FilePath);
+            var path = GetFilePath(fileName);
+            return JsonFileHelper.Delete(path);
         }
 
         /// <summary>
         /// 配置文件是否存在
         /// </summary>
-        public bool Exists()
+        public bool Exists(string fileName)
         {
-            return JsonFileHelper.Exists(FilePath);
+            var path = GetFilePath(fileName);
+            return JsonFileHelper.Exists(path);
         }
     }
 }

@@ -1,0 +1,41 @@
+{
+  "SourceViewName": "Setup_CCView",
+  "Devices": [
+    {
+      "Devices": null,
+      "DeviceNum": "47",
+      "Header": null,
+      "IsSelected": false,
+      "IsVisible": true,
+      "X": 148,
+      "Y": 88,
+      "Z": 0,
+      "Width": 200,
+      "Height": 200,
+      "Rotate": 0,
+      "FlowDirection": 0,
+      "DeviceType": "WaferRobot",
+      "DeviceControl": null,
+      "RobotControl": null,
+      "RobotPanel": null
+    },
+    {
+      "Devices": null,
+      "DeviceNum": "7",
+      "Header": null,
+      "IsSelected": false,
+      "IsVisible": true,
+      "X": 363,
+      "Y": 178,
+      "Z": 0,
+      "Width": 200,
+      "Height": 200,
+      "Rotate": 0,
+      "FlowDirection": 0,
+      "DeviceType": "WaferRobot",
+      "DeviceControl": null,
+      "RobotControl": null,
+      "RobotPanel": null
+    }
+  ]
+}

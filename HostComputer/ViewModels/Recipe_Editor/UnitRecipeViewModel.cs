@@ -1,3 +1,4 @@
+using HostComputer.Common;
 using HostComputer.Common.Base;
 using HostComputer.Common.Services;
 using HostComputer.Models.RicipeEditor;
@@ -234,7 +235,7 @@ namespace HostComputer.ViewModels.Recipe_Editor
         private void LoadUnits()
         {
             Units.Clear();
-            string root = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Recipe", "unit");
+            string root = Path.Combine(PathManager.RecipeDir, "unit");
             if (!Directory.Exists(root)) return;
 
             foreach (var dir in Directory.GetDirectories(root))
@@ -253,7 +254,7 @@ namespace HostComputer.ViewModels.Recipe_Editor
             BuildEmptyRows();
 
             // 数据流转：读取配方文件到 UnitRecipes
-            string unitPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Recipe", "unit", unit.UnitName);
+            string unitPath = Path.Combine(PathManager.RecipeDir, "unit", unit.UnitName);
             foreach (var file in Directory.GetFiles(unitPath, "*.rcp"))
                 UnitRecipes.Add(RecipeModel.LoadFromXml(file));
 
@@ -348,7 +349,7 @@ namespace HostComputer.ViewModels.Recipe_Editor
             // 数据流转：把 ParamRows 同步到 RecipeModel
             SyncParamsToRecipe();
 
-            string folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Recipe", "unit", SelectedUnit.UnitName);
+            string folder = Path.Combine(PathManager.RecipeDir, "unit", SelectedUnit.UnitName);
             if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
 
             string path = SelectedUnitRecipe.SourceFile ?? Path.Combine(folder, SelectedUnitRecipe.UnitRecipeName + ".rcp");
@@ -366,7 +367,7 @@ namespace HostComputer.ViewModels.Recipe_Editor
 
             SyncParamsToRecipe();
 
-            string folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Recipe", "unit", SelectedUnit.UnitName);
+            string folder = Path.Combine(PathManager.RecipeDir, "unit", SelectedUnit.UnitName);
             if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
 
             string path = Path.Combine(folder, SelectedUnitRecipe.UnitRecipeName + "_Copy_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".rcp");

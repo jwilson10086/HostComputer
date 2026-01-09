@@ -179,10 +179,10 @@ namespace HostComputer.Common.Services.StartupModules
 
         #region 私有字段
         /// <summary>配置文件目录</summary>
-        private readonly string configDir = "Config";
+        private readonly string configDir = PathManager.ConfigFile("");
 
         /// <summary>主配置文件路径</summary>
-        private readonly string mainConfigFile = "Config/appsettings.json";
+        private readonly string mainConfigFile = PathManager.AppConfigFile("appsettings.json");
 
         /// <summary>环境配置文件路径</summary>
         private readonly string envConfigFile = "Config/appsettings.Production.json";

@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Recipe>
+  <step1 sid="1">
+    <Param1>1</Param1>
+    <Param2>2</Param2>
+    <Param3></Param3>
+    <Param4></Param4>
+    <Param5></Param5>
+  </step1>
+  <step2 sid="2">
+    <Param1>3</Param1>
+    <Param2>4</Param2>
+    <Param3>5</Param3>
+    <Param4></Param4>
+    <Param5></Param5>
+  </step2>
+  <step3 sid="3">
+    <Param1>7</Param1>
+    <Param2>6</Param2>
+    <Param3></Param3>
+    <Param4></Param4>
+    <Param5></Param5>
+  </step3>
+  <step4 sid="4">
+    <Param1></Param1>
+    <Param2>7</Param2>
+    <Param3></Param3>
+    <Param4></Param4>
+    <Param5></Param5>
+  </step4>
+  <step5 sid="5" />
+  <step6 sid="6" />
+  <step7 sid="7" />
+</Recipe>

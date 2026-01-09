@@ -91,9 +91,7 @@ namespace HostComputer.Common.Services
             progressCallback?.Invoke(completedModules / totalModules * 100);
 
             // 阶段2: 按优先级顺序初始化模块
-            var groupedInitializers = initializers
-                .GroupBy(i => i.Priority)
-                .OrderBy(g => g.Key);
+            var groupedInitializers = initializers.GroupBy(i => i.Priority).OrderBy(g => g.Key);
 
             foreach (var group in groupedInitializers)
             {
@@ -105,9 +103,12 @@ namespace HostComputer.Common.Services
                     _ => "其他模块"
                 };
 
-                ReportProgress(stageName, "Started",
+                ReportProgress(
+                    stageName,
+                    "Started",
                     completedModules / totalModules * 100,
-                    $"开始{stageName}初始化...");
+                    $"开始{stageName}初始化..."
+                );
 
                 // 按Order排序
                 var sortedModules = group.OrderBy(i => i.Order);
@@ -124,12 +125,14 @@ namespace HostComputer.Common.Services
                 }
                 else // 业务模块可以并行执行
                 {
-                    var tasks = sortedModules.Select(async initializer =>
-                    {
-                        await InitializeSingleModuleAsync(initializer);
-                        Interlocked.Increment(ref completedModules);
-                        progressCallback?.Invoke(completedModules / totalModules * 100);
-                    }).ToList();
+                    var tasks = sortedModules
+                        .Select(async initializer =>
+                        {
+                            await InitializeSingleModuleAsync(initializer);
+                            Interlocked.Increment(ref completedModules);
+                            progressCallback?.Invoke(completedModules / totalModules * 100);
+                        })
+                        .ToList();
 
                     await Task.WhenAll(tasks);
                 }
@@ -157,7 +160,6 @@ namespace HostComputer.Common.Services
                 new LanguageModuleInitializer(),
                 // UI框架
                 new UIModuleInitializer(),
-                
                 // 业务模块 (对应你的Views文件夹)
                 new ModuleInitializer("Equipment_Setup", "设备设置模块"),
                 new ModuleInitializer("Recipe_Editor", "配方编辑模块"),
@@ -167,10 +169,8 @@ namespace HostComputer.Common.Services
                 new ModuleInitializer("Lot_Operation", "批次操作模块"),
                 new ModuleInitializer("History", "历史记录模块"),
                 new ModuleInitializer("3thViews", "第三方视图模块"),
-                
                 // 后台服务
                 new BackgroundServiceInitializer(),
-                
                 // 安全模块 (登录相关)
                 new SecurityModuleInitializer()
             };
@@ -216,8 +216,12 @@ namespace HostComputer.Common.Services
 
                 if (success)
                 {
-                    ReportProgress(initializer.ModuleName, "Success", -1,
-                        $"初始化成功 ({stopwatch.ElapsedMilliseconds}ms)");
+                    ReportProgress(
+                        initializer.ModuleName,
+                        "Success",
+                        -1,
+                        $"初始化成功 ({stopwatch.ElapsedMilliseconds}ms)"
+                    );
                     _logger.Module($"✅ {initializer.ModuleName} 初始化成功");
                 }
                 else
@@ -253,8 +257,10 @@ namespace HostComputer.Common.Services
             foreach (var dep in initializer.Dependencies)
             {
                 string depKey = $"{dep.ModuleType}_{dep.ModuleName}";
-                if (!_modules.TryGetValue(depKey, out var module) ||
-                    module.Status != ModuleStatus.Success)
+                if (
+                    !_modules.TryGetValue(depKey, out var module)
+                    || module.Status != ModuleStatus.Success
+                )
                 {
                     return false;
                 }
@@ -273,25 +279,42 @@ namespace HostComputer.Common.Services
             var stopwatch = Stopwatch.StartNew();
             _logger.Config("开始环境检查...");
 
-            // 检查必要目录
-            var requiredDirs = new[] { "Logs", "Config", "Language", "Data" };
-            foreach (var dir in requiredDirs)
+            // 统一由 PathManager 触发目录创建
+            var requiredDirs = new Dictionary<string, string>
             {
-                if (!Directory.Exists(dir))
+                { "Logs", PathManager.LogDir },
+                { "ConfigFile", PathManager.ConfigDir },
+                { "Language", PathManager.LanguageDir },
+                { "Data", PathManager.DataDir }
+            };
+
+            foreach (var item in requiredDirs)
+            {
+                if (Directory.Exists(item.Value))
                 {
-                    Directory.CreateDirectory(dir);
-                    _logger.Config($"创建目录: {dir}");
+                    _logger.Config($"目录存在: {item.Key} → {item.Value}");
+                }
+                else
+                {
+                    // 理论上不会进来（PathManager 已创建）
+                    Directory.CreateDirectory(item.Value);
+                    _logger.Config($"创建目录: {item.Key} → {item.Value}");
                 }
             }
 
-            // 系统信息
+            // 系统信息（只读，不参与路径计算）
             _logger.Config($"操作系统: {Environment.OSVersion}");
-            _logger.Config($".NET版本: {Environment.Version}");
-            _logger.Config($"处理器核心: {Environment.ProcessorCount}");
-            _logger.Config($"工作目录: {Environment.CurrentDirectory}");
+            _logger.Config($".NET 版本: {Environment.Version}");
+            _logger.Config($"处理器核心数: {Environment.ProcessorCount}");
+            _logger.Config($"程序运行目录(Base): {AppDomain.CurrentDomain.BaseDirectory}");
+            _logger.Config($"解决方案根目录: {PathManager.SolutionRoot}");
 
-            _logger.Config($"环境检查完成 ({stopwatch.ElapsedMilliseconds}ms)");
+            stopwatch.Stop();
+            _logger.Config($"环境检查完成 ({stopwatch.ElapsedMilliseconds} ms)");
+
+            await Task.CompletedTask;
         }
+
         #endregion
 
         #region 私有方法 - 报告生成
@@ -305,23 +328,31 @@ namespace HostComputer.Common.Services
                 TotalDuration = _totalStopwatch.Elapsed,
                 ModuleCount = _modules.Count,
                 SuccessCount = _modules.Values.Count(m => m.Status == ModuleStatus.Success),
-                FailedCount = _modules.Values.Count(m => m.Status == ModuleStatus.Failed ||
-                                                       m.Status == ModuleStatus.Error),
+                FailedCount = _modules.Values.Count(m =>
+                    m.Status == ModuleStatus.Failed || m.Status == ModuleStatus.Error
+                ),
                 Modules = _modules.Values.ToList()
             };
 
             // 输出报告
             _logger.Startup("📊 === 启动报告 ===");
             _logger.Startup($"总耗时: {result.TotalDuration.TotalSeconds:F2}秒");
-            _logger.Startup($"总模块: {result.ModuleCount} | 成功: {result.SuccessCount} | 失败: {result.FailedCount}");
+            _logger.Startup(
+                $"总模块: {result.ModuleCount} | 成功: {result.SuccessCount} | 失败: {result.FailedCount}"
+            );
 
             if (result.FailedCount > 0)
             {
                 _logger.Warning("失败模块:");
-                foreach (var module in result.Modules.Where(m =>
-                    m.Status == ModuleStatus.Failed || m.Status == ModuleStatus.Error))
+                foreach (
+                    var module in result.Modules.Where(m =>
+                        m.Status == ModuleStatus.Failed || m.Status == ModuleStatus.Error
+                    )
+                )
                 {
-                    _logger.Warning($"  - {module.Name}: {module.Status} ({module.Duration.TotalMilliseconds:F0}ms)");
+                    _logger.Warning(
+                        $"  - {module.Name}: {module.Status} ({module.Duration.TotalMilliseconds:F0}ms)"
+                    );
                 }
             }
 
@@ -331,16 +362,24 @@ namespace HostComputer.Common.Services
         /// <summary>
         /// 报告进度
         /// </summary>
-        private void ReportProgress(string moduleName, string status, double progress, string message)
+        private void ReportProgress(
+            string moduleName,
+            string status,
+            double progress,
+            string message
+        )
         {
-            ProgressChanged?.Invoke(this, new StartupProgressEventArgs
-            {
-                ModuleName = moduleName,
-                Status = status,
-                Progress = progress,
-                Message = message,
-                Duration = _totalStopwatch.Elapsed
-            });
+            ProgressChanged?.Invoke(
+                this,
+                new StartupProgressEventArgs
+                {
+                    ModuleName = moduleName,
+                    Status = status,
+                    Progress = progress,
+                    Message = message,
+                    Duration = _totalStopwatch.Elapsed
+                }
+            );
         }
         #endregion
     }
@@ -366,10 +405,11 @@ namespace HostComputer.Common.Services
         public int Order => 4;
 
         /// <summary>依赖项</summary>
-        public List<ModuleDependency> Dependencies => new()
-        {
-            new ModuleDependency { ModuleName = "数据库服务", ModuleType = "Database" }
-        };
+        public List<ModuleDependency> Dependencies =>
+            new()
+            {
+                new ModuleDependency { ModuleName = "数据库服务", ModuleType = "Database" }
+            };
 
         /// <summary>
         /// 异步初始化

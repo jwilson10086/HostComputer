@@ -41,8 +41,8 @@ namespace HostComputer.Common.Services.StartupModules
             _enableHotReload = enableHotReload;
 
             // 默认路径优先使用应用目录下的 Language/language.xlsx
-            var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            var defaultPath = Path.Combine(baseDir, "Language", "language.xlsx");
+            //var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            var defaultPath = PathManager.LanguageFile("language.xlsx");
 
             // 允许传入自定义路径，最后追加默认路径
             var list = new List<string>();

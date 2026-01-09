@@ -1,0 +1,87 @@
+[
+  {
+    "Title": "Overview",
+    "Icon": "\ue64d",
+    "RequiredLevel": 1,
+    "Children": [
+      { "Title": "Equipment Overview", "ViewName": "Overview_EquipmentView", "Icon": "\ue63d", "RequiredLevel": 1 },
+      { "Title": "Online", "ViewName": "Overview_OnlineView", "Icon": "\ue65d", "RequiredLevel": 1 },
+      { "Title": "Flow rate monitor", "ViewName": "Overview_FlowRateView", "Icon": "\ue653", "RequiredLevel": 1 },
+      { "Title": "Relief system monitor", "ViewName": "Overview_ReliefView", "Icon": "\ue7ab", "RequiredLevel": 2 },
+      { "Title": "Remnants wafers data", "ViewName": "Overview_RemnantsView", "Icon": "\ue7a7", "RequiredLevel": 2 },
+      { "Title": "Software version", "ViewName": "Overview_SoftwareView", "Icon": "\ue6b7", "RequiredLevel": 4 }
+    ]
+  },
+  {
+    "Title": "Lot Operation",
+    "Icon": "\ue64c",
+    "RequiredLevel": 1,
+    "Children": [
+      {
+        "Title": "Port operation",
+        "Icon": "\ue6e3",
+        "RequiredLevel": 1,
+        "Children": [
+          { "Title": "Certify Operation", "ViewName": "Lot_CJView", "RequiredLevel": 1 },
+          { "Title": "Starting operation", "ViewName": "Lot_PJView", "RequiredLevel": 1 },
+          { "Title": "Stop/Cancel operation", "ViewName": "Lot_TerminalView", "RequiredLevel": 1 }
+        ]
+      },
+      { "Title": "PJ operation", "ViewName": "Lot_PJView", "Icon": "\ue658", "RequiredLevel": 1 },
+      { "Title": "CJ operation", "ViewName": "Lot_CJView", "Icon": "\ue655", "RequiredLevel": 1 },
+      { "Title": "Terminal message", "ViewName": "Lot_TerminalView", "Icon": "\ue776", "RequiredLevel": 1 }
+    ]
+  },
+  {
+    "Title": "Equipment Setup",
+    "Icon": "\ue69a",
+    "RequiredLevel": 2,
+    "Children": [
+      { "Title": "CC operation", "ViewName": "Setup_CCView", "Icon": "\ue6e1", "RequiredLevel": 2 },
+      { "Title": "Relief system operation", "ViewName": "Setup_ReliefView", "Icon": "\ue827", "RequiredLevel": 2 },
+      { "Title": "Online mode", "ViewName": "Setup_OnlineView", "Icon": "\ue65d", "RequiredLevel": 2 },
+      { "Title": "Load port status", "ViewName": "Setup_LoadPortView", "Icon": "\ue6d5", "RequiredLevel": 1 },
+      { "Title": "Unit disconnect", "ViewName": "Setup_DisconnectView", "Icon": "\ue615", "RequiredLevel": 2 },
+      { "Title": "", "ViewName": "", "RequiredLevel": 1 },
+      { "Title": "Equipment shutdown", "ViewName": "Setup_ShutdownView", "Icon": "\ue62d", "RequiredLevel": 3 }
+    ]
+  },
+  {
+    "Title": "Recipe Editor",
+    "Icon": "\ue631",
+    "RequiredLevel": 3,
+    "Children": [
+      { "Title": "Flow recipe", "ViewName": "Recipe_FlowView", "Icon": "\ue77e", "RequiredLevel": 3 },
+      { "Title": "Process recipe", "ViewName": "Recipe_ProcessView", "Icon": "\ue73f", "RequiredLevel": 3 },
+      { "Title": "CC recipe", "ViewName": "Recipe_CCView", "Icon": "\ue60c", "RequiredLevel": 3 },
+      { "Title": "Recipe maintenance", "ViewName": "Recipe_MaintenanceView", "Icon": "\ue67e", "RequiredLevel": 4 },
+      { "Title": "Import / Export", "ViewName": "Recipe_ImportExportView", "Icon": "\ue654", "RequiredLevel": 4 }
+    ]
+  },
+  {
+    "Title": "History",
+    "Icon": "\ue620",
+    "RequiredLevel": 2,
+    "Children": [
+      { "Title": "Event log", "ViewName": "History_EventView", "Icon": "\ue683", "RequiredLevel": 2 },
+      { "Title": "Process log", "ViewName": "History_ProcessView", "Icon": "\ue655", "RequiredLevel": 2 },
+      { "Title": "Host online log", "ViewName": "History_HostView", "Icon": "\ue64a", "RequiredLevel": 3 }
+    ]
+  },
+  {
+    "Title": "Parameter",
+    "Icon": "\ue9b5",
+    "RequiredLevel": 2,
+    "Children": [
+      { "Title": "Parameter settings", "ViewName": "ParameterView", "Icon": "\ue61b", "RequiredLevel": 2 }
+    ]
+  },
+  {
+    "Title": "Maintenance",
+    "Icon": "\ue666",
+    "RequiredLevel": 4,
+    "Children": [
+      { "Title": "Service", "ViewName": "Maintenance_ServiceView", "Icon": "\ue65a", "RequiredLevel": 4 }
+    ]
+  }
+]
