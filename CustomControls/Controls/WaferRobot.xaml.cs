@@ -9,13 +9,28 @@ namespace CustomControls.Controls
 {
     public partial class WaferRobot : ComponentBase
     {
-        public IRobotController Controller { get; private set; }
+        public MotionController Controller { get; }
+
         public WaferRobot()
         {
             InitializeComponent();
+            Controller = new MotionController(this); // ★ 只在这里 new
             Loaded += WaferRobot_Loaded;
         }
 
+
+        // ====== 对外统一 API（给 ViewModel / PLC / Route 用） ======
+
+        public Task HomeAsync() => Controller.HomeAll();
+
+        public Task PickAsync(string finger, PoseData pose)
+            => Controller.Pick(finger, pose);
+
+        public Task PlaceAsync(string finger, PoseData pose)
+            => Controller.Place(finger, pose);
+
+        public Task MoveToPoseAsync(PoseData pose, string finger)
+            => Controller.MoveToPose(pose, finger);
         private void WaferRobot_Loaded(object sender, RoutedEventArgs e)
         {
             ApplyAllAngles(); // ★ 初始化时同步所有角度

@@ -32,7 +32,7 @@ namespace CustomControls.Controls
             InitializeComponent();
 
             _robot = robot ?? throw new ArgumentNullException(nameof(robot));
-            _motion = new MotionController(_robot);
+            _motion = _robot.Controller;
             DataContext = robot;
 
             _leftTimer.Interval = TimeSpan.FromMilliseconds(ThrottleMs);

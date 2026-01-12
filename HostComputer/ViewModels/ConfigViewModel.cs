@@ -212,7 +212,7 @@ namespace HostComputer.ViewModels
                 DeviceList.Add(
                     new DeviceItemModel
                     {
-                        DeviceNum = random.Next(1, 99).ToString(),
+                        
                         X = point.X - data.Width / 2,
                         Y = point.Y - data.Height / 2,
                         Width = data.Width,

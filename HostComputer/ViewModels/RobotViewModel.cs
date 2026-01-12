@@ -25,7 +25,8 @@ namespace HostComputer.ViewModels
         RobotCtrl.RequestShowFloatingPanel += OnRequestShowFloatingPanel;
     }
 
-    private void OnRequestShowFloatingPanel()
+        
+        private void OnRequestShowFloatingPanel()
     {
         // 已存在
         if (_floatingPanel != null)

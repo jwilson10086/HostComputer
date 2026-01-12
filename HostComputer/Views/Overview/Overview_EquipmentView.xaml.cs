@@ -1,4 +1,7 @@
-﻿using System;
+﻿using CustomControls.Controls;
+using HostComputer.ViewModels;
+using HostComputer.ViewModels.Overview;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +16,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using CustomControls.Controls;
 
 namespace HostComputer.Views.Overview
 {
@@ -25,6 +27,7 @@ namespace HostComputer.Views.Overview
         public Overview_EquipmentView()
         {
             InitializeComponent();
+            this.DataContext = new EquipmentViewModel();
         }
     }
 }

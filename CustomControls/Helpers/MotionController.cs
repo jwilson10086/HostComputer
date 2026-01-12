@@ -6,6 +6,8 @@ namespace CustomControls.Controls
     public class MotionController
     {
         private readonly WaferRobot _robot;
+        private readonly MotionQueue _queue = new();
+        public bool IsBusy { get; private set; }
 
         public MotionController(WaferRobot robot)
         {
@@ -136,6 +138,7 @@ namespace CustomControls.Controls
         // =====================================================
         //                       取 片
         // =====================================================
+
         public async Task Pick(string finger, PoseData pose)
         {
             var fingerWafer = GetFingerWafer(finger);
@@ -217,5 +220,21 @@ namespace CustomControls.Controls
                 await Task.WhenAll(t1, t2, t3);
             }
         }
+
+        public class MotionQueue
+        {
+            private Task _last = Task.CompletedTask;
+            private readonly object _lock = new();
+
+            public Task Enqueue(Func<Task> action)
+            {
+                lock (_lock)
+                {
+                    _last = _last.ContinueWith(_ => action()).Unwrap();
+                    return _last;
+                }
+            }
+        }
+
     }
 }

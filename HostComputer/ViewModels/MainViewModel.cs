@@ -184,7 +184,7 @@ namespace HostComputer.ViewModels
         /// <summary>
         /// 设备列表
         /// </summary>
-        public List<DeviceItemModel> DeviceList { get; set; }
+        public static List<DeviceItemModel> DeviceList { get; set; }
 
         /// <summary>
         /// 从文件加载布局
@@ -216,15 +216,16 @@ namespace HostComputer.ViewModels
                     Canvas.SetTop(robotCtrl, device.Y);
 
                     device.DeviceControl = robotCtrl;
+                    device.Controller = new MotionController(robotCtrl);
                 }
 
                 newDeviceList.Add(device);
             }
 
-            // ✅ 只更新缓存
+            // 只更新缓存
             _pageDeviceCache[sourceViewName] = newDeviceList;
 
-            // ✅ 如果是当前页面，再刷新 UI
+            // 如果是当前页面，再刷新 UI
             if (sourceViewName == _navigation._currentState.Page.GetType().Name)
             {
                 DeviceList = newDeviceList;

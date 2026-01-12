@@ -19,7 +19,7 @@ namespace HostComputer.Models
     {
         public Func<List<DeviceItemModel>> Devices { get; set; }
 
-        public string DeviceNum { get; set; }
+        public string DeviceNum { get; set; } = Guid.NewGuid().ToString(); // 唯一ID
         public string Header { get; set; }
 
         private bool _isSelected;
@@ -106,6 +106,7 @@ namespace HostComputer.Models
         // ⭐ 运行时用（配置文件里没有）
         public UIElement? DeviceControl { get; set; }
 
+        public MotionController Controller { get; set; } // 新增控制器
         // 运行时控件
         public WaferRobot RobotControl { get; set; }
 
